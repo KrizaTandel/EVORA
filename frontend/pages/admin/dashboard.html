@@ -97,7 +97,7 @@
             <span class="stat-label">Total Staff</span>
             <div class="stat-icon">&#128101;</div>
           </div>
-          <div class="stat-value">42</div>
+          <div class="stat-value" id="dash-total-staff">42</div>
           <div class="stat-meta">Across 5 departments</div>
         </div>
 
@@ -287,6 +287,12 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       EVORA.initDemoBanner('admin');
+      if (EVORA.EmployeeStore) {
+        const stats = EVORA.EmployeeStore.getStats();
+        document.querySelectorAll('.pending-counter').forEach(el => el.textContent = stats.pending);
+        const totalEl = document.getElementById('dash-total-staff');
+        if (totalEl) totalEl.textContent = stats.approved + 37; // Total headcount
+      }
     });
   </script>
 </body>

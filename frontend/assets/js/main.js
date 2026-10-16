@@ -427,6 +427,118 @@ const EVORA = {
   },
 
   /**
+   * Organizational Departments (Matching MySQL database schema)
+   */
+  departments: [
+    { id: 1, name: 'Human Resources', code: 'HR' },
+    { id: 2, name: 'Engineering & IT', code: 'ENG' },
+    { id: 3, name: 'Marketing & Sales', code: 'MKT' },
+    { id: 4, name: 'Finance & Accounts', code: 'FIN' },
+    { id: 5, name: 'Operations', code: 'OPS' }
+  ],
+
+  /**
+   * In-Memory / SessionStorage Employee Store for complete Admin Employee Management
+   */
+  EmployeeStore: {
+    key: 'evora_employees_store',
+    getInitialData() {
+      return [
+        { id: 1, name: 'Jane Doe', email: 'employee@evora.test', phone: '+91 98765 43210', dept_id: 2, department: 'Engineering & IT', designation: 'Software Associate', role: 'employee', status: 'approved', joined_date: '2026-01-15' },
+        { id: 2, name: 'Michael Scott', email: 'michael.scott@example.com', phone: '+91 98765 11111', dept_id: 5, department: 'Operations', designation: 'Regional Coordinator', role: 'employee', status: 'approved', joined_date: '2025-08-10' },
+        { id: 3, name: 'David Wallace', email: 'david.wallace@example.com', phone: '+91 98765 22222', dept_id: 4, department: 'Finance & Accounts', designation: 'CFO / Controller', role: 'employee', status: 'approved', joined_date: '2025-05-01' },
+        { id: 4, name: 'Pam Beesly', email: 'pam.beesly@example.com', phone: '+91 98765 33333', dept_id: 1, department: 'Human Resources', designation: 'People Specialist', role: 'employee', status: 'approved', joined_date: '2025-11-20' },
+        { id: 5, name: 'Jim Halpert', email: 'jim.halpert@example.com', phone: '+91 98765 44444', dept_id: 3, department: 'Marketing & Sales', designation: 'Account Lead', role: 'employee', status: 'approved', joined_date: '2025-09-15' },
+        { id: 101, name: 'Alex Mercer', email: 'alex.mercer@example.com', phone: '+91 98765 55555', dept_id: 2, department: 'Engineering & IT', designation: 'Backend Developer', role: 'employee', status: 'pending', joined_date: '2026-10-16' },
+        { id: 102, name: 'Sarah Lin', email: 'sarah.lin@example.com', phone: '+91 98765 66666', dept_id: 3, department: 'Marketing & Sales', designation: 'Brand Strategist', role: 'employee', status: 'pending', joined_date: '2026-10-15' },
+        { id: 103, name: 'Vikram Patel', email: 'vikram.patel@example.com', phone: '+91 98765 77777', dept_id: 4, department: 'Finance & Accounts', designation: 'Financial Analyst', role: 'employee', status: 'pending', joined_date: '2026-10-14' }
+      ];
+    },
+    getAll() {
+      try {
+        const stored = sessionStorage.getItem(this.key);
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      const initial = this.getInitialData();
+      this.saveAll(initial);
+      return initial;
+    },
+    saveAll(list) {
+      try {
+        sessionStorage.setItem(this.key, JSON.stringify(list));
+      } catch (e) {}
+    },
+    getById(id) {
+      return this.getAll().find(e => e.id == id);
+    },
+    add(data) {
+      const list = this.getAll();
+      const newId = list.reduce((max, e) => Math.max(max, e.id), 0) + 1;
+      const today = new Date().toISOString().split('T')[0];
+      const newEmp = {
+        id: newId,
+        name: data.name.trim(),
+        email: data.email.trim(),
+        phone: data.phone ? data.phone.trim() : '+91 98765 00000',
+        dept_id: parseInt(data.dept_id, 10) || 1,
+        department: data.department || 'Human Resources',
+        designation: data.designation.trim(),
+        role: 'employee',
+        status: data.status || 'approved',
+        joined_date: data.joined_date || today
+      };
+      list.unshift(newEmp);
+      this.saveAll(list);
+      return newEmp;
+    },
+    update(id, data) {
+      const list = this.getAll();
+      const idx = list.findIndex(e => e.id == id);
+      if (idx !== -1) {
+        list[idx] = { ...list[idx], ...data };
+        this.saveAll(list);
+        return list[idx];
+      }
+      return null;
+    },
+    remove(id) {
+      let list = this.getAll();
+      const beforeCount = list.length;
+      list = list.filter(e => e.id != id);
+      this.saveAll(list);
+      return list.length < beforeCount;
+    },
+    approve(id) {
+      return this.update(id, { status: 'approved' });
+    },
+    reject(id) {
+      return this.update(id, { status: 'rejected' });
+    },
+    getStats() {
+      const list = this.getAll();
+      const approved = list.filter(e => e.status === 'approved').length;
+      const pending = list.filter(e => e.status === 'pending').length;
+      const rejected = list.filter(e => e.status === 'rejected').length;
+      return { total: list.length, approved, pending, rejected };
+    }
+  },
+
+  /**
+   * Check if current user is allowed to access Admin features
+   */
+  checkAdminAccess() {
+    const user = this.getDemoUser();
+    if (user && user.role === 'employee') {
+      const modal = document.getElementById('modal-access-denied');
+      if (modal) {
+        this.openModal('modal-access-denied');
+        return false;
+      }
+    }
+    return true;
+  },
+
+  /**
    * Global Initialization
    */
   init() {
