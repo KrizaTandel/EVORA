@@ -116,15 +116,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">EV</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">EV</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Eleanor Vance</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-approved" id="dropdown-user-role">ADMIN</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">admin@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -180,7 +180,7 @@
               </tr>
             </thead>
             <tbody id="pending-tbody">
-              <!-- Dynamically rendered from EVORA.EmployeeStore -->
+              <!-- Dynamically rendered from MySQL users table -->
             </tbody>
           </table>
         </div>
@@ -239,7 +239,7 @@
               </tr>
             </thead>
             <tbody id="directory-tbody">
-              <!-- Dynamically populated from EVORA.EmployeeStore -->
+              <!-- Dynamically populated from MySQL users table -->
             </tbody>
           </table>
         </div>
@@ -265,7 +265,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
               <label class="form-label" for="add-email">Work Email <span style="color:var(--status-rejected);">*</span></label>
-              <input type="email" id="add-email" class="form-control" placeholder="rachel.green@evora.test" required>
+              <input type="email" id="add-email" class="form-control" placeholder="name@evora.com" required>
               <div class="invalid-feedback">Please enter a valid email address.</div>
             </div>
             <div class="form-group">
@@ -322,11 +322,11 @@
       <div class="modal-body">
         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
           <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--color-forest); color: var(--color-sage); font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; justify-content: center;" id="view-avatar">
-            JD
+            —
           </div>
           <div>
-            <h3 style="margin: 0; font-size: 1.35rem;" id="view-name">Jane Doe</h3>
-            <div style="font-size: 0.85rem; color: var(--color-text-muted);" id="view-email">employee@evora.test</div>
+            <h3 style="margin: 0; font-size: 1.35rem;" id="view-name">—</h3>
+            <div style="font-size: 0.85rem; color: var(--color-text-muted);" id="view-email">—</div>
           </div>
           <div style="margin-left: auto;" id="view-status-badge">
             <span class="badge badge-approved">Approved</span>
@@ -446,8 +446,8 @@
         <div style="display:flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem;">
           <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--status-rejected-bg); color: var(--status-rejected); display:flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700;">⚠</div>
           <div>
-            <strong style="font-size: 1.05rem;" id="remove-employee-name">Jane Doe</strong>
-            <div style="font-size: 0.82rem; color: var(--color-text-muted);" id="remove-employee-email">employee@evora.test</div>
+            <strong style="font-size: 1.05rem;" id="remove-employee-name">—</strong>
+            <div style="font-size: 0.82rem; color: var(--color-text-muted);" id="remove-employee-email">—</div>
           </div>
         </div>
 
@@ -489,35 +489,80 @@
   <script src="../../assets/js/main.js"></script>
   <script>
     let currentlyViewingId = null;
+    let allDepartments = [];
+    let cachedEmployees = [];
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize demo banner and check role authorization
-      EVORA.initDemoBanner('admin');
-      
-      const hasAccess = EVORA.checkAdminAccess();
-      if (!hasAccess) return;
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Guard page with admin requirement
+      const user = await EVORA.guardPage('admin');
+      if (!user) return;
 
-      renderAllTables();
+      await loadDepartments();
+      await renderAllTables();
     });
 
     /**
-     * Render both Pending Approvals and Active Directory tables
+     * Load organizational departments dynamically from MySQL database
      */
-    function renderAllTables() {
-      renderPendingTable();
-      renderStaffTable();
-      updateBadgeCounts();
+    async function loadDepartments() {
+      const res = await EVORA.api('/departments.php');
+      if (res.ok && res.success && Array.isArray(res.departments)) {
+        allDepartments = res.departments;
+
+        // Populate Add Modal Dept Select
+        const addDeptSelect = document.getElementById('add-dept');
+        if (addDeptSelect) {
+          addDeptSelect.innerHTML = '<option value="">Select Department...</option>' +
+            allDepartments.map(d => `<option value="${d.id}">${escapeHtml(d.name)} (${escapeHtml(d.code)})</option>`).join('');
+        }
+
+        // Populate Edit Modal Dept Select
+        const editDeptSelect = document.getElementById('edit-dept');
+        if (editDeptSelect) {
+          editDeptSelect.innerHTML = '<option value="">Select Department...</option>' +
+            allDepartments.map(d => `<option value="${d.id}">${escapeHtml(d.name)} (${escapeHtml(d.code)})</option>`).join('');
+        }
+
+        // Populate Filter Select
+        const filterDeptSelect = document.getElementById('filter-dept');
+        if (filterDeptSelect) {
+          filterDeptSelect.innerHTML = '<option value="">All Departments</option>' +
+            allDepartments.map(d => `<option value="${d.id}">${escapeHtml(d.name)} (${escapeHtml(d.code)})</option>`).join('');
+        }
+      }
+    }
+
+    /**
+     * Fetch and render both Pending Approvals and Active Directory tables from MySQL
+     */
+    async function renderAllTables() {
+      const search = (document.getElementById('employee-search')?.value || '').trim();
+      const dept = document.getElementById('filter-dept')?.value || '';
+      const statusFilter = document.getElementById('filter-status-select')?.value || '';
+
+      const queryParams = new URLSearchParams();
+      if (search) queryParams.set('search', search);
+      if (dept) queryParams.set('department_id', dept);
+      if (statusFilter) queryParams.set('status', statusFilter);
+
+      const res = await EVORA.api(`/admin/employees.php?${queryParams.toString()}`);
+      if (!res.ok || !res.success) {
+        EVORA.showToast(res.message || 'Failed to load employees from database.', 'error');
+        return;
+      }
+
+      cachedEmployees = res.employees || [];
+      renderPendingTable(cachedEmployees, res.pending_count ?? 0);
+      renderStaffTable(cachedEmployees);
+      updateBadgeCounts(res.pending_count ?? 0);
     }
 
     /**
      * Render the Pending Registration Approval Queue
      */
-    function renderPendingTable() {
-      const all = EVORA.EmployeeStore.getAll();
-      const pending = all.filter(e => e.status === 'pending');
+    function renderPendingTable(employees, pendingCount) {
+      const pending = employees.filter(e => e.status === 'pending');
       const tbody = document.getElementById('pending-tbody');
-      const queueSection = document.getElementById('section-pending-queue');
-
       if (!tbody) return;
 
       if (pending.length === 0) {
@@ -535,48 +580,31 @@
 
       tbody.innerHTML = pending.map(e => `
         <tr id="pending-row-${e.id}">
-          <td><strong>${escapeHtml(e.name)}</strong></td>
+          <td><strong>${escapeHtml(e.full_name)}</strong></td>
           <td>${escapeHtml(e.email)}</td>
-          <td>${escapeHtml(e.phone)}</td>
-          <td><span class="badge badge-neutral">${escapeHtml(e.department)}</span></td>
-          <td>${escapeHtml(e.designation)}</td>
-          <td>${escapeHtml(e.joined_date)}</td>
+          <td>${escapeHtml(e.phone || '—')}</td>
+          <td><span class="badge badge-neutral">${escapeHtml(e.department_name || 'General')}</span></td>
+          <td>${escapeHtml(e.designation || 'Pending Staff')}</td>
+          <td>${escapeHtml(e.joined_date || e.created_at?.split(' ')[0] || '—')}</td>
           <td style="white-space: nowrap;">
-            <button class="btn btn-primary btn-sm" onclick="approveApplicant(${e.id}, '${escapeHtml(e.name)}')">Approve</button>
-            <button class="btn btn-danger btn-sm" onclick="rejectApplicant(${e.id}, '${escapeHtml(e.name)}')">Reject</button>
+            <button class="btn btn-primary btn-sm" onclick="approveApplicant(${e.id}, '${escapeHtml(e.full_name)}')">Approve</button>
+            <button class="btn btn-danger btn-sm" onclick="rejectApplicant(${e.id}, '${escapeHtml(e.full_name)}')">Reject</button>
           </td>
         </tr>
       `).join('');
     }
 
     /**
-     * Render the Approved / Filtered Staff Directory
+     * Render the Filtered Staff Directory
      */
-    function renderStaffTable() {
-      const query = (document.getElementById('employee-search')?.value || '').toLowerCase().trim();
-      const dept = (document.getElementById('filter-dept')?.value || '').toLowerCase().trim();
-      const statusFilter = (document.getElementById('filter-status-select')?.value || '').toLowerCase().trim();
-
-      const all = EVORA.EmployeeStore.getAll();
-      const filtered = all.filter(e => {
-        const matchesQuery = !query || 
-          e.name.toLowerCase().includes(query) || 
-          e.email.toLowerCase().includes(query) || 
-          e.designation.toLowerCase().includes(query);
-
-        const matchesDept = !dept || e.department.toLowerCase().includes(dept);
-        const matchesStatus = !statusFilter || e.status.toLowerCase() === statusFilter;
-
-        return matchesQuery && matchesDept && matchesStatus;
-      });
-
+    function renderStaffTable(employees) {
       const tbody = document.getElementById('directory-tbody');
       const countEl = document.getElementById('count-visible-staff');
-      if (countEl) countEl.textContent = filtered.length;
+      if (countEl) countEl.textContent = employees.length;
 
       if (!tbody) return;
 
-      if (filtered.length === 0) {
+      if (employees.length === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="7" class="empty-state">
@@ -588,7 +616,7 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map(e => {
+      tbody.innerHTML = employees.map(e => {
         let badgeClass = 'badge-approved';
         if (e.status === 'pending') badgeClass = 'badge-pending';
         if (e.status === 'rejected') badgeClass = 'badge-rejected';
@@ -596,13 +624,13 @@
         return `
           <tr id="staff-row-${e.id}">
             <td>
-              <strong>${escapeHtml(e.name)}</strong>
+              <strong>${escapeHtml(e.full_name)}</strong>
               <div style="font-size: 0.78rem; color: var(--color-text-muted);">${escapeHtml(e.email)}</div>
             </td>
-            <td><span class="badge badge-neutral">${escapeHtml(e.department)}</span></td>
-            <td>${escapeHtml(e.designation)}</td>
-            <td>${escapeHtml(e.phone)}</td>
-            <td>${escapeHtml(e.joined_date)}</td>
+            <td><span class="badge badge-neutral">${escapeHtml(e.department_name || 'Unassigned')}</span></td>
+            <td>${escapeHtml(e.designation || 'Staff')}</td>
+            <td>${escapeHtml(e.phone || '—')}</td>
+            <td>${escapeHtml(e.joined_date || e.created_at?.split(' ')[0] || '—')}</td>
             <td><span class="badge ${badgeClass}">${capitalize(e.status)}</span></td>
             <td style="text-align: center;">
               <div class="actions-cell" style="justify-content: center;">
@@ -625,34 +653,50 @@
     /**
      * Update Badge Counters dynamically
      */
-    function updateBadgeCounts() {
-      const stats = EVORA.EmployeeStore.getStats();
+    function updateBadgeCounts(pendingCount) {
       document.querySelectorAll('.pending-counter').forEach(el => {
-        el.textContent = stats.pending;
+        el.textContent = pendingCount;
       });
       const headerBadge = document.getElementById('badge-pending-header');
       if (headerBadge) {
-        headerBadge.style.display = stats.pending > 0 ? 'inline-flex' : 'none';
+        headerBadge.style.display = pendingCount > 0 ? 'inline-flex' : 'none';
       }
     }
 
     /**
-     * Approve a pending registration
+     * Approve a pending registration in MySQL
      */
-    function approveApplicant(id, name) {
-      EVORA.EmployeeStore.approve(id);
-      renderAllTables();
-      EVORA.showToast(`Approved registration for ${name}`, 'success');
+    async function approveApplicant(id, name) {
+      const res = await EVORA.api('/admin/employee-approval.php', {
+        method: 'POST',
+        body: { id, action: 'approve' }
+      });
+
+      if (res.ok && res.success) {
+        EVORA.showToast(res.message, 'success');
+        await renderAllTables();
+      } else {
+        EVORA.showToast(res.message || 'Failed to approve applicant.', 'error');
+      }
     }
 
     /**
-     * Reject a pending registration with confirmation
+     * Reject a pending registration in MySQL
      */
-    function rejectApplicant(id, name) {
-      if (!confirm(`Are you sure you want to reject the registration application for ${name}?`)) return;
-      EVORA.EmployeeStore.reject(id);
-      renderAllTables();
-      EVORA.showToast(`Rejected registration for ${name}`, 'warning');
+    async function rejectApplicant(id, name) {
+      if (!confirm(`Are you sure you want to reject registration application for ${name}?`)) return;
+
+      const res = await EVORA.api('/admin/employee-approval.php', {
+        method: 'POST',
+        body: { id, action: 'reject' }
+      });
+
+      if (res.ok && res.success) {
+        EVORA.showToast(res.message, 'warning');
+        await renderAllTables();
+      } else {
+        EVORA.showToast(res.message || 'Failed to reject applicant.', 'error');
+      }
     }
 
     /**
@@ -666,19 +710,20 @@
     }
 
     /**
-     * Handle Add Employee Submission
+     * Handle Add Employee Submission to backend/admin/employees.php
      */
-    function handleAddEmployeeSubmit() {
+    async function handleAddEmployeeSubmit() {
       const name = document.getElementById('add-name');
       const email = document.getElementById('add-email');
       const phone = document.getElementById('add-phone');
       const deptSelect = document.getElementById('add-dept');
       const designation = document.getElementById('add-designation');
       const status = document.getElementById('add-status')?.value || 'approved';
+      const submitBtn = document.getElementById('btn-save-new-employee');
 
       let isValid = true;
 
-      if (!name.value.trim()) {
+      if (!name.value.trim() || name.value.trim().length < 2) {
         name.classList.add('is-invalid');
         isValid = false;
       } else {
@@ -690,13 +735,6 @@
         isValid = false;
       } else {
         email.classList.remove('is-invalid');
-      }
-
-      if (!phone.value.trim()) {
-        phone.classList.add('is-invalid');
-        isValid = false;
-      } else {
-        phone.classList.remove('is-invalid');
       }
 
       if (!deptSelect.value) {
@@ -715,43 +753,60 @@
 
       if (!isValid) return;
 
-      const selectedOption = deptSelect.options[deptSelect.selectedIndex];
-      const deptId = selectedOption.getAttribute('data-id') || 1;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating...';
+      }
 
-      const newEmp = EVORA.EmployeeStore.add({
-        name: name.value,
-        email: email.value,
-        phone: phone.value,
-        department: deptSelect.value,
-        dept_id: deptId,
-        designation: designation.value,
-        status: status
+      const res = await EVORA.api('/admin/employees.php', {
+        method: 'POST',
+        body: {
+          full_name: name.value.trim(),
+          email: email.value.trim(),
+          phone: phone.value.trim(),
+          department_id: parseInt(deptSelect.value, 10),
+          designation: designation.value.trim(),
+          status: status
+        }
       });
 
-      EVORA.closeModal('modal-add-employee');
-      renderAllTables();
-      EVORA.showToast(`Added employee "${newEmp.name}"`, 'success');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Employee';
+      }
+
+      if (res.ok && res.success) {
+        EVORA.closeModal('modal-add-employee');
+        EVORA.showToast(res.message, 'success');
+        await renderAllTables();
+      } else {
+        EVORA.showToast(res.message || 'Failed to create employee.', 'error');
+      }
     }
 
     /**
-     * Modal: Open View Details
+     * Modal: Open View Details (fetches live from /admin/employee.php?id=...)
      */
-    function openViewModal(id) {
-      const emp = EVORA.EmployeeStore.getById(id);
-      if (!emp) return;
+    async function openViewModal(id) {
+      const res = await EVORA.api(`/admin/employee.php?id=${id}`);
+      if (!res.ok || !res.success || !res.employee) {
+        EVORA.showToast(res.message || 'Unable to load employee details.', 'error');
+        return;
+      }
 
+      const emp = res.employee;
       currentlyViewingId = emp.id;
 
-      document.getElementById('view-name').textContent = emp.name;
+      document.getElementById('view-name').textContent = emp.full_name;
       document.getElementById('view-email').textContent = emp.email;
-      document.getElementById('view-designation').textContent = emp.designation;
-      document.getElementById('view-department').textContent = emp.department;
-      document.getElementById('view-phone').textContent = emp.phone;
-      document.getElementById('view-joined').textContent = emp.joined_date;
-      document.getElementById('view-id').textContent = `EMP-00${emp.id}`;
-      document.getElementById('view-role').textContent = `${capitalize(emp.role)} (Staff Member)`;
+      document.getElementById('view-designation').textContent = emp.designation || 'Staff';
+      document.getElementById('view-department').textContent = emp.department_name || 'General';
+      document.getElementById('view-phone').textContent = emp.phone || '—';
+      document.getElementById('view-joined').textContent = emp.joined_date || emp.created_at?.split(' ')[0] || '—';
+      document.getElementById('view-id').textContent = `EMP-${String(emp.id).padStart(3, '0')}`;
+      document.getElementById('view-role').textContent = `${capitalize(emp.role)} (Organizational Account)`;
 
-      const initials = emp.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const initials = emp.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'EM';
       document.getElementById('view-avatar').textContent = initials;
 
       const badgeWrap = document.getElementById('view-status-badge');
@@ -771,18 +826,22 @@
     }
 
     /**
-     * Modal: Open Edit Employee (with Department Transfer dropdown)
+     * Modal: Open Edit Employee
      */
-    function openEditModal(id) {
-      const emp = EVORA.EmployeeStore.getById(id);
-      if (!emp) return;
+    async function openEditModal(id) {
+      const res = await EVORA.api(`/admin/employee.php?id=${id}`);
+      if (!res.ok || !res.success || !res.employee) {
+        EVORA.showToast(res.message || 'Unable to load employee details for editing.', 'error');
+        return;
+      }
 
+      const emp = res.employee;
       document.getElementById('edit-id').value = emp.id;
-      document.getElementById('edit-name').value = emp.name;
+      document.getElementById('edit-name').value = emp.full_name;
       document.getElementById('edit-email').value = emp.email;
-      document.getElementById('edit-phone').value = emp.phone;
-      document.getElementById('edit-designation').value = emp.designation;
-      document.getElementById('edit-dept').value = emp.department;
+      document.getElementById('edit-phone').value = emp.phone || '';
+      document.getElementById('edit-designation').value = emp.designation || '';
+      document.getElementById('edit-dept').value = emp.department_id || '';
       document.getElementById('edit-status').value = emp.status;
 
       clearValidationErrors('form-edit-employee');
@@ -790,9 +849,9 @@
     }
 
     /**
-     * Handle Edit Employee Submission
+     * Handle Edit Employee Submission to backend/admin/employee.php
      */
-    function handleEditEmployeeSubmit() {
+    async function handleEditEmployeeSubmit() {
       const id = document.getElementById('edit-id').value;
       const name = document.getElementById('edit-name');
       const email = document.getElementById('edit-email');
@@ -800,6 +859,7 @@
       const deptSelect = document.getElementById('edit-dept');
       const designation = document.getElementById('edit-designation');
       const status = document.getElementById('edit-status').value;
+      const submitBtn = document.getElementById('btn-save-edit-employee');
 
       let isValid = true;
 
@@ -817,13 +877,6 @@
         email.classList.remove('is-invalid');
       }
 
-      if (!phone.value.trim()) {
-        phone.classList.add('is-invalid');
-        isValid = false;
-      } else {
-        phone.classList.remove('is-invalid');
-      }
-
       if (!designation.value.trim()) {
         designation.classList.add('is-invalid');
         isValid = false;
@@ -833,58 +886,90 @@
 
       if (!isValid) return;
 
-      const selectedOption = deptSelect.options[deptSelect.selectedIndex];
-      const deptId = selectedOption.getAttribute('data-id') || 1;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+      }
 
-      const updated = EVORA.EmployeeStore.update(id, {
-        name: name.value.trim(),
-        email: email.value.trim(),
-        phone: phone.value.trim(),
-        department: deptSelect.value,
-        dept_id: deptId,
-        designation: designation.value.trim(),
-        status: status
+      const res = await EVORA.api('/admin/employee.php?action=update', {
+        method: 'POST',
+        body: {
+          id: parseInt(id, 10),
+          full_name: name.value.trim(),
+          email: email.value.trim(),
+          phone: phone.value.trim(),
+          department_id: parseInt(deptSelect.value, 10) || 1,
+          designation: designation.value.trim(),
+          status: status
+        }
       });
 
-      EVORA.closeModal('modal-edit-employee');
-      renderAllTables();
-      EVORA.showToast(`Updated "${updated.name}" successfully`, 'success');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Changes';
+      }
+
+      if (res.ok && res.success) {
+        EVORA.closeModal('modal-edit-employee');
+        EVORA.showToast(res.message, 'success');
+        await renderAllTables();
+      } else {
+        EVORA.showToast(res.message || 'Failed to update employee.', 'error');
+      }
     }
 
     /**
      * Modal: Open Destructive Remove Confirmation
      */
-    function openRemoveModal(id) {
-      const emp = EVORA.EmployeeStore.getById(id);
-      if (!emp) return;
+    async function openRemoveModal(id) {
+      const res = await EVORA.api(`/admin/employee.php?id=${id}`);
+      if (!res.ok || !res.success || !res.employee) {
+        EVORA.showToast(res.message || 'Unable to load employee.', 'error');
+        return;
+      }
 
+      const emp = res.employee;
       document.getElementById('remove-employee-id').value = emp.id;
-      document.getElementById('remove-employee-name').textContent = emp.name;
-      document.getElementById('remove-employee-email').textContent = `${emp.email} • ${emp.department}`;
+      document.getElementById('remove-employee-name').textContent = emp.full_name;
+      document.getElementById('remove-employee-email').textContent = `${emp.email} • ${emp.department_name || 'General'}`;
 
       EVORA.openModal('modal-remove-employee');
     }
 
-    /**
-     * Abort removal without changing records
-     */
     function cancelRemoval() {
       EVORA.closeModal('modal-remove-employee');
-      EVORA.showToast('Removal cancelled &mdash; no changes made', 'info');
+      EVORA.showToast('Removal cancelled — no changes made', 'info');
     }
 
     /**
-     * Confirm removal
+     * Confirm removal to backend/admin/employee.php (action=delete)
      */
-    function confirmRemoval() {
+    async function confirmRemoval() {
       const id = document.getElementById('remove-employee-id').value;
-      const emp = EVORA.EmployeeStore.getById(id);
-      const name = emp ? emp.name : 'Employee';
+      const confirmBtn = document.getElementById('btn-confirm-delete');
 
-      EVORA.EmployeeStore.remove(id);
-      EVORA.closeModal('modal-remove-employee');
-      renderAllTables();
-      EVORA.showToast(`Removed employee "${name}"`, 'warning');
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Removing...';
+      }
+
+      const res = await EVORA.api('/admin/employee.php?action=delete', {
+        method: 'POST',
+        body: { id: parseInt(id, 10) }
+      });
+
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm & Remove';
+      }
+
+      if (res.ok && res.success) {
+        EVORA.closeModal('modal-remove-employee');
+        EVORA.showToast(res.message, 'warning');
+        await renderAllTables();
+      } else {
+        EVORA.showToast(res.message || 'Failed to remove employee.', 'error');
+      }
     }
 
     /**
@@ -893,8 +978,8 @@
     function resetFilters() {
       document.getElementById('employee-search').value = '';
       document.getElementById('filter-dept').value = '';
-      document.getElementById('filter-status-select').value = 'approved';
-      renderStaffTable();
+      document.getElementById('filter-status-select').value = '';
+      renderAllTables();
     }
 
     function clearValidationErrors(formId) {
@@ -905,13 +990,7 @@
     }
 
     function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+      return EVORA.escapeHtml(str);
     }
 
     function capitalize(str) {

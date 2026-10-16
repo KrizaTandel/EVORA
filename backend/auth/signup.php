@@ -5,9 +5,10 @@
  * 
  * Enforces:
  * - Public signups strictly provision role: 'employee' and status: 'pending'
- * - Server-side validation of full_name, email, phone, department, password
+ * - Server-side validation of full_name, email, phone, department, password, password confirmation
  * - Secure password hashing using PASSWORD_DEFAULT
  * - Duplicate email prevention with safe generic messaging
+ * - Department existence verification
  */
 
 declare(strict_types=1);
@@ -21,13 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = getRequestBody();
 
-$fullName   = trim((string)($input['full_name'] ?? $input['name'] ?? ''));
-$email      = strtolower(trim((string)($input['email'] ?? '')));
-$phone      = trim((string)($input['phone'] ?? ''));
-$deptId     = isset($input['department_id']) ? (int)$input['department_id'] : (isset($input['department']) ? (int)$input['department'] : 0);
-$password   = (string)($input['password'] ?? '');
+$fullName        = trim((string)($input['full_name'] ?? $input['name'] ?? ''));
+$email           = strtolower(trim((string)($input['email'] ?? '')));
+$phone           = trim((string)($input['phone'] ?? ''));
+$deptId          = isset($input['department_id']) ? (int)$input['department_id'] : (isset($input['department']) ? (int)$input['department'] : 0);
+$password        = (string)($input['password'] ?? '');
+$passwordConfirm = isset($input['password_confirm']) ? (string)$input['password_confirm'] : (isset($input['confirm_password']) ? (string)$input['confirm_password'] : null);
 
-// Server-side validation
+// Essential Server-side Validation
 if (empty($fullName) || mb_strlen($fullName) < 2 || mb_strlen($fullName) > 120) {
     jsonResponse(false, 'Please provide a valid full name (2–120 characters).', [], 422);
 }
@@ -40,8 +42,20 @@ if (empty($password) || mb_strlen($password) < 6) {
     jsonResponse(false, 'Password must be at least 6 characters in length.', [], 422);
 }
 
+if (mb_strlen($password) > 255) {
+    jsonResponse(false, 'Password exceeds maximum allowable length.', [], 422);
+}
+
+if ($passwordConfirm !== null && $password !== $passwordConfirm) {
+    jsonResponse(false, 'Password confirmation does not match.', [], 422);
+}
+
 if (!empty($phone) && mb_strlen($phone) > 20) {
     jsonResponse(false, 'Phone number cannot exceed 20 characters.', [], 422);
+}
+
+if ($deptId <= 0) {
+    jsonResponse(false, 'Please select a valid organizational department.', [], 422);
 }
 
 try {
@@ -56,17 +70,17 @@ try {
         jsonResponse(false, 'Selected department does not exist. Please choose a valid department.', [], 422);
     }
 
-    // Check duplicate email
+    // Check duplicate email safely
     $checkStmt = $pdo->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
     $checkStmt->execute([':email' => $email]);
     if ($checkStmt->fetch()) {
         jsonResponse(false, 'An account with this work email address is already registered or pending review.', [], 409);
     }
 
-    // Hash password with PHP PASSWORD_DEFAULT (BCrypt / Argon2 depending on PHP 8.2 setup)
+    // Hash password with PHP PASSWORD_DEFAULT
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-    // Strictly enforce role='employee' and status='pending'
+    // Strictly hardcode role='employee' and status='pending'
     $insertStmt = $pdo->prepare('
         INSERT INTO users (full_name, email, password_hash, role, status, department_id, phone, joined_date, created_at)
         VALUES (:full_name, :email, :password_hash, "employee", "pending", :dept_id, :phone, CURDATE(), NOW())
@@ -98,7 +112,6 @@ try {
             ),
         ]);
     } catch (Exception $ne) {
-        // Log non-fatal notification error
         error_log('[EVORA Notification Warning] ' . $ne->getMessage());
     }
 

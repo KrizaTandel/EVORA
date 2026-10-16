@@ -72,15 +72,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">EV</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">EV</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Eleanor Vance</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-approved" id="dropdown-user-role">ADMIN</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">admin@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -127,40 +127,10 @@
                 <th>Decision Action</th>
               </tr>
             </thead>
-            <tbody>
-              <tr id="leave-row-1">
-                <td><strong>Jane Doe</strong></td>
-                <td>Engineering &amp; IT</td>
-                <td><span class="badge badge-neutral">Casual</span></td>
-                <td>2026-10-20 &mdash; 2026-10-21</td>
-                <td>Personal family celebration</td>
-                <td class="status-cell"><span class="badge badge-pending">Pending</span></td>
-                <td class="action-cell" style="white-space: nowrap;">
-                  <button class="btn btn-primary btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-1', 'approve', 'Jane Doe')">Approve</button>
-                  <button class="btn btn-danger btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-1', 'reject', 'Jane Doe')">Reject</button>
-                </td>
-              </tr>
-              <tr id="leave-row-2">
-                <td><strong>Michael Scott</strong></td>
-                <td>Operations</td>
-                <td><span class="badge badge-neutral">Sick</span></td>
-                <td>2026-10-18 &mdash; 2026-10-19</td>
-                <td>Medical recovery &amp; rest</td>
-                <td class="status-cell"><span class="badge badge-pending">Pending</span></td>
-                <td class="action-cell" style="white-space: nowrap;">
-                  <button class="btn btn-primary btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-2', 'approve', 'Michael Scott')">Approve</button>
-                  <button class="btn btn-danger btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-2', 'reject', 'Michael Scott')">Reject</button>
-                </td>
-              </tr>
-              <tr id="leave-row-3">
-                <td><strong>David Wallace</strong></td>
-                <td>Finance &amp; Accounts</td>
-                <td><span class="badge badge-neutral">Paid Annual</span></td>
-                <td>2026-10-27 &mdash; 2026-10-29</td>
-                <td>Conference attendance &amp; research</td>
-                <td class="status-cell"><span class="badge badge-approved">Approved</span></td>
-                <td class="action-cell" style="font-size:0.8rem; color:var(--color-text-muted);">
-                  Approved by Eleanor Vance
+            <tbody id="leaves-tbody">
+              <tr>
+                <td colspan="7" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                  Loading leave applications from database...
                 </td>
               </tr>
             </tbody>
@@ -176,8 +146,8 @@
             <div class="card-subtitle">Auditable check-in and check-out logs for all departments.</div>
           </div>
           <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-            <input type="date" id="attendance-audit-date" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" value="2026-10-16">
-            <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Attendance log filtered for selected date', 'info')">
+            <input type="date" id="attendance-audit-date" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+            <button class="btn btn-secondary btn-sm" onclick="loadAttendanceLogs()">
               Filter Date
             </button>
           </div>
@@ -195,38 +165,11 @@
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="attendance-tbody">
               <tr>
-                <td><strong>Jane Doe</strong></td>
-                <td>Engineering &amp; IT</td>
-                <td>09:05 AM</td>
-                <td>&mdash;</td>
-                <td>Shift in progress</td>
-                <td><span class="badge badge-approved">Present</span></td>
-              </tr>
-              <tr>
-                <td><strong>David Wallace</strong></td>
-                <td>Finance &amp; Accounts</td>
-                <td>09:38 AM</td>
-                <td>&mdash;</td>
-                <td>Shift in progress</td>
-                <td><span class="badge badge-pending">Late (38m)</span></td>
-              </tr>
-              <tr>
-                <td><strong>Pam Beesly</strong></td>
-                <td>Human Resources</td>
-                <td>08:55 AM</td>
-                <td>&mdash;</td>
-                <td>Shift in progress</td>
-                <td><span class="badge badge-approved">Present</span></td>
-              </tr>
-              <tr>
-                <td><strong>Michael Scott</strong></td>
-                <td>Operations</td>
-                <td>09:00 AM</td>
-                <td>&mdash;</td>
-                <td>Shift in progress</td>
-                <td><span class="badge badge-approved">Present</span></td>
+                <td colspan="6" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                  Loading attendance records...
+                </td>
               </tr>
             </tbody>
           </table>
@@ -235,11 +178,253 @@
     </main>
   </div>
 
+  <!-- Leave Review Modal -->
+  <div class="modal-backdrop" id="leave-review-modal" role="dialog" aria-modal="true" aria-labelledby="leave-review-title">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="leave-review-title">Review Leave Application</div>
+        <button class="modal-close" onclick="EVORA.closeModal('leave-review-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-review-leave" onsubmit="event.preventDefault(); submitLeaveReview();">
+          <input type="hidden" id="review-leave-id">
+          <input type="hidden" id="review-leave-action">
+
+          <p id="review-leave-summary" style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--color-text-dark);"></p>
+
+          <div class="form-group">
+            <label class="form-label" for="review-leave-remarks">Administrator Remarks (Optional)</label>
+            <textarea id="review-leave-remarks" class="form-control" rows="3" placeholder="Provide any notes, conditions, or reason for this decision..."></textarea>
+          </div>
+
+          <div style="display:flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+            <button type="button" class="btn btn-secondary" onclick="EVORA.closeModal('leave-review-modal')">Cancel</button>
+            <button type="submit" class="btn" id="btn-submit-review">Confirm Decision</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      EVORA.initDemoBanner('admin');
+    let leavesCache = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await EVORA.requireRole('admin');
+      if (!user) return;
+
+      // Set today's date in attendance filter
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('attendance-audit-date');
+      if (dateInput) {
+        dateInput.value = today;
+        dateInput.addEventListener('change', loadAttendanceLogs);
+      }
+
+      loadLeaves();
+      loadAttendanceLogs();
+      updatePendingBadge();
     });
+
+    async function updatePendingBadge() {
+      try {
+        const res = await EVORA.api('/backend/admin/employees.php?status=pending');
+        if (res && res.success && res.data) {
+          const badge = document.querySelector('.pending-counter');
+          if (badge) {
+            const count = res.data.total || 0;
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function loadLeaves() {
+      const tbody = document.getElementById('leaves-tbody');
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">Loading leave applications...</td></tr>`;
+
+      try {
+        const res = await EVORA.api('/backend/admin/leaves.php');
+        if (!res || !res.success) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--color-error); padding: 2rem;">Failed to load leaves: ${EVORA.escapeHtml(res?.message || 'Error')}</td></tr>`;
+          return;
+        }
+
+        leavesCache = res.data.leaves || [];
+        renderLeaves(leavesCache);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--color-error); padding: 2rem;">Server error loading leave applications.</td></tr>`;
+      }
+    }
+
+    function renderLeaves(leaves) {
+      const tbody = document.getElementById('leaves-tbody');
+      if (!leaves.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2.5rem; color: var(--color-text-muted);">No leave applications submitted yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = leaves.map(l => {
+        const isPending = l.status === 'pending';
+        const isApproved = l.status === 'approved';
+        const badgeClass = isPending ? 'badge-pending' : (isApproved ? 'badge-approved' : 'badge-rejected');
+        const dept = l.department_name ? EVORA.escapeHtml(l.department_name) : '—';
+        const category = l.leave_type ? EVORA.escapeHtml(l.leave_type.charAt(0).toUpperCase() + l.leave_type.slice(1)) : 'General';
+
+        let actionHtml = '';
+        if (isPending) {
+          actionHtml = `
+            <div style="display:flex; gap:0.4rem; white-space:nowrap;">
+              <button class="btn btn-primary btn-sm" onclick="openReviewModal(${l.id}, 'approve', '${EVORA.escapeHtml(l.employee_name)}')">Approve</button>
+              <button class="btn btn-danger btn-sm" onclick="openReviewModal(${l.id}, 'reject', '${EVORA.escapeHtml(l.employee_name)}')">Reject</button>
+            </div>
+          `;
+        } else {
+          const revBy = l.reviewer_name ? ` by ${EVORA.escapeHtml(l.reviewer_name)}` : '';
+          actionHtml = `<span style="font-size:0.8rem; color:var(--color-text-muted);">${EVORA.escapeHtml(l.status)}${revBy}</span>`;
+        }
+
+        return `
+          <tr id="leave-row-${l.id}">
+            <td><strong>${EVORA.escapeHtml(l.employee_name)}</strong><br><small style="color:var(--color-text-muted);">${EVORA.escapeHtml(l.employee_email)}</small></td>
+            <td>${dept}</td>
+            <td><span class="badge badge-neutral">${category}</span></td>
+            <td>${EVORA.escapeHtml(l.start_date)} &mdash; ${EVORA.escapeHtml(l.end_date)}</td>
+            <td>${EVORA.escapeHtml(l.reason || '—')}</td>
+            <td class="status-cell"><span class="badge ${badgeClass}">${EVORA.escapeHtml(l.status.charAt(0).toUpperCase() + l.status.slice(1))}</span></td>
+            <td class="action-cell">${actionHtml}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openReviewModal(id, action, employeeName) {
+      document.getElementById('review-leave-id').value = id;
+      document.getElementById('review-leave-action').value = action;
+      document.getElementById('review-leave-remarks').value = '';
+
+      const summaryEl = document.getElementById('review-leave-summary');
+      const submitBtn = document.getElementById('btn-submit-review');
+
+      if (action === 'approve') {
+        summaryEl.innerHTML = `Are you sure you want to <strong>approve</strong> the leave request for <strong>${employeeName}</strong>?`;
+        submitBtn.className = 'btn btn-primary';
+        submitBtn.textContent = 'Approve Leave';
+      } else {
+        summaryEl.innerHTML = `Are you sure you want to <strong style="color:var(--color-error)">reject</strong> the leave request for <strong>${employeeName}</strong>?`;
+        submitBtn.className = 'btn btn-danger';
+        submitBtn.textContent = 'Reject Leave';
+      }
+
+      EVORA.openModal('leave-review-modal');
+    }
+
+    async function submitLeaveReview() {
+      const id = document.getElementById('review-leave-id').value;
+      const action = document.getElementById('review-leave-action').value;
+      const remarks = document.getElementById('review-leave-remarks').value.trim();
+      const submitBtn = document.getElementById('btn-submit-review');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
+
+      try {
+        const res = await EVORA.api('/backend/admin/leaves.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: parseInt(id, 10),
+            action: action,
+            admin_remarks: remarks
+          })
+        });
+
+        if (res && res.success) {
+          EVORA.showToast(res.message || 'Leave request updated.', 'success');
+          EVORA.closeModal('leave-review-modal');
+          loadLeaves();
+        } else {
+          EVORA.showToast(res?.message || 'Failed to update leave request.', 'error');
+        }
+      } catch (err) {
+        EVORA.showToast(err.message || 'Server error processing leave request.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = action === 'approve' ? 'Approve Leave' : 'Reject Leave';
+      }
+    }
+
+    async function loadAttendanceLogs() {
+      const dateInput = document.getElementById('attendance-audit-date');
+      const selectedDate = dateInput ? dateInput.value : '';
+      const tbody = document.getElementById('attendance-tbody');
+
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">Loading records for ${selectedDate}...</td></tr>`;
+
+      try {
+        const res = await EVORA.api(`/backend/admin/attendance.php?date=${encodeURIComponent(selectedDate)}`);
+        if (!res || !res.success) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--color-error); padding: 2rem;">Failed to fetch attendance logs.</td></tr>`;
+          return;
+        }
+
+        const records = res.data.records || [];
+        renderAttendanceLogs(records);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--color-error); padding: 2rem;">Server error loading attendance logs.</td></tr>`;
+      }
+    }
+
+    function renderAttendanceLogs(records) {
+      const tbody = document.getElementById('attendance-tbody');
+      if (!records.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">No attendance records logged for this date.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = records.map(r => {
+        const dept = r.department_name ? EVORA.escapeHtml(r.department_name) : '—';
+        const inTime = EVORA.formatTime(r.check_in_time);
+        const outTime = r.check_out_time ? EVORA.formatTime(r.check_out_time) : '&mdash;';
+
+        let durationText = 'Shift in progress';
+        if (r.check_in_time && r.check_out_time) {
+          const inDate = new Date(`1970-01-01T${r.check_in_time}`);
+          const outDate = new Date(`1970-01-01T${r.check_out_time}`);
+          const diffMs = outDate - inDate;
+          if (diffMs > 0) {
+            const hrs = Math.floor(diffMs / 3600000);
+            const mins = Math.floor((diffMs % 3600000) / 60000);
+            durationText = `${hrs}h ${mins}m`;
+          }
+        }
+
+        let badgeClass = 'badge-approved';
+        let label = 'Present';
+        if (r.status === 'late') {
+          badgeClass = 'badge-pending';
+          label = 'Late';
+        } else if (r.status === 'half_day') {
+          badgeClass = 'badge-pending';
+          label = 'Half Day';
+        } else if (r.status === 'absent') {
+          badgeClass = 'badge-rejected';
+          label = 'Absent';
+        }
+
+        return `
+          <tr>
+            <td><strong>${EVORA.escapeHtml(r.full_name)}</strong><br><small style="color:var(--color-text-muted);">${EVORA.escapeHtml(r.email)}</small></td>
+            <td>${dept}</td>
+            <td>${inTime}</td>
+            <td>${outTime}</td>
+            <td>${durationText}</td>
+            <td><span class="badge ${badgeClass}">${label}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
   </script>
 </body>
 </html>

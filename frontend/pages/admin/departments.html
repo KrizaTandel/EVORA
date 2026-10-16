@@ -72,15 +72,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">EV</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">EV</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Eleanor Vance</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-approved" id="dropdown-user-role">ADMIN</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">admin@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -114,7 +114,7 @@
             <span class="stat-label">Active Units</span>
             <div class="stat-icon">&#127970;</div>
           </div>
-          <div class="stat-value" id="dept-count">5</div>
+          <div class="stat-value" id="dept-count">0</div>
           <div class="stat-meta">Structured organizational divisions</div>
         </div>
         <div class="stat-card">
@@ -122,15 +122,15 @@
             <span class="stat-label">Largest Department</span>
             <div class="stat-icon">&#128101;</div>
           </div>
-          <div class="stat-value" style="font-size: 1.5rem; padding-top: 0.35rem;">Engineering</div>
-          <div class="stat-meta">18 team members (43%)</div>
+          <div class="stat-value" id="dept-largest" style="font-size: 1.5rem; padding-top: 0.35rem;">—</div>
+          <div class="stat-meta" id="dept-largest-meta">0 team members</div>
         </div>
         <div class="stat-card">
           <div class="stat-header">
             <span class="stat-label">Avg Team Size</span>
             <div class="stat-icon">&#128202;</div>
           </div>
-          <div class="stat-value">8.4</div>
+          <div class="stat-value" id="dept-avg">0</div>
           <div class="stat-meta">Staff members per division</div>
         </div>
       </div>
@@ -140,7 +140,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Existing Departments</div>
-            <div class="card-subtitle">Default schema divisions and allocated workforce members.</div>
+            <div class="card-subtitle">Real organizational divisions and allocated workforce members from MySQL.</div>
           </div>
         </div>
 
@@ -155,50 +155,10 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="departments-tbody">
               <tr>
-                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">ENG</strong></td>
-                <td><strong>Engineering &amp; IT</strong></td>
-                <td>Software architecture, cloud infrastructure, and technical operations</td>
-                <td><span class="badge badge-approved">18 Staff</span></td>
-                <td>
-                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Department configuration view', 'info')">Edit</button>
-                </td>
-              </tr>
-              <tr>
-                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">MKT</strong></td>
-                <td><strong>Marketing &amp; Sales</strong></td>
-                <td>Brand growth, client outreach, and campaign management</td>
-                <td><span class="badge badge-approved">8 Staff</span></td>
-                <td>
-                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Department configuration view', 'info')">Edit</button>
-                </td>
-              </tr>
-              <tr>
-                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">HR</strong></td>
-                <td><strong>Human Resources</strong></td>
-                <td>Talent acquisition, employee welfare, and institutional compliance</td>
-                <td><span class="badge badge-approved">6 Staff</span></td>
-                <td>
-                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Department configuration view', 'info')">Edit</button>
-                </td>
-              </tr>
-              <tr>
-                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">FIN</strong></td>
-                <td><strong>Finance &amp; Accounts</strong></td>
-                <td>Budget auditing, financial forecasts, and compliance accounting</td>
-                <td><span class="badge badge-approved">5 Staff</span></td>
-                <td>
-                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Department configuration view', 'info')">Edit</button>
-                </td>
-              </tr>
-              <tr>
-                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">OPS</strong></td>
-                <td><strong>Operations</strong></td>
-                <td>Logistics, facilities oversight, and cross-departmental coordination</td>
-                <td><span class="badge badge-approved">5 Staff</span></td>
-                <td>
-                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Department configuration view', 'info')">Edit</button>
+                <td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                  Loading departments from database...
                 </td>
               </tr>
             </tbody>
@@ -227,10 +187,42 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="new-dept-desc">Responsibilities &amp; Overview</label>
+            <textarea id="new-dept-desc" class="form-control" rows="3" placeholder="Software architecture, research, client support..."></textarea>
           </div>
           <div style="display:flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
             <button type="button" class="btn btn-secondary" onclick="EVORA.closeModal('add-dept-modal')">Cancel</button>
-            <button type="submit" class="btn btn-primary">Create Department</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-dept">Create Department</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Department Modal -->
+  <div class="modal-backdrop" id="edit-dept-modal" role="dialog" aria-modal="true" aria-labelledby="edit-dept-title">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="edit-dept-title">Edit Department</div>
+        <button class="modal-close" onclick="EVORA.closeModal('edit-dept-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-edit-dept" onsubmit="event.preventDefault(); updateDepartment();">
+          <input type="hidden" id="edit-dept-id">
+          <div class="form-group">
+            <label class="form-label" for="edit-dept-name">Department Name</label>
+            <input type="text" id="edit-dept-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-dept-code">Short Code</label>
+            <input type="text" id="edit-dept-code" class="form-control" maxlength="6" style="text-transform: uppercase;" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-dept-desc">Responsibilities &amp; Overview</label>
+            <textarea id="edit-dept-desc" class="form-control" rows="3"></textarea>
+          </div>
+          <div style="display:flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+            <button type="button" class="btn btn-secondary" onclick="EVORA.closeModal('edit-dept-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-update-dept">Save Changes</button>
           </div>
         </form>
       </div>
@@ -239,37 +231,218 @@
 
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      EVORA.initDemoBanner('admin');
+    let departmentsData = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Guard admin session
+      const user = await EVORA.requireRole('admin');
+      if (!user) return;
+
+      loadDepartments();
+      updatePendingBadge();
     });
 
-    function createDepartment() {
+    async function updatePendingBadge() {
+      try {
+        const res = await EVORA.api('/backend/admin/employees.php?status=pending');
+        if (res && res.success && res.data) {
+          const badge = document.querySelector('.pending-counter');
+          if (badge) {
+            const count = res.data.total || 0;
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+          }
+        }
+      } catch (e) {
+        // quiet ignore
+      }
+    }
+
+    async function loadDepartments() {
+      const tbody = document.getElementById('departments-tbody');
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">Loading departments...</td></tr>`;
+
+      try {
+        const res = await EVORA.api('/backend/admin/departments.php');
+        if (!res || !res.success) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--color-error); padding: 2rem;">Failed to load departments: ${EVORA.escapeHtml(res?.message || 'Error')}</td></tr>`;
+          return;
+        }
+
+        departmentsData = res.data.departments || [];
+        renderDepartments(departmentsData);
+        updateDepartmentStats(departmentsData);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--color-error); padding: 2rem;">Failed to fetch departments from server.</td></tr>`;
+      }
+    }
+
+    function renderDepartments(depts) {
+      const tbody = document.getElementById('departments-tbody');
+      if (!depts.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">No departments configured yet. Click "+ Add New Department" to create one.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = depts.map(d => {
+        const staff = parseInt(d.staff_count, 10) || 0;
+        const staffBadge = staff > 0 
+          ? `<span class="badge badge-approved">${staff} Staff</span>` 
+          : `<span class="badge badge-neutral">0 Staff</span>`;
+        const desc = d.description ? EVORA.escapeHtml(d.description) : '<span style="color:var(--color-text-muted); font-style: italic;">No description provided</span>';
+
+        return `
+          <tr>
+            <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">${EVORA.escapeHtml(d.code)}</strong></td>
+            <td><strong>${EVORA.escapeHtml(d.name)}</strong></td>
+            <td>${desc}</td>
+            <td>${staffBadge}</td>
+            <td>
+              <div style="display: flex; gap: 0.4rem;">
+                <button class="btn btn-secondary btn-sm" onclick="openEditDeptModal(${d.id})">Edit</button>
+                <button class="btn btn-sm" style="background: rgba(220, 53, 69, 0.1); color: var(--color-error); border: 1px solid rgba(220, 53, 69, 0.25);" onclick="deleteDepartment(${d.id}, '${EVORA.escapeHtml(d.name)}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateDepartmentStats(depts) {
+      document.getElementById('dept-count').textContent = depts.length;
+
+      let largest = null;
+      let totalStaff = 0;
+
+      depts.forEach(d => {
+        const staff = parseInt(d.staff_count, 10) || 0;
+        totalStaff += staff;
+        if (!largest || staff > (parseInt(largest.staff_count, 10) || 0)) {
+          largest = d;
+        }
+      });
+
+      const largestEl = document.getElementById('dept-largest');
+      const largestMetaEl = document.getElementById('dept-largest-meta');
+      if (largest && (parseInt(largest.staff_count, 10) || 0) > 0) {
+        largestEl.textContent = largest.name;
+        const pct = totalStaff > 0 ? Math.round((parseInt(largest.staff_count, 10) / totalStaff) * 100) : 0;
+        largestMetaEl.textContent = `${largest.staff_count} team members (${pct}%)`;
+      } else {
+        largestEl.textContent = depts.length ? depts[0].name : '—';
+        largestMetaEl.textContent = `0 team members`;
+      }
+
+      const avgEl = document.getElementById('dept-avg');
+      const avg = depts.length > 0 ? (totalStaff / depts.length).toFixed(1) : 0;
+      avgEl.textContent = avg;
+    }
+
+    async function createDepartment() {
+      const btn = document.getElementById('btn-save-dept');
       const name = document.getElementById('new-dept-name').value.trim();
       const code = document.getElementById('new-dept-code').value.trim().toUpperCase();
-      const desc = document.getElementById('new-dept-desc').value.trim();
+      const description = document.getElementById('new-dept-desc').value.trim();
 
-      if (!name || !code) return;
+      if (!name || !code) {
+        EVORA.showToast('Please provide both department name and code.', 'error');
+        return;
+      }
 
-      const tbody = document.querySelector('#departments-table tbody');
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">${code}</strong></td>
-        <td><strong>${name}</strong></td>
-        <td>${desc || 'General departmental duties'}</td>
-        <td><span class="badge badge-neutral">0 Staff</span></td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast(`Edit department: ${name}`, 'info')">Edit</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
 
-      // Increment count
-      const countEl = document.getElementById('dept-count');
-      if (countEl) countEl.textContent = parseInt(countEl.textContent, 10) + 1;
+      try {
+        const res = await EVORA.api('/backend/admin/departments.php', {
+          method: 'POST',
+          body: JSON.stringify({ name, code, description })
+        });
 
-      document.getElementById('form-add-dept').reset();
-      EVORA.closeModal('add-dept-modal');
-      EVORA.showToast(`Department "${name}" (${code}) created successfully`, 'success');
+        if (res && res.success) {
+          EVORA.showToast(res.message || 'Department created successfully.', 'success');
+          document.getElementById('form-add-dept').reset();
+          EVORA.closeModal('add-dept-modal');
+          loadDepartments();
+        } else {
+          EVORA.showToast(res?.message || 'Failed to create department.', 'error');
+        }
+      } catch (err) {
+        EVORA.showToast(err.message || 'Server error creating department.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Department';
+      }
+    }
+
+    function openEditDeptModal(id) {
+      const dept = departmentsData.find(d => parseInt(d.id, 10) === parseInt(id, 10));
+      if (!dept) return;
+
+      document.getElementById('edit-dept-id').value = dept.id;
+      document.getElementById('edit-dept-name').value = dept.name;
+      document.getElementById('edit-dept-code').value = dept.code;
+      document.getElementById('edit-dept-desc').value = dept.description || '';
+
+      EVORA.openModal('edit-dept-modal');
+    }
+
+    async function updateDepartment() {
+      const btn = document.getElementById('btn-update-dept');
+      const id = document.getElementById('edit-dept-id').value;
+      const name = document.getElementById('edit-dept-name').value.trim();
+      const code = document.getElementById('edit-dept-code').value.trim().toUpperCase();
+      const description = document.getElementById('edit-dept-desc').value.trim();
+
+      if (!id || !name || !code) {
+        EVORA.showToast('Department name and code are required.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const res = await EVORA.api('/backend/admin/departments.php', {
+          method: 'PUT',
+          body: JSON.stringify({ id, name, code, description })
+        });
+
+        if (res && res.success) {
+          EVORA.showToast(res.message || 'Department updated successfully.', 'success');
+          EVORA.closeModal('edit-dept-modal');
+          loadDepartments();
+        } else {
+          EVORA.showToast(res?.message || 'Failed to update department.', 'error');
+        }
+      } catch (err) {
+        EVORA.showToast(err.message || 'Server error updating department.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+      }
+    }
+
+    async function deleteDepartment(id, name) {
+      if (!confirm(`Are you sure you want to delete department "${name}"?\n\nNote: If employees are currently assigned to this department, deletion will be safely rejected.`)) {
+        return;
+      }
+
+      try {
+        const res = await EVORA.api('/backend/admin/departments.php', {
+          method: 'DELETE',
+          body: JSON.stringify({ id })
+        });
+
+        if (res && res.success) {
+          EVORA.showToast(res.message || 'Department deleted successfully.', 'success');
+          loadDepartments();
+        } else {
+          // 409 Conflict or 400
+          EVORA.showToast(res?.message || 'Cannot delete department.', 'error');
+        }
+      } catch (err) {
+        EVORA.showToast(err.message || 'Server error deleting department.', 'error');
+      }
     }
   </script>
 </body>

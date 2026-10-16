@@ -83,15 +83,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">JD</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">JD</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Jane Doe</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-neutral" id="dropdown-user-role">EMPLOYEE</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">employee@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -120,7 +120,7 @@
             <span class="stat-label">Casual Leave</span>
             <div class="stat-icon">&#127796;</div>
           </div>
-          <div class="stat-value">8 <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Left</span></div>
+          <div class="stat-value" id="leave-casual-bal">0 <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Left</span></div>
           <div class="stat-meta">Allowed: 12 days / year</div>
         </div>
 
@@ -129,7 +129,7 @@
             <span class="stat-label">Sick Leave</span>
             <div class="stat-icon">&#129658;</div>
           </div>
-          <div class="stat-value">4 <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Left</span></div>
+          <div class="stat-value" id="leave-sick-bal">0 <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Left</span></div>
           <div class="stat-meta">Allowed: 6 days / year</div>
         </div>
 
@@ -138,8 +138,8 @@
             <span class="stat-label">Paid Annual</span>
             <div class="stat-icon">&#128197;</div>
           </div>
-          <div class="stat-value">2 <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Left</span></div>
-          <div class="stat-meta">Carried over from Q3</div>
+          <div class="stat-value" id="leave-paid-bal">0 <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Used</span></div>
+          <div class="stat-meta">Tracked this calendar year</div>
         </div>
 
         <div class="stat-card">
@@ -147,7 +147,7 @@
             <span class="stat-label">Pending Approval</span>
             <div class="stat-icon">&#9203;</div>
           </div>
-          <div class="stat-value" style="color: var(--status-pending);">1</div>
+          <div class="stat-value" id="leave-pending-bal" style="color: var(--status-pending);">0</div>
           <div class="stat-meta">Under administrator review</div>
         </div>
       </div>
@@ -161,15 +161,15 @@
           </div>
         </div>
 
-        <form id="form-leave-apply" novalidate>
+        <form id="form-leave-apply" novalidate onsubmit="event.preventDefault(); applyLeave();">
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label" for="leave-type">Leave Category</label>
               <select id="leave-type" class="form-control" required>
-                <option value="Casual">Casual Leave</option>
-                <option value="Sick">Sick / Medical Leave</option>
-                <option value="Paid Annual">Paid Annual Leave</option>
-                <option value="Unpaid">Unpaid Leave</option>
+                <option value="casual">Casual Leave</option>
+                <option value="sick">Sick / Medical Leave</option>
+                <option value="paid">Paid Annual Leave</option>
+                <option value="unpaid">Unpaid Leave</option>
               </select>
             </div>
             <div class="grid-2">
@@ -200,7 +200,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Leave History &amp; Review Status</div>
-            <div class="card-subtitle">All requests logged in your profile.</div>
+            <div class="card-subtitle">All requests logged in your profile from MySQL.</div>
           </div>
         </div>
 
@@ -217,25 +217,9 @@
             </thead>
             <tbody id="leave-history-tbody">
               <tr>
-                <td><strong>Casual</strong></td>
-                <td>2026-10-20 &mdash; 2026-10-21</td>
-                <td>Personal family event</td>
-                <td><span class="badge badge-pending">Pending</span></td>
-                <td><em>Awaiting administrator review</em></td>
-              </tr>
-              <tr>
-                <td><strong>Sick</strong></td>
-                <td>2026-09-12 &mdash; 2026-09-13</td>
-                <td>Medical consultation &amp; recovery</td>
-                <td><span class="badge badge-approved">Approved</span></td>
-                <td>Approved by Eleanor Vance (HR)</td>
-              </tr>
-              <tr>
-                <td><strong>Casual</strong></td>
-                <td>2026-08-04 &mdash; 2026-08-05</td>
-                <td>Family celebration</td>
-                <td><span class="badge badge-approved">Approved</span></td>
-                <td>Approved on schedule</td>
+                <td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                  Loading your leave applications...
+                </td>
               </tr>
             </tbody>
           </table>
@@ -246,10 +230,128 @@
 
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      EVORA.initDemoBanner('employee');
-      EVORA.initLeaveForm();
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await EVORA.guardPage();
+      if (!user) return;
+
+      // Restrict start date min to today
+      const today = new Date().toISOString().split('T')[0];
+      const startEl = document.getElementById('leave-start');
+      const endEl = document.getElementById('leave-end');
+      if (startEl) startEl.min = today;
+      if (endEl) endEl.min = today;
+
+      loadLeaves();
     });
+
+    async function loadLeaves() {
+      const tbody = document.getElementById('leave-history-tbody');
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">Loading leave records...</td></tr>`;
+
+      try {
+        const res = await EVORA.api('/employee/leaves.php');
+        if (!res || !res.success) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--color-error); padding: 2rem;">Failed to load leave records: ${EVORA.escapeHtml(res?.message || 'Error')}</td></tr>`;
+          return;
+        }
+
+        const data = res.data || res;
+        const balance = data.balance || {};
+        const leaves = data.leaves || [];
+
+        // Update Balance Cards
+        document.getElementById('leave-casual-bal').innerHTML = `${balance.casual_remaining ?? 12} <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Left</span>`;
+        document.getElementById('leave-sick-bal').innerHTML = `${balance.sick_remaining ?? 6} <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Left</span>`;
+        document.getElementById('leave-paid-bal').innerHTML = `${balance.paid_used ?? 0} <span style="font-size: 0.95rem; font-weight: 500; color: var(--color-text-muted);">Days Used</span>`;
+        document.getElementById('leave-pending-bal').textContent = balance.total_pending ?? 0;
+
+        renderLeaves(leaves);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--color-error); padding: 2rem;">Server error loading leave applications.</td></tr>`;
+      }
+    }
+
+    function renderLeaves(leaves) {
+      const tbody = document.getElementById('leave-history-tbody');
+      if (!leaves.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2.5rem; color: var(--color-text-muted);">You have not submitted any leave applications yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = leaves.map(l => {
+        const isPending = l.status === 'pending';
+        const isApproved = l.status === 'approved';
+        const badgeClass = isPending ? 'badge-pending' : (isApproved ? 'badge-approved' : 'badge-rejected');
+        const statusLabel = l.status ? (l.status.charAt(0).toUpperCase() + l.status.slice(1)) : 'Pending';
+        const category = l.leave_type ? (l.leave_type.charAt(0).toUpperCase() + l.leave_type.slice(1)) : 'Casual';
+
+        let remarks = '<em>Awaiting review</em>';
+        if (l.admin_remarks) {
+          remarks = EVORA.escapeHtml(l.admin_remarks);
+          if (l.reviewer_name) remarks += ` <small style="color:var(--color-text-muted);">(${EVORA.escapeHtml(l.reviewer_name)})</small>`;
+        } else if (!isPending) {
+          remarks = l.reviewer_name ? `Reviewed by ${EVORA.escapeHtml(l.reviewer_name)}` : 'Decision recorded';
+        }
+
+        return `
+          <tr>
+            <td><strong>${EVORA.escapeHtml(category)}</strong></td>
+            <td>${EVORA.escapeHtml(l.start_date)} &mdash; ${EVORA.escapeHtml(l.end_date)}</td>
+            <td>${EVORA.escapeHtml(l.reason || '—')}</td>
+            <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
+            <td>${remarks}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function applyLeave() {
+      const type = document.getElementById('leave-type').value;
+      const start = document.getElementById('leave-start').value;
+      const end = document.getElementById('leave-end').value;
+      const reason = document.getElementById('leave-reason').value.trim();
+      const btn = document.getElementById('btn-submit-leave');
+
+      if (!type || !start || !end || !reason) {
+        EVORA.showToast('Please fill out all fields.', 'error');
+        return;
+      }
+
+      if (end < start) {
+        EVORA.showToast('End date cannot precede start date.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting Request...';
+
+      try {
+        const res = await EVORA.api('/employee/leaves.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            leave_type: type,
+            start_date: start,
+            end_date: end,
+            reason: reason
+          })
+        });
+
+        if (res && res.success) {
+          EVORA.showToast(res.message || 'Leave request submitted successfully.', 'success');
+          document.getElementById('form-leave-apply').reset();
+          loadLeaves();
+        } else {
+          EVORA.showToast(res?.message || 'Failed to submit leave application.', 'error');
+        }
+      } catch (err) {
+        EVORA.showToast(err.message || 'Server error submitting leave request.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Leave Request';
+      }
+    }
+
+    window.renderLeaveHistory = loadLeaves;
   </script>
 </body>
 </html>

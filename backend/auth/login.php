@@ -6,6 +6,7 @@
  * Verifies credentials against MySQL `users` table.
  * Enforces approval gating: only status='approved' can establish sessions.
  * Regenerates session ID to prevent session fixation.
+ * Defends against timing attacks and credential enumeration.
  */
 
 declare(strict_types=1);
@@ -42,12 +43,17 @@ try {
     $stmt->execute([':email' => $email]);
     $user = $stmt->fetch();
 
-    // Constant-time check: reject if user not found or password does not match
-    if (!$user || !password_verify($password, $user['password_hash'])) {
+    // Mitigate timing attacks by verifying a dummy hash if user is not found
+    $dummyHash = '$2y$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012345';
+    $hashToCheck = $user ? $user['password_hash'] : $dummyHash;
+    $passwordMatches = password_verify($password, $hashToCheck);
+
+    // Constant-time check: reject without leaking whether the email exists
+    if (!$user || !$passwordMatches) {
         jsonResponse(false, 'Invalid email or password. Please verify your credentials.', [], 401);
     }
 
-    // Check account status
+    // Gate authentication on account approval status
     if ($user['status'] === 'pending') {
         jsonResponse(
             false,
@@ -77,7 +83,7 @@ try {
         $rehashStmt->execute([':hash' => $newHash, ':id' => $user['id']]);
     }
 
-    // Establish secure session
+    // Establish secure session with ID regeneration
     regenerateSession();
 
     $_SESSION['user_id']         = (int)$user['id'];
@@ -87,7 +93,7 @@ try {
     $_SESSION['department_id']   = $user['department_id'] ? (int)$user['department_id'] : null;
     $_SESSION['department_name'] = $user['department_name'] ?? 'General';
     $_SESSION['designation']     = $user['designation'] ?? ($user['role'] === 'admin' ? 'Administrator' : 'Staff Member');
-    $_SESSION['logged_in_at']     = time();
+    $_SESSION['logged_in_at']    = time();
 
     // Determine role-based landing redirection relative to frontend/pages/
     $redirect = ($user['role'] === 'admin') ? 'admin/dashboard.html' : 'employee/dashboard.html';
@@ -100,8 +106,8 @@ try {
             'name'            => $user['full_name'],
             'email'           => $user['email'],
             'role'            => $user['role'],
-            'department_id'   => $user['department_id'],
-            'department_name' => $user['department_name'],
+            'department_id'   => $user['department_id'] ? (int)$user['department_id'] : null,
+            'department_name' => $user['department_name'] ?? 'General',
             'designation'     => $_SESSION['designation'],
         ],
         'csrf_token' => getCsrfToken(),

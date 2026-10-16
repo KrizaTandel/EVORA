@@ -2,6 +2,9 @@
 /**
  * EVORA HRMS — Core Authentication & Session Security Helper
  * Core PHP 8.2
+ * 
+ * Provides hardened session lifecycle management, role-based access control,
+ * CSRF token generation & verification, and secure API JSON responses.
  */
 
 declare(strict_types=1);
@@ -27,30 +30,41 @@ function initSession(): void
         (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
     );
 
-    // Apply strict session cookie configuration
-    session_set_cookie_params([
-        'lifetime' => $lifetime,
-        'path'     => '/',
-        'domain'   => '',
-        'secure'   => $isHttps,
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
+    // If SESSION_SECURE is explicitly specified in .env, honor it only when valid
+    if (isset($env['SESSION_SECURE']) && $env['SESSION_SECURE'] !== '') {
+        $secureEnv = filter_var($env['SESSION_SECURE'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        if ($secureEnv !== null) {
+            $isHttps = $secureEnv ? $isHttps : false;
+        }
+    }
 
-    // Additional PHP INI security hardening
-    ini_set('session.use_strict_mode', '1');
-    ini_set('session.use_only_cookies', '1');
-    ini_set('session.cookie_httponly', '1');
+    // Apply strict session cookie configuration if headers not already sent
+    if (!headers_sent()) {
+        session_set_cookie_params([
+            'lifetime' => $lifetime,
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $isHttps,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
 
-    session_start();
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.cookie_httponly', '1');
+    }
+
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        @session_start();
+    }
 }
 
 /**
- * Regenerate session ID safely on privilege changes
+ * Regenerate session ID safely on privilege changes (mitigate session fixation)
  */
 function regenerateSession(): void
 {
-    if (session_status() === PHP_SESSION_ACTIVE) {
+    if (session_status() === PHP_SESSION_ACTIVE && !headers_sent()) {
         session_regenerate_id(true);
     }
 }
@@ -80,6 +94,29 @@ function validateCsrfToken(?string $token): bool
 }
 
 /**
+ * Verify CSRF token from either HTTP header or request body
+ */
+function verifyCsrfRequest(): bool
+{
+    initSession();
+    $headerToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    $body = getRequestBody();
+    $bodyToken = $body['csrf_token'] ?? null;
+    $token = $headerToken ?? $bodyToken;
+    return validateCsrfToken($token);
+}
+
+/**
+ * Require valid CSRF token on state-changing requests
+ */
+function requireCsrf(): void
+{
+    if (!verifyCsrfRequest()) {
+        jsonResponse(false, 'Invalid or missing CSRF token. Request rejected for security.', [], 403);
+    }
+}
+
+/**
  * Check if current visitor has an authenticated session
  */
 function isAuthenticated(): bool
@@ -98,12 +135,13 @@ function getCurrentUser(): ?array
     }
 
     return [
-        'id'            => (int)$_SESSION['user_id'],
-        'name'          => $_SESSION['full_name'] ?? '',
-        'email'         => $_SESSION['email'] ?? '',
-        'role'          => $_SESSION['role'] ?? '',
-        'department_id' => isset($_SESSION['department_id']) ? (int)$_SESSION['department_id'] : null,
-        'designation'   => $_SESSION['designation'] ?? null,
+        'id'              => (int)$_SESSION['user_id'],
+        'name'            => $_SESSION['full_name'] ?? '',
+        'email'           => $_SESSION['email'] ?? '',
+        'role'            => $_SESSION['role'] ?? '',
+        'department_id'   => isset($_SESSION['department_id']) ? (int)$_SESSION['department_id'] : null,
+        'department_name' => $_SESSION['department_name'] ?? 'General',
+        'designation'     => $_SESSION['designation'] ?? null,
     ];
 }
 
@@ -117,7 +155,6 @@ function requireAuth(): array
 
     if ($user === null) {
         jsonResponse(false, 'Authentication required to access this resource.', [], 401);
-        exit;
     }
 
     return $user;
@@ -136,10 +173,25 @@ function requireRole(string|array $allowedRoles): array
 
     if (!in_array($user['role'], $roles, true)) {
         jsonResponse(false, 'Access forbidden: Insufficient privileges for this operation.', [], 403);
-        exit;
     }
 
     return $user;
+}
+
+/**
+ * Require Administrator role ('admin')
+ */
+function requireAdmin(): array
+{
+    return requireRole('admin');
+}
+
+/**
+ * Require Employee role ('employee')
+ */
+function requireEmployee(): array
+{
+    return requireRole('employee');
 }
 
 /**
@@ -148,8 +200,8 @@ function requireRole(string|array $allowedRoles): array
 function jsonResponse(bool $success, string $message, array $data = [], int $httpCode = 200): void
 {
     // Clean buffer to prevent accidental output corruption
-    if (ob_get_length()) {
-        ob_clean();
+    while (ob_get_level() > 0) {
+        ob_end_clean();
     }
 
     http_response_code($httpCode);
@@ -178,6 +230,9 @@ function getRequestBody(): array
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
     if (str_contains($contentType, 'application/json')) {
         $raw = file_get_contents('php://input');
+        if (empty($raw)) {
+            return [];
+        }
         $data = json_decode($raw, true);
         return is_array($data) ? $data : [];
     }

@@ -104,15 +104,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">EV</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">EV</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Eleanor Vance</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-approved" id="dropdown-user-role">ADMIN</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">admin@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -146,8 +146,8 @@
             <span class="stat-label">Total Staff</span>
             <div class="stat-icon">&#128101;</div>
           </div>
-          <div class="stat-value" id="dash-total-staff">42</div>
-          <div class="stat-meta">Across 5 departments</div>
+          <div class="stat-value" id="dash-total-staff">0</div>
+          <div class="stat-meta" id="dash-total-staff-meta">Across 0 departments</div>
         </div>
 
         <div class="stat-card">
@@ -155,7 +155,7 @@
             <span class="stat-label">Pending Approvals</span>
             <div class="stat-icon">&#9203;</div>
           </div>
-          <div class="stat-value pending-counter" style="color: var(--status-pending);">3</div>
+          <div class="stat-value pending-counter" id="dash-pending-count" style="color: var(--status-pending);">0</div>
           <div class="stat-meta">Require onboarding review</div>
         </div>
 
@@ -164,8 +164,8 @@
             <span class="stat-label">Present Today</span>
             <div class="stat-icon">&#9201;</div>
           </div>
-          <div class="stat-value" style="color: var(--status-present);">38</div>
-          <div class="stat-meta">90.4% daily turnout</div>
+          <div class="stat-value" id="dash-present-today" style="color: var(--status-present);">0</div>
+          <div class="stat-meta" id="dash-turnout-meta">0% daily turnout</div>
         </div>
 
         <div class="stat-card">
@@ -173,7 +173,7 @@
             <span class="stat-label">Active Leaves</span>
             <div class="stat-icon">&#128197;</div>
           </div>
-          <div class="stat-value">4</div>
+          <div class="stat-value" id="dash-active-leaves">0</div>
           <div class="stat-meta">Approved scheduled absences</div>
         </div>
       </div>
@@ -189,32 +189,15 @@
             </div>
           </div>
 
-          <div class="visual-chart" style="height: 170px;">
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 92%;"></div>
-              <span class="chart-label">Mon (39)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 95%;"></div>
-              <span class="chart-label">Tue (40)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 90%;"></div>
-              <span class="chart-label">Wed (38)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 96%; background-color: var(--color-forest);"></div>
-              <span class="chart-label">Thu (41)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 88%;"></div>
-              <span class="chart-label">Fri (37)</span>
+          <div class="visual-chart" id="dash-weekly-chart" style="height: 170px;">
+            <div style="width: 100%; text-align: center; color: var(--color-text-muted); align-self: center;">
+              Loading weekly turnout...
             </div>
           </div>
 
-          <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.84rem; color: var(--color-text-muted);">
-            <span>&bull; Average Turnout: <strong>92.2%</strong></span>
-            <span>&bull; Peak Presence: <strong>Thursday (96%)</strong></span>
+          <div id="dash-weekly-summary" style="margin-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.84rem; color: var(--color-text-muted);">
+            <span>&bull; Today's Presence: <strong id="dash-today-count">0</strong></span>
+            <span>&bull; Total Staff: <strong id="dash-staff-count">0</strong></span>
           </div>
         </div>
 
@@ -227,54 +210,8 @@
             </div>
           </div>
 
-          <div class="dept-progress-item">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-              <strong>Engineering &amp; IT</strong>
-              <span>18 (43%)</span>
-            </div>
-            <div class="dept-progress-bar">
-              <div class="dept-progress-fill" style="width: 43%;"></div>
-            </div>
-          </div>
-
-          <div class="dept-progress-item">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-              <strong>Marketing &amp; Sales</strong>
-              <span>8 (19%)</span>
-            </div>
-            <div class="dept-progress-bar">
-              <div class="dept-progress-fill" style="width: 19%; background-color: var(--color-sage-dark);"></div>
-            </div>
-          </div>
-
-          <div class="dept-progress-item">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-              <strong>Human Resources</strong>
-              <span>6 (14%)</span>
-            </div>
-            <div class="dept-progress-bar">
-              <div class="dept-progress-fill" style="width: 14%; background-color: var(--color-gold);"></div>
-            </div>
-          </div>
-
-          <div class="dept-progress-item">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-              <strong>Finance &amp; Accounts</strong>
-              <span>5 (12%)</span>
-            </div>
-            <div class="dept-progress-bar">
-              <div class="dept-progress-fill" style="width: 12%;"></div>
-            </div>
-          </div>
-
-          <div class="dept-progress-item">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-              <strong>Operations</strong>
-              <span>5 (12%)</span>
-            </div>
-            <div class="dept-progress-bar">
-              <div class="dept-progress-fill" style="width: 12%;"></div>
-            </div>
+          <div id="dash-departments-list">
+            <div style="text-align: center; padding: 2rem; color: var(--color-text-muted);">Loading departments...</div>
           </div>
 
           <div style="margin-top: 1.25rem;">
@@ -304,25 +241,10 @@
                 <th>Approval Decision</th>
               </tr>
             </thead>
-            <tbody>
-              <tr id="dash-row-1">
-                <td><strong>Alex Mercer</strong></td>
-                <td>alex.mercer@example.com</td>
-                <td>Engineering &amp; IT</td>
-                <td>2026-10-16</td>
-                <td>
-                  <button class="btn btn-primary btn-sm" onclick="EVORA.reviewEmployee('dash-row-1', 'approve', 'Alex Mercer')">Approve</button>
-                  <button class="btn btn-danger btn-sm" onclick="EVORA.reviewEmployee('dash-row-1', 'reject', 'Alex Mercer')">Reject</button>
-                </td>
-              </tr>
-              <tr id="dash-row-2">
-                <td><strong>Sarah Lin</strong></td>
-                <td>sarah.lin@example.com</td>
-                <td>Marketing &amp; Sales</td>
-                <td>2026-10-15</td>
-                <td>
-                  <button class="btn btn-primary btn-sm" onclick="EVORA.reviewEmployee('dash-row-2', 'approve', 'Sarah Lin')">Approve</button>
-                  <button class="btn btn-danger btn-sm" onclick="EVORA.reviewEmployee('dash-row-2', 'reject', 'Sarah Lin')">Reject</button>
+            <tbody id="dash-queue-tbody">
+              <tr>
+                <td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                  Loading pending registrations...
                 </td>
               </tr>
             </tbody>
@@ -334,15 +256,154 @@
 
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      EVORA.initDemoBanner('admin');
-      if (EVORA.EmployeeStore) {
-        const stats = EVORA.EmployeeStore.getStats();
-        document.querySelectorAll('.pending-counter').forEach(el => el.textContent = stats.pending);
-        const totalEl = document.getElementById('dash-total-staff');
-        if (totalEl) totalEl.textContent = stats.approved + 37; // Total headcount
-      }
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await EVORA.requireRole('admin');
+      if (!user) return;
+
+      loadDashboardData();
     });
+
+    async function loadDashboardData() {
+      try {
+        const res = await EVORA.api('/backend/admin/dashboard.php');
+        if (!res || !res.success) {
+          EVORA.showToast(res?.message || 'Failed to load dashboard metrics.', 'error');
+          return;
+        }
+
+        const data = res.data;
+        const stats = data.stats || {};
+
+        // 1. Metric Cards
+        document.getElementById('dash-total-staff').textContent = stats.total_staff || 0;
+        document.getElementById('dash-total-staff-meta').textContent = `Across ${stats.total_departments || 0} departments`;
+
+        document.querySelectorAll('.pending-counter').forEach(el => {
+          el.textContent = stats.pending_approvals || 0;
+        });
+
+        document.getElementById('dash-present-today').textContent = stats.present_today || 0;
+        document.getElementById('dash-turnout-meta').textContent = `${stats.turnout_pct || 0}% daily turnout`;
+
+        document.getElementById('dash-active-leaves').textContent = stats.active_leaves || 0;
+
+        document.getElementById('dash-today-count').textContent = stats.present_today || 0;
+        document.getElementById('dash-staff-count').textContent = stats.total_staff || 0;
+
+        // 2. Weekly Chart
+        renderWeeklyChart(data.weekly_trends || [], stats.total_staff || 0);
+
+        // 3. Departments
+        renderDepartments(data.departments || []);
+
+        // 4. Pending Queue
+        renderPendingQueue(data.pending_queue || []);
+
+      } catch (err) {
+        EVORA.showToast('Server error loading dashboard analytics.', 'error');
+      }
+    }
+
+    function renderWeeklyChart(trends, totalStaff) {
+      const chart = document.getElementById('dash-weekly-chart');
+      if (!trends.length) {
+        chart.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--color-text-muted);">No attendance data for current week.</div>`;
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+
+      chart.innerHTML = trends.map(t => {
+        const heightPct = t.pct > 0 ? t.pct : 6;
+        const isToday = t.date === today;
+        const barColor = isToday ? 'var(--color-forest)' : 'var(--color-forest-light)';
+        return `
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height: ${heightPct}%; background-color: ${barColor};" title="${t.label} (${t.date}): ${t.count} present (${t.pct}%)"></div>
+            <span class="chart-label">${t.label} (${t.count})</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDepartments(depts) {
+      const list = document.getElementById('dash-departments-list');
+      if (!depts.length) {
+        list.innerHTML = `<div style="text-align:center; padding: 1.5rem; color: var(--color-text-muted);">No departments configured.</div>`;
+        return;
+      }
+
+      const colors = ['var(--color-forest)', 'var(--color-sage-dark)', 'var(--color-gold)', 'var(--color-forest-light)', 'var(--color-earth)'];
+
+      list.innerHTML = depts.map((d, idx) => {
+        const color = colors[idx % colors.length];
+        const count = parseInt(d.staff_count, 10) || 0;
+        const pct = d.percentage || 0;
+
+        return `
+          <div class="dept-progress-item">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+              <strong>${EVORA.escapeHtml(d.name)}</strong>
+              <span>${count} (${pct}%)</span>
+            </div>
+            <div class="dept-progress-bar">
+              <div class="dept-progress-fill" style="width: ${Math.max(pct, 2)}%; background-color: ${color};"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPendingQueue(queue) {
+      const tbody = document.getElementById('dash-queue-tbody');
+      if (!queue.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">No applicants currently awaiting onboarding review.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = queue.map(u => {
+        const dateStr = u.created_at ? u.created_at.split(' ')[0] : (u.joined_date || '—');
+        const dept = u.department_name ? EVORA.escapeHtml(u.department_name) : 'Unassigned';
+
+        return `
+          <tr id="dash-queue-row-${u.id}">
+            <td><strong>${EVORA.escapeHtml(u.full_name)}</strong></td>
+            <td>${EVORA.escapeHtml(u.email)}</td>
+            <td>${dept}</td>
+            <td>${EVORA.escapeHtml(dateStr)}</td>
+            <td>
+              <div style="display:flex; gap:0.4rem;">
+                <button class="btn btn-primary btn-sm" onclick="reviewQueueApplicant(${u.id}, 'approve', '${EVORA.escapeHtml(u.full_name)}')">Approve</button>
+                <button class="btn btn-danger btn-sm" onclick="reviewQueueApplicant(${u.id}, 'reject', '${EVORA.escapeHtml(u.full_name)}')">Reject</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function reviewQueueApplicant(id, action, name) {
+      const actionText = action === 'approve' ? 'approve' : 'reject';
+      if (!confirm(`Are you sure you want to ${actionText} employee "${name}"?`)) {
+        return;
+      }
+
+      try {
+        const res = await EVORA.api('/backend/admin/employee-approval.php', {
+          method: 'POST',
+          body: JSON.stringify({ id, action })
+        });
+
+        if (res && res.success) {
+          EVORA.showToast(res.message || `Applicant ${actionText}d successfully.`, 'success');
+          loadDashboardData();
+        } else {
+          EVORA.showToast(res?.message || `Failed to ${actionText} applicant.`, 'error');
+        }
+      } catch (err) {
+        EVORA.showToast(err.message || `Server error during ${actionText}.`, 'error');
+      }
+    }
   </script>
 </body>
 </html>

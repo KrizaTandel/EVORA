@@ -1,5 +1,5 @@
 /**
- * EVORA HRMS — Core Interactive Engine & Demo State Manager
+ * EVORA HRMS — Core Interactive Engine & API Client
  * College Web Development Project
  * Strictly Vanilla JavaScript (ES6+)
  */
@@ -18,32 +18,91 @@ const EVORA = {
   },
 
   /**
-   * Demo User Personas (Fallback for UI layout testing until backend auth endpoints are connected)
+   * Universal fetch client with CSRF token management and error handling
    */
-  demoPersonas: {
-    admin: {
-      role: 'admin',
-      name: 'Eleanor Vance',
-      email: 'admin@evora.test',
-      designation: 'Head of People Operations',
-      status: 'approved'
-    },
-    employee: {
-      role: 'employee',
-      name: 'Jane Doe',
-      email: 'employee@evora.test',
-      department: 'Engineering & IT',
-      designation: 'Software Associate',
-      status: 'approved'
+  async api(endpoint, options = {}) {
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${this.apiBase}${cleanEndpoint}`;
+    const method = (options.method || 'GET').toUpperCase();
+    const headers = Object.assign({}, options.headers || {});
+
+    headers['Accept'] = 'application/json';
+
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+      const csrfToken = sessionStorage.getItem('evora_csrf_token');
+      if (csrfToken && !headers['X-CSRF-Token']) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+      if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(options.body);
+      }
+    }
+
+    const fetchOptions = {
+      method,
+      headers,
+      credentials: 'same-origin',
+      ...options,
+    };
+
+    try {
+      const res = await fetch(url, fetchOptions);
+      const data = await res.json().catch(() => null);
+
+      if (res.status === 401) {
+        this.setCurrentUser(null);
+        const isSubdir = window.location.pathname.includes('/pages/admin/') || window.location.pathname.includes('/pages/employee/');
+        window.location.replace(isSubdir ? '../login.html' : 'login.html');
+        return { ok: false, success: false, status: 401, message: 'Authentication required' };
+      }
+
+      return {
+        ok: res.ok,
+        status: res.status,
+        ...(data || {}),
+      };
+    } catch (err) {
+      console.error(`API Error [${method} ${endpoint}]:`, err);
+      return {
+        ok: false,
+        status: 0,
+        success: false,
+        message: 'Unable to connect to the server. Please verify your connection.',
+      };
     }
   },
 
   /**
-   * Get current authenticated user session
+   * XSS protection helper for dynamic HTML rendering
+   */
+  escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+  },
+
+  /**
+   * Format 24-hr time string (HH:MM:SS) to 12-hr with AM/PM
+   */
+  formatTime(timeStr) {
+    if (!timeStr) return '—';
+    const parts = timeStr.split(':');
+    if (parts.length < 2) return timeStr;
+    const hours = parseInt(parts[0], 10);
+    const minutes = parts[1];
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    return `${String(formattedHours).padStart(2, '0')}:${minutes} ${ampm}`;
+  },
+
+  /**
+   * Get current authenticated user session data cached locally
    */
   getCurrentUser() {
     try {
-      const data = sessionStorage.getItem('evora_user') || sessionStorage.getItem('evora_demo_user');
+      const data = sessionStorage.getItem('evora_user');
       return data ? JSON.parse(data) : null;
     } catch (e) {
       return null;
@@ -51,69 +110,37 @@ const EVORA = {
   },
 
   /**
-   * Backwards-compatible alias for getDemoUser
-   */
-  getDemoUser() {
-    return this.getCurrentUser();
-  },
-
-  /**
    * Set user in session storage
    */
-  setDemoUser(persona) {
+  setCurrentUser(user) {
     try {
-      sessionStorage.setItem('evora_user', JSON.stringify(persona));
-      sessionStorage.setItem('evora_demo_user', JSON.stringify(persona));
+      if (user) {
+        sessionStorage.setItem('evora_user', JSON.stringify(user));
+      } else {
+        sessionStorage.removeItem('evora_user');
+      }
     } catch (e) {
       console.error('Failed to store user state', e);
     }
   },
 
   /**
-   * Switch demo role (deprecated: real roles are enforced by backend session)
+   * Genuine User Logout: Clears backend PHP session, cookies, and client state
    */
-  switchDemoRole(role) {
-    console.warn('EVORA.switchDemoRole is deprecated. User role will be authenticated via backend session.');
-    const persona = this.demoPersonas[role];
-    if (!persona) return;
-    this.setDemoUser(persona);
-    this.showToast(`Active session role: ${role.toUpperCase()}`, 'info');
-    
-    // Resolve relative path to dashboard
-    const isEmployeePath = window.location.pathname.includes('/pages/employee/');
-    const isAdminPath = window.location.pathname.includes('/pages/admin/');
-    const isAuthPath = window.location.pathname.includes('/pages/');
-
-    if (role === 'admin') {
-      if (isAdminPath) {
-        window.location.reload();
-      } else if (isEmployeePath) {
-        window.location.href = '../admin/dashboard.html';
-      } else if (isAuthPath) {
-        window.location.href = 'admin/dashboard.html';
-      } else {
-        window.location.href = 'pages/admin/dashboard.html';
-      }
-    } else {
-      if (isEmployeePath) {
-        window.location.reload();
-      } else if (isAdminPath) {
-        window.location.href = '../employee/dashboard.html';
-      } else if (isAuthPath) {
-        window.location.href = 'employee/dashboard.html';
-      } else {
-        window.location.href = 'pages/employee/dashboard.html';
-      }
+  async logout() {
+    try {
+      await fetch(`${this.apiBase}/auth/logout.php`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+      });
+    } catch (e) {
+      console.warn('Logout API request error', e);
     }
-  },
 
-  /**
-   * Genuine User Logout: Clears session credentials and redirects to login
-   */
-  logout() {
     try {
       sessionStorage.removeItem('evora_user');
-      sessionStorage.removeItem('evora_demo_user');
+      sessionStorage.removeItem('evora_csrf_token');
       sessionStorage.removeItem('evora_clocked_in');
       localStorage.removeItem('evora_auth_token');
     } catch (e) {}
@@ -130,7 +157,7 @@ const EVORA = {
       } else {
         window.location.href = 'pages/login.html';
       }
-    }, 300);
+    }, 250);
   },
 
   /**
@@ -141,16 +168,174 @@ const EVORA = {
   },
 
   /**
-   * Initialize user session and profile dropdown for portal pages
+   * Populate topbar, dropdown, and profile views with verified user session data
    */
-  initDemoBanner(currentRole) {
-    let user = this.getCurrentUser();
-    if (!user) {
-      user = this.demoPersonas[currentRole] || this.demoPersonas.employee;
-      this.setDemoUser(user);
+  populateUserProfile(user) {
+    if (!user) return;
+    const name = user.name || user.full_name || 'Staff Member';
+    const email = user.email || '';
+    const role = (user.role || 'employee').toLowerCase();
+    const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'EV';
+
+    // Topbar avatar
+    const initialsEl = document.getElementById('topbar-avatar-initials');
+    if (initialsEl) initialsEl.textContent = initials;
+
+    // Dropdown profile info
+    const dropdownAvatar = document.getElementById('dropdown-avatar-circle');
+    if (dropdownAvatar) dropdownAvatar.textContent = initials;
+
+    const nameEl = document.getElementById('dropdown-user-name');
+    if (nameEl) nameEl.textContent = name;
+
+    const emailEl = document.getElementById('dropdown-user-email');
+    if (emailEl) emailEl.textContent = email;
+
+    const roleEl = document.getElementById('dropdown-user-role');
+    if (roleEl) {
+      roleEl.textContent = role.toUpperCase();
+      roleEl.className = role === 'admin' ? 'dropdown-user-role badge badge-approved' : 'dropdown-user-role badge badge-neutral';
     }
 
+    // Dynamic View Profile link destination based on role and location
+    const viewProfileLink = document.getElementById('dropdown-view-profile');
+    if (viewProfileLink) {
+      const isEmployeeSubdir = window.location.pathname.includes('/pages/employee/');
+      const isAdminSubdir = window.location.pathname.includes('/pages/admin/');
+      if (isEmployeeSubdir) {
+        viewProfileLink.href = 'profile.html';
+      } else if (isAdminSubdir) {
+        viewProfileLink.href = '../employee/profile.html';
+      } else {
+        viewProfileLink.href = 'employee/profile.html';
+      }
+    }
+
+    // Profile page elements if present
+    const displayProfileName = document.getElementById('display-profile-name');
+    if (displayProfileName) displayProfileName.textContent = name;
+
+    const profileNameInput = document.getElementById('profile-name');
+    if (profileNameInput) profileNameInput.value = name;
+
+    const profileEmailInput = document.getElementById('profile-email');
+    if (profileEmailInput) profileEmailInput.value = email;
+
+    const profilePhoneInput = document.getElementById('profile-phone');
+    if (profilePhoneInput && user.phone) profilePhoneInput.value = user.phone;
+
+    const profileDeptInput = document.getElementById('profile-dept');
+    if (profileDeptInput && user.department_name) profileDeptInput.value = user.department_name;
+
+    const profileDesigInput = document.getElementById('profile-designation');
+    if (profileDesigInput && user.designation) profileDesigInput.value = user.designation;
+
+    const profileHeroAvatar = document.querySelector('.profile-hero .profile-avatar-lg');
+    if (profileHeroAvatar) profileHeroAvatar.textContent = initials;
+
+    const heroSubtitle = document.getElementById('profile-hero-subtitle');
+    if (heroSubtitle) {
+      const desig = user.designation || (role === 'admin' ? 'Administrator' : 'Staff Member');
+      const dept = user.department_name || 'General';
+      heroSubtitle.textContent = `${desig} • ${dept} Department`;
+    }
+
+    const heroId = document.getElementById('profile-hero-id');
+    if (heroId) heroId.textContent = `EMP-2026-${String(user.id || 1).padStart(3, '0')}`;
+
+    const heroJoined = document.getElementById('profile-hero-joined');
+    if (heroJoined && user.joined_date) heroJoined.textContent = user.joined_date;
+
+    const heroEmail = document.getElementById('profile-hero-email');
+    if (heroEmail) heroEmail.textContent = email;
+
+    const welcomeTitle = document.querySelector('.welcome-title');
+    if (welcomeTitle && welcomeTitle.textContent.includes('Welcome back')) {
+      welcomeTitle.textContent = `Welcome back, ${name}`;
+    }
+  },
+
+  /**
+   * Verify authenticated PHP session and enforce role authorization
+   */
+  async checkSession(requiredRole = null) {
+    const isSubdir = window.location.pathname.includes('/pages/admin/') || window.location.pathname.includes('/pages/employee/');
+    const loginTarget = isSubdir ? '../login.html' : 'login.html';
+
+    try {
+      const res = await fetch(`${this.apiBase}/auth/me.php`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!res.ok) {
+        this.setCurrentUser(null);
+        window.location.replace(loginTarget);
+        return null;
+      }
+
+      const data = await res.json();
+      if (!data.authenticated || !data.user) {
+        this.setCurrentUser(null);
+        window.location.replace(loginTarget);
+        return null;
+      }
+
+      const user = data.user;
+      this.setCurrentUser(user);
+
+      if (data.csrf_token) {
+        sessionStorage.setItem('evora_csrf_token', data.csrf_token);
+      }
+
+      // Enforce role authorization
+      if (requiredRole) {
+        const userRole = (user.role || '').toLowerCase();
+        const neededRole = requiredRole.toLowerCase();
+
+        if (neededRole === 'admin' && userRole !== 'admin') {
+          const modal = document.getElementById('modal-access-denied');
+          if (modal) {
+            this.openModal('modal-access-denied');
+            return null;
+          }
+          window.location.replace('../employee/dashboard.html');
+          return null;
+        }
+      }
+
+      this.populateUserProfile(user);
+      return user;
+    } catch (e) {
+      console.error('Session verification error', e);
+      this.setCurrentUser(null);
+      window.location.replace(loginTarget);
+      return null;
+    }
+  },
+
+  /**
+   * Navigation Guard & User Session initialization for portal pages
+   */
+  guardPage(requiredRole) {
     this.initProfileDropdown();
+    this.initNotificationWidget();
+    return this.checkSession(requiredRole);
+  },
+
+  /**
+   * Role-based access guard alias
+   */
+  requireRole(requiredRole) {
+    return this.guardPage(requiredRole);
+  },
+
+  /**
+   * Backwards-compatible alias for existing markup
+   */
+  initDemoBanner(currentRole) {
+    return this.guardPage(currentRole);
   },
 
   /**
@@ -179,7 +364,7 @@ const EVORA = {
     toast.innerHTML = `
       <div style="display:flex;align-items:center;gap:0.6rem;">
         <span style="font-weight:700;font-size:1.05rem;">${icons[type] || 'ℹ'}</span>
-        <span>${message}</span>
+        <span>${this.escapeHtml(message)}</span>
       </div>
       <button style="background:none;border:none;color:inherit;cursor:pointer;font-size:1.1rem;padding:0.1rem 0.3rem;" onclick="this.parentElement.remove()" aria-label="Close notification">&times;</button>
     `;
@@ -203,11 +388,9 @@ const EVORA = {
     backdrop.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // Focus on first input or close button
     const focusable = backdrop.querySelector('input, select, textarea, button.btn-primary, button.modal-close');
     if (focusable) focusable.focus();
 
-    // Close on ESC
     const escListener = (e) => {
       if (e.key === 'Escape') {
         this.closeModal(modalId);
@@ -261,281 +444,213 @@ const EVORA = {
   },
 
   /**
-   * Attendance Interactive Demo State (Check In / Check Out)
+   * Real Database Attendance Controls (Employee Check In / Check Out)
    */
-  initAttendanceControls() {
+  async initAttendanceControls() {
     const btnClock = document.getElementById('btn-clock-toggle');
     const statusText = document.getElementById('clock-status-text');
     const timeText = document.getElementById('clock-time-text');
     if (!btnClock) return;
 
-    // Check stored state
-    let isCheckedIn = sessionStorage.getItem('evora_clocked_in') === 'true';
+    btnClock.disabled = true;
 
-    const updateDisplay = () => {
-      if (isCheckedIn) {
-        btnClock.textContent = 'Clock Out';
-        btnClock.className = 'btn btn-secondary';
-        if (statusText) statusText.textContent = 'Present (Checked In)';
-        if (statusText) statusText.className = 'badge badge-approved';
-      } else {
+    // Load real today status from API
+    const res = await this.api('/employee/attendance.php');
+    btnClock.disabled = false;
+
+    if (!res.ok || !res.success) {
+      if (statusText) statusText.textContent = 'Offline';
+      return;
+    }
+
+    const today = res.data?.today ?? res.today ?? null;
+
+    const updateDisplay = (rec) => {
+      if (!rec || !rec.check_in_time) {
         btnClock.textContent = 'Clock In';
         btnClock.className = 'btn btn-primary';
-        if (statusText) statusText.textContent = 'Not Checked In';
-        if (statusText) statusText.className = 'badge badge-neutral';
+        btnClock.disabled = false;
+        if (statusText) {
+          statusText.textContent = 'Not Checked In';
+          statusText.className = 'badge badge-neutral';
+        }
+        if (timeText) timeText.textContent = 'Shift not started today';
+      } else if (rec.check_in_time && !rec.check_out_time) {
+        btnClock.textContent = 'Clock Out';
+        btnClock.className = 'btn btn-secondary';
+        btnClock.disabled = false;
+        const formattedIn = this.formatTime(rec.check_in_time);
+        if (statusText) {
+          statusText.textContent = rec.status === 'late' ? 'Present (Late Arrival)' : 'Present (Checked In)';
+          statusText.className = rec.status === 'late' ? 'badge badge-pending' : 'badge badge-approved';
+        }
+        if (timeText) timeText.textContent = `Today: Clocked in at ${formattedIn}`;
+      } else {
+        btnClock.textContent = 'Shift Completed';
+        btnClock.className = 'btn btn-secondary';
+        btnClock.disabled = true;
+        const formattedIn = this.formatTime(rec.check_in_time);
+        const formattedOut = this.formatTime(rec.check_out_time);
+        if (statusText) {
+          statusText.textContent = 'Shift Concluded';
+          statusText.className = 'badge badge-approved';
+        }
+        if (timeText) timeText.textContent = `In: ${formattedIn} • Out: ${formattedOut}`;
       }
     };
 
-    updateDisplay();
+    updateDisplay(today);
 
-    btnClock.addEventListener('click', () => {
-      isCheckedIn = !isCheckedIn;
-      sessionStorage.setItem('evora_clocked_in', isCheckedIn);
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    // Click handler for Check-In / Check-Out
+    btnClock.onclick = async () => {
+      const isCheckingIn = btnClock.textContent === 'Clock In';
+      const action = isCheckingIn ? 'check_in' : 'check_out';
 
-      if (isCheckedIn) {
-        if (timeText) timeText.textContent = `Today: Clocked in at ${now}`;
-        this.showToast(`Checked In at ${now} (Demo simulation)`, 'success');
+      btnClock.disabled = true;
+      btnClock.textContent = isCheckingIn ? 'Clocking In...' : 'Clocking Out...';
+
+      const actionRes = await this.api('/employee/attendance.php', {
+        method: 'POST',
+        body: { action }
+      });
+
+      btnClock.disabled = false;
+
+      if (actionRes.ok && actionRes.success) {
+        this.showToast(actionRes.message, 'success');
+        const updatedRec = actionRes.data?.record ?? actionRes.record ?? null;
+        updateDisplay(updatedRec);
+
+        // If attendance table is on page, reload it
+        if (typeof renderAttendanceTable === 'function') {
+          renderAttendanceTable();
+        }
       } else {
-        if (timeText) timeText.textContent = `Shift ended at ${now}`;
-        this.showToast(`Clocked Out at ${now} (Demo simulation)`, 'info');
+        this.showToast(actionRes.message || 'Failed to update attendance status.', 'error');
+        // Revert display
+        const refresh = await this.api('/employee/attendance.php');
+        if (refresh.ok && refresh.success) {
+          updateDisplay(refresh.data?.today ?? refresh.today ?? null);
+        }
       }
-      updateDisplay();
-    });
+    };
   },
 
   /**
-   * Leave Application Demo Submission
+   * Real Database Leave Application Form Submission
    */
   initLeaveForm() {
     const form = document.getElementById('form-leave-apply');
     if (!form) return;
 
-    form.addEventListener('submit', (e) => {
+    form.onsubmit = async (e) => {
       e.preventDefault();
-      const type = document.getElementById('leave-type')?.value || 'Casual';
+      const type = document.getElementById('leave-type')?.value;
       const start = document.getElementById('leave-start')?.value;
       const end = document.getElementById('leave-end')?.value;
       const reason = document.getElementById('leave-reason')?.value;
+      const submitBtn = document.getElementById('btn-submit-leave');
 
-      if (!start || !end) {
-        this.showToast('Please select valid start and end dates.', 'error');
+      if (!type || !start || !end || !reason) {
+        this.showToast('Please fill out all required fields.', 'error');
         return;
       }
 
-      if (new Date(end) < new Date(start)) {
-        this.showToast('End date cannot precede the start date.', 'error');
-        return;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting Request...';
       }
 
-      const tableBody = document.getElementById('leave-history-tbody');
-      if (tableBody) {
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td><strong>${type.charAt(0).toUpperCase() + type.slice(1)}</strong></td>
-          <td>${start} &mdash; ${end}</td>
-          <td>${reason || 'No additional details'}</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><em>Awaiting administrator review</em></td>
-        `;
-        tableBody.insertBefore(newRow, tableBody.firstChild);
+      const res = await this.api('/employee/leaves.php', {
+        method: 'POST',
+        body: {
+          leave_type: type,
+          start_date: start,
+          end_date: end,
+          reason: reason
+        }
+      });
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Leave Request';
       }
 
-      form.reset();
-      this.showToast('Leave request submitted (Demo only &mdash; pending review simulation)', 'success');
-    });
+      if (res.ok && res.success) {
+        this.showToast(res.message, 'success');
+        form.reset();
+        // If on leaves.html and renderLeaveHistory exists, reload
+        if (typeof renderLeaveHistory === 'function') {
+          renderLeaveHistory();
+        }
+      } else {
+        this.showToast(res.message || 'Failed to submit leave request.', 'error');
+      }
+    };
   },
 
   /**
-   * Profile Form Demo Save
+   * Real Database Profile Form Save Handler
    */
   initProfileForm() {
     const form = document.getElementById('form-profile');
     if (!form) return;
 
-    form.addEventListener('submit', (e) => {
+    form.onsubmit = async (e) => {
       e.preventDefault();
       const name = document.getElementById('profile-name')?.value;
       const phone = document.getElementById('profile-phone')?.value;
+      const saveBtn = document.getElementById('btn-save-profile');
 
-      let user = this.getDemoUser() || this.demoPersonas.employee;
-      if (name) user.name = name;
-      if (phone) user.phone = phone;
-      this.setDemoUser(user);
-
-      this.showToast('Profile updated in session memory (Demo mode &mdash; not persisted to DB)', 'success');
-    });
-  },
-
-  /**
-   * Admin Employee Approval / Rejection Interaction
-   */
-  reviewEmployee(rowId, action, applicantName) {
-    const row = document.getElementById(rowId);
-    if (!row) return;
-
-    if (action === 'approve') {
-      row.style.transition = 'all 0.3s ease';
-      row.style.backgroundColor = 'var(--status-approved-bg)';
-      setTimeout(() => {
-        row.remove();
-        this.showToast(`Approved ${applicantName} (Demo simulation: account marked approved)`, 'success');
-        this.updatePendingCount(-1);
-      }, 400);
-    } else {
-      if (!confirm(`Are you sure you want to reject registration for ${applicantName}?`)) return;
-      row.style.transition = 'all 0.3s ease';
-      row.style.backgroundColor = 'var(--status-rejected-bg)';
-      setTimeout(() => {
-        row.remove();
-        this.showToast(`Rejected registration for ${applicantName} (Demo simulation)`, 'warning');
-        this.updatePendingCount(-1);
-      }, 400);
-    }
-  },
-
-  /**
-   * Admin Leave Review Interaction
-   */
-  reviewLeaveRequest(rowId, action, employeeName) {
-    const row = document.getElementById(rowId);
-    if (!row) return;
-
-    const actionCell = row.querySelector('.action-cell');
-    const statusCell = row.querySelector('.status-cell');
-
-    if (action === 'approve') {
-      if (statusCell) statusCell.innerHTML = '<span class="badge badge-approved">Approved</span>';
-      if (actionCell) actionCell.innerHTML = '<span style="font-size:0.8rem;color:var(--color-text-muted);">Approved by Admin</span>';
-      this.showToast(`Approved leave request for ${employeeName} (Demo simulation)`, 'success');
-    } else {
-      if (statusCell) statusCell.innerHTML = '<span class="badge badge-rejected">Rejected</span>';
-      if (actionCell) actionCell.innerHTML = '<span style="font-size:0.8rem;color:var(--color-text-muted);">Rejected</span>';
-      this.showToast(`Rejected leave request for ${employeeName} (Demo simulation)`, 'warning');
-    }
-  },
-
-  /**
-   * Helper to decrement badge counts dynamically
-   */
-  updatePendingCount(delta) {
-    document.querySelectorAll('.pending-counter').forEach(el => {
-      let count = parseInt(el.textContent, 10);
-      if (!isNaN(count)) {
-        count = Math.max(0, count + delta);
-        el.textContent = count;
+      if (!name || name.trim().length < 2) {
+        this.showToast('Please enter a valid full name.', 'error');
+        return;
       }
-    });
-  },
 
-  /**
-   * Organizational Departments (Matching MySQL database schema)
-   */
-  departments: [
-    { id: 1, name: 'Human Resources', code: 'HR' },
-    { id: 2, name: 'Engineering & IT', code: 'ENG' },
-    { id: 3, name: 'Marketing & Sales', code: 'MKT' },
-    { id: 4, name: 'Finance & Accounts', code: 'FIN' },
-    { id: 5, name: 'Operations', code: 'OPS' }
-  ],
-
-  /**
-   * In-Memory / SessionStorage Employee Store for complete Admin Employee Management
-   */
-  EmployeeStore: {
-    key: 'evora_employees_store',
-    getInitialData() {
-      return [
-        { id: 1, name: 'Jane Doe', email: 'employee@evora.test', phone: '+91 98765 43210', dept_id: 2, department: 'Engineering & IT', designation: 'Software Associate', role: 'employee', status: 'approved', joined_date: '2026-01-15' },
-        { id: 2, name: 'Michael Scott', email: 'michael.scott@example.com', phone: '+91 98765 11111', dept_id: 5, department: 'Operations', designation: 'Regional Coordinator', role: 'employee', status: 'approved', joined_date: '2025-08-10' },
-        { id: 3, name: 'David Wallace', email: 'david.wallace@example.com', phone: '+91 98765 22222', dept_id: 4, department: 'Finance & Accounts', designation: 'CFO / Controller', role: 'employee', status: 'approved', joined_date: '2025-05-01' },
-        { id: 4, name: 'Pam Beesly', email: 'pam.beesly@example.com', phone: '+91 98765 33333', dept_id: 1, department: 'Human Resources', designation: 'People Specialist', role: 'employee', status: 'approved', joined_date: '2025-11-20' },
-        { id: 5, name: 'Jim Halpert', email: 'jim.halpert@example.com', phone: '+91 98765 44444', dept_id: 3, department: 'Marketing & Sales', designation: 'Account Lead', role: 'employee', status: 'approved', joined_date: '2025-09-15' },
-        { id: 101, name: 'Alex Mercer', email: 'alex.mercer@example.com', phone: '+91 98765 55555', dept_id: 2, department: 'Engineering & IT', designation: 'Backend Developer', role: 'employee', status: 'pending', joined_date: '2026-10-16' },
-        { id: 102, name: 'Sarah Lin', email: 'sarah.lin@example.com', phone: '+91 98765 66666', dept_id: 3, department: 'Marketing & Sales', designation: 'Brand Strategist', role: 'employee', status: 'pending', joined_date: '2026-10-15' },
-        { id: 103, name: 'Vikram Patel', email: 'vikram.patel@example.com', phone: '+91 98765 77777', dept_id: 4, department: 'Finance & Accounts', designation: 'Financial Analyst', role: 'employee', status: 'pending', joined_date: '2026-10-14' }
-      ];
-    },
-    getAll() {
-      try {
-        const stored = sessionStorage.getItem(this.key);
-        if (stored) return JSON.parse(stored);
-      } catch (e) {}
-      const initial = this.getInitialData();
-      this.saveAll(initial);
-      return initial;
-    },
-    saveAll(list) {
-      try {
-        sessionStorage.setItem(this.key, JSON.stringify(list));
-      } catch (e) {}
-    },
-    getById(id) {
-      return this.getAll().find(e => e.id == id);
-    },
-    add(data) {
-      const list = this.getAll();
-      const newId = list.reduce((max, e) => Math.max(max, e.id), 0) + 1;
-      const today = new Date().toISOString().split('T')[0];
-      const newEmp = {
-        id: newId,
-        name: data.name.trim(),
-        email: data.email.trim(),
-        phone: data.phone ? data.phone.trim() : '+91 98765 00000',
-        dept_id: parseInt(data.dept_id, 10) || 1,
-        department: data.department || 'Human Resources',
-        designation: data.designation.trim(),
-        role: 'employee',
-        status: data.status || 'approved',
-        joined_date: data.joined_date || today
-      };
-      list.unshift(newEmp);
-      this.saveAll(list);
-      return newEmp;
-    },
-    update(id, data) {
-      const list = this.getAll();
-      const idx = list.findIndex(e => e.id == id);
-      if (idx !== -1) {
-        list[idx] = { ...list[idx], ...data };
-        this.saveAll(list);
-        return list[idx];
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving Changes...';
       }
-      return null;
-    },
-    remove(id) {
-      let list = this.getAll();
-      const beforeCount = list.length;
-      list = list.filter(e => e.id != id);
-      this.saveAll(list);
-      return list.length < beforeCount;
-    },
-    approve(id) {
-      return this.update(id, { status: 'approved' });
-    },
-    reject(id) {
-      return this.update(id, { status: 'rejected' });
-    },
-    getStats() {
-      const list = this.getAll();
-      const approved = list.filter(e => e.status === 'approved').length;
-      const pending = list.filter(e => e.status === 'pending').length;
-      const rejected = list.filter(e => e.status === 'rejected').length;
-      return { total: list.length, approved, pending, rejected };
-    }
+
+      const res = await this.api('/employee/profile.php', {
+        method: 'POST',
+        body: {
+          full_name: name.trim(),
+          phone: phone ? phone.trim() : ''
+        }
+      });
+
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Profile Changes';
+      }
+
+      if (res.ok && res.success) {
+        this.showToast(res.message || 'Profile updated successfully.', 'success');
+        const user = this.getCurrentUser() || {};
+        user.name = name.trim();
+        user.full_name = name.trim();
+        user.phone = phone ? phone.trim() : '';
+        this.setCurrentUser(user);
+        this.populateUserProfile(user);
+      } else {
+        this.showToast(res.message || 'Failed to update profile.', 'error');
+      }
+    };
   },
 
   /**
-   * Check if current user is allowed to access Admin features
+   * Check if current session user has administrator role
    */
   checkAdminAccess() {
-    const user = this.getDemoUser();
-    if (user && user.role === 'employee') {
+    const user = this.getCurrentUser();
+    if (!user || user.role !== 'admin') {
       const modal = document.getElementById('modal-access-denied');
       if (modal) {
         this.openModal('modal-access-denied');
         return false;
       }
+      return false;
     }
     return true;
   },
@@ -548,40 +663,14 @@ const EVORA = {
     const dropdown = document.getElementById('profile-dropdown');
     if (!avatarBtn || !dropdown) return;
 
-    // Populate user info from demo state
-    const user = this.getDemoUser() || this.demoPersonas.employee;
-    const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-
-    const initialsEl = document.getElementById('topbar-avatar-initials');
-    if (initialsEl) initialsEl.textContent = initials;
-
-    const dropdownAvatar = document.getElementById('dropdown-avatar-circle');
-    if (dropdownAvatar) dropdownAvatar.textContent = initials;
-
-    const nameEl = document.getElementById('dropdown-user-name');
-    if (nameEl) nameEl.textContent = user.name;
-
-    const emailEl = document.getElementById('dropdown-user-email');
-    if (emailEl) emailEl.textContent = user.email;
-
-    const roleEl = document.getElementById('dropdown-user-role');
-    if (roleEl) {
-      roleEl.textContent = user.role.toUpperCase();
-      roleEl.className = user.role === 'admin' ? 'dropdown-user-role badge badge-approved' : 'dropdown-user-role badge badge-neutral';
+    const user = this.getCurrentUser();
+    if (user) {
+      this.populateUserProfile(user);
     }
 
-    const viewProfileLink = document.getElementById('dropdown-view-profile');
-    if (viewProfileLink) {
-      const isEmployeeSubdir = window.location.pathname.includes('/pages/employee/');
-      viewProfileLink.href = isEmployeeSubdir ? 'profile.html' : '../employee/profile.html';
-      viewProfileLink.innerHTML = '<span class="dropdown-link-icon">&#128100;</span> View Profile';
-    }
-
-    // Only attach events once
     if (avatarBtn.dataset.bound === 'true') return;
     avatarBtn.dataset.bound = 'true';
 
-    // Toggle dropdown on avatar click
     avatarBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const isShown = dropdown.classList.contains('show');
@@ -589,7 +678,6 @@ const EVORA = {
       avatarBtn.setAttribute('aria-expanded', !isShown);
     });
 
-    // Close on outside click
     document.addEventListener('click', (e) => {
       if (!dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
         dropdown.classList.remove('show');
@@ -597,7 +685,6 @@ const EVORA = {
       }
     });
 
-    // Close on ESC
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && dropdown.classList.contains('show')) {
         dropdown.classList.remove('show');
@@ -608,12 +695,153 @@ const EVORA = {
   },
 
   /**
+   * Real Database User Notifications Topbar Widget
+   */
+  async initNotificationWidget() {
+    const topbarRight = document.querySelector('.topbar-right');
+    if (!topbarRight || document.getElementById('notif-widget')) return;
+
+    const widget = document.createElement('div');
+    widget.className = 'notif-widget';
+    widget.id = 'notif-widget';
+    widget.innerHTML = `
+      <button class="notif-btn" id="notif-bell-btn" aria-label="Notifications" title="Notifications">
+        <span>&#128276;</span>
+        <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+      </button>
+      <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-dropdown-header">
+          <span class="notif-dropdown-title">Notifications</span>
+          <button class="btn btn-secondary btn-sm" id="btn-mark-all-read" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">Mark all as read</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div style="padding: 1.5rem; text-align: center; color: var(--color-text-muted); font-size: 0.82rem;">Loading notices...</div>
+        </div>
+      </div>
+    `;
+
+    const profileWidget = document.getElementById('profile-widget');
+    if (profileWidget) {
+      topbarRight.insertBefore(widget, profileWidget);
+    } else {
+      topbarRight.appendChild(widget);
+    }
+
+    const bellBtn = document.getElementById('notif-bell-btn');
+    const dropdown = document.getElementById('notif-dropdown');
+    const badge = document.getElementById('notif-badge');
+    const list = document.getElementById('notif-list');
+    const markAllBtn = document.getElementById('btn-mark-all-read');
+
+    // Toggle dropdown
+    bellBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isShown = dropdown.classList.contains('show');
+      dropdown.classList.toggle('show');
+      // Close profile dropdown if open
+      const profileDropdown = document.getElementById('profile-dropdown');
+      if (profileDropdown) profileDropdown.classList.remove('show');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target) && !bellBtn.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    // Fetch and render
+    const loadNotifs = async () => {
+      try {
+        const res = await this.api('/notifications/index.php');
+        if (!res || !res.success) return;
+
+        const notifs = res.data?.notifications || res.notifications || [];
+        const unread = res.data?.unread_count ?? res.unread_count ?? 0;
+
+        if (unread > 0) {
+          badge.textContent = unread > 99 ? '99+' : unread;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+
+        if (!notifs.length) {
+          list.innerHTML = `<div style="padding: 1.75rem 1rem; text-align: center; color: var(--color-text-muted); font-size: 0.82rem;">No notifications yet.</div>`;
+          return;
+        }
+
+        list.innerHTML = notifs.map(n => {
+          const isUnread = !n.is_read;
+          const unreadClass = isUnread ? 'unread' : '';
+          const dot = isUnread ? '<span class="notif-dot"></span>' : '';
+          const time = n.created_at ? n.created_at.split(' ')[0] : '';
+
+          return `
+            <div class="notif-item ${unreadClass}" data-id="${n.id}">
+              <div class="notif-item-title">
+                <span>${this.escapeHtml(n.title)}</span>
+                ${dot}
+              </div>
+              <div class="notif-item-msg">${this.escapeHtml(n.message)}</div>
+              <div class="notif-item-time">${this.escapeHtml(time)}</div>
+            </div>
+          `;
+        }).join('');
+
+        // Item click -> mark as read
+        list.querySelectorAll('.notif-item.unread').forEach(item => {
+          item.addEventListener('click', async () => {
+            const id = item.dataset.id;
+            await EVORA.api('/notifications/index.php', {
+              method: 'POST',
+              body: JSON.stringify({ id: parseInt(id, 10) })
+            });
+            item.classList.remove('unread');
+            const dot = item.querySelector('.notif-dot');
+            if (dot) dot.remove();
+            const curVal = parseInt(badge.textContent, 10) || 0;
+            if (curVal <= 1) {
+              badge.style.display = 'none';
+            } else {
+              badge.textContent = curVal - 1;
+            }
+          });
+        });
+
+      } catch (err) {
+        // silent fail
+      }
+    };
+
+    // Mark all as read
+    markAllBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      try {
+        await EVORA.api('/notifications/index.php', {
+          method: 'POST',
+          body: JSON.stringify({ action: 'mark_all' })
+        });
+        badge.style.display = 'none';
+        list.querySelectorAll('.notif-item.unread').forEach(item => {
+          item.classList.remove('unread');
+          const dot = item.querySelector('.notif-dot');
+          if (dot) dot.remove();
+        });
+        EVORA.showToast('All notifications marked as read.', 'info');
+      } catch (err) {}
+    });
+
+    loadNotifs();
+  },
+
+  /**
    * Global Initialization
    */
   init() {
     this.initPasswordToggles();
     this.initMobileNav();
     this.initProfileDropdown();
+    this.initNotificationWidget();
   }
 };
 

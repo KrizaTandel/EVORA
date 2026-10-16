@@ -36,19 +36,32 @@
       gap: 0.65rem;
       margin-bottom: 1.5rem;
     }
-    .auth-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-sm);
-      background: linear-gradient(135deg, var(--color-forest) 0%, #193126 100%);
-      color: var(--color-sage);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      font-weight: 800;
+    .auth-banner-alert {
+      display: none;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
     }
-
+    .auth-banner-alert.error {
+      display: block;
+      background-color: #FDF2F2;
+      color: #991B1B;
+      border: 1px solid #F87171;
+    }
+    .auth-banner-alert.warning {
+      display: block;
+      background-color: #FFFBEB;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+    .auth-banner-alert.success {
+      display: block;
+      background-color: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #6EE7B7;
+    }
   </style>
 </head>
 <body class="auth-page">
@@ -74,10 +87,13 @@
         </div>
       </div>
 
-      <div style="text-align: center; margin-bottom: 1.75rem;">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
         <h1 style="font-size: 1.75rem; margin-bottom: 0.35rem;">Welcome Back</h1>
         <p style="font-size: 0.92rem;">Sign in to access your organizational workspace.</p>
       </div>
+
+      <!-- Live Feedback Alert Banner -->
+      <div id="auth-alert" class="auth-banner-alert" role="alert" aria-live="assertive"></div>
 
       <!-- Authentication Form -->
       <form id="form-login" novalidate>
@@ -123,8 +139,42 @@
 
   <script src="../assets/js/main.js"></script>
   <script>
+    // Automatic redirection if active approved session exists
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch(`${EVORA.apiBase}/auth/me.php`, {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.authenticated && data.user) {
+            EVORA.setCurrentUser(data.user);
+            const redirectUrl = data.user.role === 'admin' ? 'admin/dashboard.html' : 'employee/dashboard.html';
+            window.location.replace(redirectUrl);
+          }
+        }
+      } catch (e) {
+        // Stay on login page if offline or unauthenticated
+      }
+    });
+
+    const alertBox = document.getElementById('auth-alert');
+    function showAlert(message, type = 'error') {
+      alertBox.textContent = message;
+      alertBox.className = `auth-banner-alert ${type}`;
+    }
+    function hideAlert() {
+      alertBox.style.display = 'none';
+      alertBox.textContent = '';
+      alertBox.className = 'auth-banner-alert';
+    }
+
     document.getElementById('form-login').addEventListener('submit', async function(e) {
       e.preventDefault();
+      hideAlert();
+
       const email = document.getElementById('login-email');
       const pass = document.getElementById('login-password');
       let isValid = true;
@@ -136,7 +186,7 @@
         email.classList.remove('is-invalid');
       }
 
-      if (!pass.value || pass.value.length < 4) {
+      if (!pass.value) {
         pass.classList.add('is-invalid');
         isValid = false;
       } else {
@@ -152,22 +202,44 @@
       try {
         const response = await fetch(`${EVORA.apiBase}/auth/login.php`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'same-origin',
           body: JSON.stringify({ email: email.value.trim(), password: pass.value })
         });
+
         const result = await response.json();
-        if (result.success) {
-          EVORA.showToast('Login successful! Redirecting...', 'success');
+
+        if (response.ok && result.success) {
+          showAlert(result.message || 'Login successful! Redirecting...', 'success');
+          EVORA.showToast(result.message || 'Login successful!', 'success');
+
+          if (result.user) {
+            EVORA.setCurrentUser(result.user);
+          }
+          if (result.csrf_token) {
+            sessionStorage.setItem('evora_csrf_token', result.csrf_token);
+          }
+
+          const target = result.redirect || (result.role === 'admin' ? 'admin/dashboard.html' : 'employee/dashboard.html');
           setTimeout(() => {
-            window.location.href = result.redirect || (result.role === 'admin' ? 'admin/dashboard.html' : 'employee/dashboard.html');
-          }, 400);
+            window.location.href = target;
+          }, 300);
         } else {
-          EVORA.showToast(result.message || 'Invalid email or password.', 'error');
+          const msg = result.message || 'Invalid email or password.';
+          const alertType = (result.status === 'pending' || result.status === 'rejected') ? 'warning' : 'error';
+          showAlert(msg, alertType);
+          EVORA.showToast(msg, alertType === 'warning' ? 'warning' : 'error');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Sign In to Portal';
         }
       } catch (err) {
-        EVORA.showToast('Backend authentication endpoint will be connected in next task.', 'info');
+        console.error('Login network error', err);
+        const errMsg = 'Unable to connect to authentication service. Please verify your connection.';
+        showAlert(errMsg, 'error');
+        EVORA.showToast(errMsg, 'error');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Sign In to Portal';
       }

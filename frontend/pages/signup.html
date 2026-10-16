@@ -34,6 +34,26 @@
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
+    .auth-banner-alert {
+      display: none;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+    .auth-banner-alert.error {
+      display: block;
+      background-color: #FDF2F2;
+      color: #991B1B;
+      border: 1px solid #F87171;
+    }
+    .auth-banner-alert.warning {
+      display: block;
+      background-color: #FFFBEB;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
     @media (max-width: 580px) {
       .grid-2 {
         grid-template-columns: 1fr;
@@ -70,17 +90,20 @@
         All new registrations strictly provision <strong>Employee</strong> accounts with a <code>Pending</code> status. An administrator must verify and approve your registration before you can log in.
       </div>
 
+      <!-- Live Feedback Alert Banner -->
+      <div id="signup-alert" class="auth-banner-alert" role="alert" aria-live="assertive"></div>
+
       <form id="form-signup" novalidate>
         <div class="form-group">
           <label class="form-label" for="signup-name">Full Name</label>
           <input type="text" id="signup-name" class="form-control" placeholder="e.g. Jane Doe" required autocomplete="name">
-          <div class="invalid-feedback">Please enter your full name.</div>
+          <div class="invalid-feedback">Please enter your full name (2–120 characters).</div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="signup-email">Work Email</label>
           <input type="email" id="signup-email" class="form-control" placeholder="jane.doe@example.com" required autocomplete="email">
-          <div class="invalid-feedback">Please enter a valid email address.</div>
+          <div class="invalid-feedback">Please enter a valid work email address.</div>
         </div>
 
         <div class="grid-2">
@@ -98,7 +121,7 @@
               <option value="4">Finance &amp; Accounts (FIN)</option>
               <option value="5">Operations (OPS)</option>
             </select>
-            <div class="invalid-feedback">Please select a department.</div>
+            <div class="invalid-feedback">Please select an organizational department.</div>
           </div>
         </div>
 
@@ -136,7 +159,7 @@
     </div>
   </div>
 
-  <!-- Success Modal for Simulated Signup -->
+  <!-- Success Modal for Genuine Pending Signup -->
   <div class="modal-backdrop" id="signup-success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal">
       <div class="modal-header">
@@ -163,16 +186,31 @@
 
   <script src="../assets/js/main.js"></script>
   <script>
-    document.getElementById('form-signup').addEventListener('submit', function(e) {
+    const alertBox = document.getElementById('signup-alert');
+    function showAlert(message, type = 'error') {
+      alertBox.textContent = message;
+      alertBox.className = `auth-banner-alert ${type}`;
+    }
+    function hideAlert() {
+      alertBox.style.display = 'none';
+      alertBox.textContent = '';
+      alertBox.className = 'auth-banner-alert';
+    }
+
+    document.getElementById('form-signup').addEventListener('submit', async function(e) {
       e.preventDefault();
+      hideAlert();
+
       const name = document.getElementById('signup-name');
       const email = document.getElementById('signup-email');
+      const phone = document.getElementById('signup-phone');
       const dept = document.getElementById('signup-dept');
       const pass = document.getElementById('signup-pass');
       const passConfirm = document.getElementById('signup-pass-confirm');
+      const submitBtn = document.getElementById('btn-signup-submit');
       let isValid = true;
 
-      if (!name.value.trim()) {
+      if (!name.value.trim() || name.value.trim().length < 2) {
         name.classList.add('is-invalid');
         isValid = false;
       } else {
@@ -209,9 +247,48 @@
 
       if (!isValid) return;
 
-      document.getElementById('success-user-name').textContent = name.value.trim();
-      EVORA.openModal('signup-success-modal');
-      this.reset();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting Application...';
+
+      try {
+        const response = await fetch(`${EVORA.apiBase}/auth/signup.php`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            full_name: name.value.trim(),
+            email: email.value.trim(),
+            phone: phone ? phone.value.trim() : '',
+            department_id: parseInt(dept.value, 10),
+            password: pass.value,
+            password_confirm: passConfirm.value
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          document.getElementById('success-user-name').textContent = name.value.trim();
+          EVORA.openModal('signup-success-modal');
+          EVORA.showToast(result.message, 'success');
+          this.reset();
+        } else {
+          const msg = result.message || 'Registration failed. Please check your information.';
+          showAlert(msg, response.status === 409 ? 'warning' : 'error');
+          EVORA.showToast(msg, 'error');
+        }
+      } catch (err) {
+        console.error('Registration network error', err);
+        const errMsg = 'Unable to connect to server. Please try again.';
+        showAlert(errMsg, 'error');
+        EVORA.showToast(errMsg, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application for Approval';
+      }
     });
   </script>
 </body>

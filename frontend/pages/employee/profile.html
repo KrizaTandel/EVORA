@@ -108,15 +108,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">JD</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">JD</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Jane Doe</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-neutral" id="dropdown-user-role">EMPLOYEE</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">employee@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -140,19 +140,19 @@
 
       <!-- Profile Summary Card -->
       <div class="profile-hero">
-        <div class="profile-avatar-lg">JD</div>
+        <div class="profile-avatar-lg" id="profile-hero-avatar">EV</div>
         <div style="flex: 1;">
           <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-            <h2 style="font-size: 1.5rem; margin: 0;" id="display-profile-name">Jane Doe</h2>
-            <span class="badge badge-approved">Approved Staff</span>
+            <h2 style="font-size: 1.5rem; margin: 0;" id="display-profile-name">Loading...</h2>
+            <span class="badge badge-approved" id="profile-hero-badge">Approved Staff</span>
           </div>
           <div style="color: var(--color-text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
-            Senior Product Designer &bull; Engineering &amp; IT Department
+            <span id="profile-hero-subtitle">—</span>
           </div>
           <div style="display: flex; gap: 1.5rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--color-text-muted); flex-wrap: wrap;">
-            <div><strong>Employee ID:</strong> EMP-2026-042</div>
-            <div><strong>Joined:</strong> January 15, 2026</div>
-            <div><strong>Email:</strong> employee@evora.test</div>
+            <div><strong>Employee ID:</strong> <span id="profile-hero-id">—</span></div>
+            <div><strong>Joined:</strong> <span id="profile-hero-joined">—</span></div>
+            <div><strong>Email:</strong> <span id="profile-hero-email">—</span></div>
           </div>
         </div>
       </div>
@@ -162,41 +162,41 @@
         <div class="card-header">
           <div>
             <div class="card-title">Edit Contact Details</div>
-            <div class="card-subtitle">Keep your organizational contact information up to date.</div>
+            <div class="card-subtitle">Keep your organizational contact information up to date in MySQL.</div>
           </div>
         </div>
 
-        <form id="form-profile" novalidate>
+        <form id="form-profile" novalidate onsubmit="event.preventDefault(); saveProfile();">
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label" for="profile-name">Full Name</label>
-              <input type="text" id="profile-name" class="form-control" value="Jane Doe" required>
+              <input type="text" id="profile-name" class="form-control" placeholder="Full name" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="profile-email">Work Email (Locked by Admin)</label>
-              <input type="email" id="profile-email" class="form-control" value="employee@evora.test" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
+              <input type="email" id="profile-email" class="form-control" placeholder="Work email" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label" for="profile-phone">Mobile Phone</label>
-              <input type="tel" id="profile-phone" class="form-control" value="+91 98765 43210">
+              <input type="tel" id="profile-phone" class="form-control" placeholder="+91 ...">
             </div>
             <div class="form-group">
-              <label class="form-label" for="profile-emergency">Emergency Contact</label>
-              <input type="text" id="profile-emergency" class="form-control" value="Robert Doe &bull; +91 98765 12345">
+              <label class="form-label" for="profile-dept">Department (Locked by Admin)</label>
+              <input type="text" id="profile-dept" class="form-control" placeholder="Department" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label" for="profile-dept">Department</label>
-              <input type="text" id="profile-dept" class="form-control" value="Engineering &amp; IT" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
+              <label class="form-label" for="profile-designation">Designation (Locked by Admin)</label>
+              <input type="text" id="profile-designation" class="form-control" placeholder="Designation" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
             </div>
             <div class="form-group">
-              <label class="form-label" for="profile-designation">Designation</label>
-              <input type="text" id="profile-designation" class="form-control" value="Software Associate" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
+              <label class="form-label" for="profile-role">Account Role</label>
+              <input type="text" id="profile-role" class="form-control" placeholder="Role" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
             </div>
           </div>
 
@@ -204,8 +204,8 @@
             <button type="submit" class="btn btn-primary" id="btn-save-profile">
               Save Profile Changes
             </button>
-            <button type="button" class="btn btn-secondary" onclick="EVORA.showToast('Discarded unsaved changes', 'info')">
-              Cancel
+            <button type="button" class="btn btn-secondary" onclick="loadProfile()">
+              Reset / Cancel
             </button>
           </div>
         </form>
@@ -215,17 +215,84 @@
 
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      EVORA.initDemoBanner('employee');
-      EVORA.initProfileForm();
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await EVORA.guardPage();
+      if (!user) return;
 
-      // Reflect any saved name in session
-      const user = EVORA.getDemoUser();
-      if (user && user.name) {
-        document.getElementById('display-profile-name').textContent = user.name;
-        document.getElementById('profile-name').value = user.name;
-      }
+      loadProfile();
     });
+
+    async function loadProfile() {
+      try {
+        const res = await EVORA.api('/employee/profile.php');
+        if (!res || !res.success) {
+          EVORA.showToast(res?.message || 'Failed to load profile.', 'error');
+          return;
+        }
+
+        const u = res.data?.user || res.user || {};
+        const name = u.full_name || 'Staff Member';
+        const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'EV';
+        const dept = u.department_name || 'General';
+        const desig = u.designation || (u.role === 'admin' ? 'Administrator' : 'Staff Member');
+
+        document.getElementById('display-profile-name').textContent = name;
+        document.getElementById('profile-hero-avatar').textContent = initials;
+        document.getElementById('profile-hero-subtitle').textContent = `${desig} • ${dept} Department`;
+        document.getElementById('profile-hero-id').textContent = `EMP-${String(u.id).padStart(3, '0')}`;
+        document.getElementById('profile-hero-joined').textContent = u.joined_date || (u.created_at ? u.created_at.split(' ')[0] : '—');
+        document.getElementById('profile-hero-email').textContent = u.email;
+
+        const badge = document.getElementById('profile-hero-badge');
+        if (badge) {
+          badge.textContent = u.status === 'approved' ? 'Approved Staff' : (u.status === 'pending' ? 'Pending Approval' : u.status);
+          badge.className = u.status === 'approved' ? 'badge badge-approved' : 'badge badge-pending';
+        }
+
+        document.getElementById('profile-name').value = name;
+        document.getElementById('profile-email').value = u.email;
+        document.getElementById('profile-phone').value = u.phone || '';
+        document.getElementById('profile-dept').value = dept;
+        document.getElementById('profile-designation').value = desig;
+        document.getElementById('profile-role').value = (u.role || 'employee').toUpperCase();
+
+      } catch (err) {
+        EVORA.showToast('Server error loading profile.', 'error');
+      }
+    }
+
+    async function saveProfile() {
+      const btn = document.getElementById('btn-save-profile');
+      const fullName = document.getElementById('profile-name').value.trim();
+      const phone = document.getElementById('profile-phone').value.trim();
+
+      if (!fullName) {
+        EVORA.showToast('Please enter your full name.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving Changes...';
+
+      try {
+        const res = await EVORA.api('/employee/profile.php', {
+          method: 'POST',
+          body: JSON.stringify({ full_name: fullName, phone })
+        });
+
+        if (res && res.success) {
+          EVORA.showToast(res.message || 'Profile updated successfully.', 'success');
+          loadProfile();
+        } else {
+          EVORA.showToast(res?.message || 'Failed to update profile.', 'error');
+        }
+      } catch (err) {
+        EVORA.showToast(err.message || 'Server error updating profile.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Profile Changes';
+      }
+    }
   </script>
 </body>
 </html>

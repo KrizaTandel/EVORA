@@ -71,15 +71,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">JD</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">JD</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Jane Doe</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-neutral" id="dropdown-user-role">EMPLOYEE</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">employee@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -126,24 +126,24 @@
             <span class="stat-label">Days Present</span>
             <div class="stat-icon">&#128197;</div>
           </div>
-          <div class="stat-value" style="color: var(--status-present);">21</div>
-          <div class="stat-meta">Out of 22 scheduled shifts</div>
+          <div class="stat-value" id="emp-days-present" style="color: var(--status-present);">0</div>
+          <div class="stat-meta" id="emp-days-meta">This month</div>
         </div>
         <div class="stat-card">
           <div class="stat-header">
             <span class="stat-label">On-Time Rate</span>
             <div class="stat-icon">&#9201;</div>
           </div>
-          <div class="stat-value">95.4%</div>
-          <div class="stat-meta">1 late arrival logged this month</div>
+          <div class="stat-value" id="emp-ontime-rate">0%</div>
+          <div class="stat-meta" id="emp-ontime-meta">0 late arrivals logged</div>
         </div>
         <div class="stat-card">
           <div class="stat-header">
-            <span class="stat-label">Avg Shift Length</span>
+            <span class="stat-label">Total Shifts</span>
             <div class="stat-icon">&#9200;</div>
           </div>
-          <div class="stat-value">8.4 <span style="font-size: 1rem; font-weight: 500; color: var(--color-text-muted);">Hours</span></div>
-          <div class="stat-meta">Meets full-time criteria</div>
+          <div class="stat-value" id="emp-total-shifts">0</div>
+          <div class="stat-meta">Completed shift logs</div>
         </div>
       </div>
 
@@ -152,15 +152,25 @@
         <div class="card-header">
           <div>
             <div class="card-title">Monthly Attendance Logs</div>
-            <div class="card-subtitle">Sample attendance log for the current evaluation period.</div>
+            <div class="card-subtitle">Verified shift attendance and punctuality records from MySQL.</div>
           </div>
           <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-            <select id="filter-month" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Attendance filter applied', 'info')">
-              <option value="10">October 2026 (Current)</option>
-              <option value="09">September 2026</option>
-              <option value="08">August 2026</option>
+            <select id="filter-month" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="loadAttendanceHistory()">
+              <option value="">All Months</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
             </select>
-            <select id="filter-status" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Attendance filter applied', 'info')">
+            <select id="filter-status" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="loadAttendanceHistory()">
               <option value="all">All Statuses</option>
               <option value="present">Present Only</option>
               <option value="late">Late Only</option>
@@ -180,46 +190,11 @@
                 <th>Remarks</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="attendance-history-tbody">
               <tr>
-                <td><strong>2026-10-16</strong></td>
-                <td>09:05 AM</td>
-                <td>&mdash;</td>
-                <td>In Progress</td>
-                <td><span class="badge badge-approved">Present</span></td>
-                <td>Standard shift</td>
-              </tr>
-              <tr>
-                <td>2026-10-15</td>
-                <td>09:32 AM</td>
-                <td>06:15 PM</td>
-                <td>8 hrs 43 min</td>
-                <td><span class="badge badge-pending">Late</span></td>
-                <td>Transit congestion reported</td>
-              </tr>
-              <tr>
-                <td>2026-10-14</td>
-                <td>08:58 AM</td>
-                <td>05:55 PM</td>
-                <td>8 hrs 57 min</td>
-                <td><span class="badge badge-approved">Present</span></td>
-                <td>On time</td>
-              </tr>
-              <tr>
-                <td>2026-10-13</td>
-                <td>09:02 AM</td>
-                <td>06:05 PM</td>
-                <td>9 hrs 03 min</td>
-                <td><span class="badge badge-approved">Present</span></td>
-                <td>On time</td>
-              </tr>
-              <tr>
-                <td>2026-10-10</td>
-                <td>09:00 AM</td>
-                <td>06:00 PM</td>
-                <td>9 hrs 00 min</td>
-                <td><span class="badge badge-approved">Present</span></td>
-                <td>Weekly review</td>
+                <td colspan="6" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                  Loading attendance records...
+                </td>
               </tr>
             </tbody>
           </table>
@@ -230,10 +205,104 @@
 
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      EVORA.initDemoBanner('employee');
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await EVORA.guardPage();
+      if (!user) return;
+
+      // Set current month in filter
+      const curMonth = (new Date().getMonth() + 1).toString();
+      const monthSelect = document.getElementById('filter-month');
+      if (monthSelect) monthSelect.value = curMonth;
+
       EVORA.initAttendanceControls();
+      loadAttendanceHistory();
     });
+
+    async function loadAttendanceHistory() {
+      const tbody = document.getElementById('attendance-history-tbody');
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">Loading attendance logs...</td></tr>`;
+
+      const month = document.getElementById('filter-month')?.value || '';
+      const status = document.getElementById('filter-status')?.value || 'all';
+
+      let query = [];
+      if (month) query.push(`month=${encodeURIComponent(month)}`);
+      if (status && status !== 'all') query.push(`status=${encodeURIComponent(status)}`);
+      const qs = query.length ? `?${query.join('&')}` : '';
+
+      try {
+        const res = await EVORA.api(`/employee/attendance.php${qs}`);
+        if (!res || !res.success) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--color-error); padding: 2rem;">Failed to load attendance logs.</td></tr>`;
+          return;
+        }
+
+        const data = res.data || res;
+        const metrics = data.metrics || {};
+        const records = data.records || [];
+
+        // Metrics
+        const presentCnt = metrics.present_count || 0;
+        const lateCnt = metrics.late_count || 0;
+        const totalShifts = metrics.total_shifts || (presentCnt + lateCnt);
+        const onTimeRate = totalShifts > 0 ? Math.round((presentCnt / totalShifts) * 100) : 100;
+
+        document.getElementById('emp-days-present').textContent = presentCnt;
+        document.getElementById('emp-days-meta').textContent = `Out of ${totalShifts} shift(s) this month`;
+
+        document.getElementById('emp-ontime-rate').textContent = `${onTimeRate}%`;
+        document.getElementById('emp-ontime-meta').textContent = `${lateCnt} late arrival(s) logged`;
+
+        document.getElementById('emp-total-shifts').textContent = totalShifts;
+
+        // Render records
+        renderTable(records);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--color-error); padding: 2rem;">Server error loading attendance logs.</td></tr>`;
+      }
+    }
+
+    function renderTable(records) {
+      const tbody = document.getElementById('attendance-history-tbody');
+      if (!records.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">No attendance records found for this period.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = records.map(r => {
+        const inTime = EVORA.formatTime(r.check_in_time);
+        const outTime = r.check_out_time ? EVORA.formatTime(r.check_out_time) : '&mdash;';
+
+        let duration = 'In Progress';
+        if (r.check_in_time && r.check_out_time) {
+          const inDate = new Date(`1970-01-01T${r.check_in_time}`);
+          const outDate = new Date(`1970-01-01T${r.check_out_time}`);
+          const diffMs = outDate - inDate;
+          if (diffMs > 0) {
+            const hrs = Math.floor(diffMs / 3600000);
+            const mins = Math.floor((diffMs % 3600000) / 60000);
+            duration = `${hrs} hrs ${mins} min`;
+          }
+        }
+
+        const badgeClass = r.status === 'present' ? 'badge-approved' : (r.status === 'late' ? 'badge-pending' : 'badge-rejected');
+        const statusLabel = r.status ? (r.status.charAt(0).toUpperCase() + r.status.slice(1)) : 'Present';
+
+        return `
+          <tr>
+            <td><strong>${EVORA.escapeHtml(r.date)}</strong></td>
+            <td>${inTime}</td>
+            <td>${outTime}</td>
+            <td>${duration}</td>
+            <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
+            <td>${EVORA.escapeHtml(r.notes || '—')}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Expose for attendance controls refresh
+    window.renderAttendanceTable = loadAttendanceHistory;
   </script>
 </body>
 </html>

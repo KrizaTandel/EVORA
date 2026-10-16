@@ -114,15 +114,15 @@
         <div class="topbar-right">
           <div class="profile-widget" id="profile-widget">
             <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
-              <span class="avatar-initials" id="topbar-avatar-initials">JD</span>
+              <span class="avatar-initials" id="topbar-avatar-initials">—</span>
             </button>
             <div class="profile-dropdown" id="profile-dropdown" role="menu">
               <div class="dropdown-user-info">
-                <div class="dropdown-avatar" id="dropdown-avatar-circle">JD</div>
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">—</div>
                 <div class="dropdown-user-text">
-                  <strong class="dropdown-user-name" id="dropdown-user-name">Jane Doe</strong>
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Loading...</strong>
                   <span class="dropdown-user-role badge badge-neutral" id="dropdown-user-role">EMPLOYEE</span>
-                  <span class="dropdown-user-email" id="dropdown-user-email">employee@evora.test</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email"></span>
                 </div>
               </div>
               <hr class="dropdown-divider">
@@ -142,20 +142,20 @@
       <!-- Welcome Header Banner -->
       <div class="welcome-card">
         <div>
-          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(215, 167, 109, 0.2); border: 1px solid var(--color-gold); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; color: var(--color-gold); margin-bottom: 0.75rem;">
-            Approved Employee &bull; Engineering &amp; IT
+          <div id="emp-banner-pill" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(215, 167, 109, 0.2); border: 1px solid var(--color-gold); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; color: var(--color-gold); margin-bottom: 0.75rem;">
+            Approved Employee &bull; General
           </div>
-          <h1 class="welcome-title">Welcome back, Jane Doe</h1>
+          <h1 class="welcome-title" id="emp-welcome-title">Welcome back</h1>
           <p class="welcome-desc">Here is your attendance summary, active requests, and upcoming schedule.</p>
         </div>
 
         <!-- Quick Clock-In Widget -->
         <div class="clock-pill-card">
           <div>
-            <div id="clock-status-text" class="badge badge-approved" style="margin-bottom: 0.25rem;">Present (Checked In)</div>
-            <div id="clock-time-text" style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.85);">Today: Clocked in at 09:05 AM</div>
+            <div id="clock-status-text" class="badge badge-neutral" style="margin-bottom: 0.25rem;">Checking Status...</div>
+            <div id="clock-time-text" style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.85);">Loading shift details...</div>
           </div>
-          <button class="btn btn-secondary btn-sm" id="btn-clock-toggle">Clock Out</button>
+          <button class="btn btn-secondary btn-sm" id="btn-clock-toggle">Clock In</button>
         </div>
       </div>
 
@@ -166,8 +166,8 @@
             <span class="stat-label">Leaves Remaining</span>
             <div class="stat-icon">&#128197;</div>
           </div>
-          <div class="stat-value">14 <span style="font-size: 1rem; font-weight: 500; color: var(--color-text-muted);">Days</span></div>
-          <div class="stat-meta">10 Casual &bull; 4 Sick remaining</div>
+          <div class="stat-value" id="emp-leaves-val">0 <span style="font-size: 1rem; font-weight: 500; color: var(--color-text-muted);">Days</span></div>
+          <div class="stat-meta" id="emp-leaves-meta">0 Casual &bull; 0 Sick remaining</div>
         </div>
 
         <div class="stat-card">
@@ -175,8 +175,8 @@
             <span class="stat-label">Pending Requests</span>
             <div class="stat-icon">&#9993;</div>
           </div>
-          <div class="stat-value" style="color: var(--status-pending);">1</div>
-          <div class="stat-meta"><span class="badge badge-pending">Under HR Review</span></div>
+          <div class="stat-value" id="emp-pending-val" style="color: var(--status-pending);">0</div>
+          <div class="stat-meta" id="emp-pending-meta"><span class="badge badge-neutral">No pending requests</span></div>
         </div>
 
         <div class="stat-card">
@@ -184,8 +184,8 @@
             <span class="stat-label">Monthly Attendance</span>
             <div class="stat-icon">&#9201;</div>
           </div>
-          <div class="stat-value" style="color: var(--color-forest);">96%</div>
-          <div class="stat-meta">21 of 22 working shifts logged</div>
+          <div class="stat-value" id="emp-turnout-val" style="color: var(--color-forest);">100%</div>
+          <div class="stat-meta" id="emp-turnout-meta">0 working shifts logged</div>
         </div>
 
         <div class="stat-card">
@@ -193,8 +193,8 @@
             <span class="stat-label">Department</span>
             <div class="stat-icon">&#128101;</div>
           </div>
-          <div class="stat-value" style="font-size: 1.4rem; padding-top: 0.4rem;">Engineering</div>
-          <div class="stat-meta">Role: Software Associate</div>
+          <div class="stat-value" id="emp-dept-val" style="font-size: 1.4rem; padding-top: 0.4rem;">—</div>
+          <div class="stat-meta" id="emp-role-meta">Role: Staff Member</div>
         </div>
       </div>
 
@@ -205,31 +205,14 @@
           <div class="card-header">
             <div>
               <div class="card-title">Weekly Attendance Rhythm</div>
-              <div class="card-subtitle">Hours logged per shift over the past week.</div>
+              <div class="card-subtitle">Hours logged per shift over the current week.</div>
             </div>
             <a href="attendance.html" class="btn btn-secondary btn-sm">Full Attendance Log &rarr;</a>
           </div>
 
-          <div class="visual-chart" style="height: 160px;">
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 85%;"></div>
-              <span class="chart-label">Mon (8.5h)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 90%;"></div>
-              <span class="chart-label">Tue (9.0h)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 80%;"></div>
-              <span class="chart-label">Wed (8.0h)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 88%; background-color: var(--color-forest);"></div>
-              <span class="chart-label">Thu (8.8h)</span>
-            </div>
-            <div class="chart-bar-group">
-              <div class="chart-bar" style="height: 75%;"></div>
-              <span class="chart-label">Fri (7.5h)</span>
+          <div class="visual-chart" id="emp-weekly-chart" style="height: 160px;">
+            <div style="width: 100%; text-align: center; color: var(--color-text-muted); align-self: center;">
+              Loading attendance rhythm...
             </div>
           </div>
 
@@ -245,24 +228,11 @@
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="emp-recent-logs-tbody">
                   <tr>
-                    <td><strong>Today (2026-10-16)</strong></td>
-                    <td>09:05 AM</td>
-                    <td>&mdash;</td>
-                    <td><span class="badge badge-approved">Present</span></td>
-                  </tr>
-                  <tr>
-                    <td>2026-10-15</td>
-                    <td>09:32 AM</td>
-                    <td>06:15 PM</td>
-                    <td><span class="badge badge-pending">Late (32m)</span></td>
-                  </tr>
-                  <tr>
-                    <td>2026-10-14</td>
-                    <td>08:58 AM</td>
-                    <td>05:55 PM</td>
-                    <td><span class="badge badge-approved">Present</span></td>
+                    <td colspan="4" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                      Loading recent attendance...
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -314,10 +284,114 @@
 
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      EVORA.initDemoBanner('employee');
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await EVORA.guardPage();
+      if (!user) return;
+
       EVORA.initAttendanceControls();
+      loadEmployeeDashboard();
     });
+
+    async function loadEmployeeDashboard() {
+      try {
+        const res = await EVORA.api('/employee/dashboard.php');
+        if (!res || !res.success) {
+          EVORA.showToast(res?.message || 'Failed to load dashboard.', 'error');
+          return;
+        }
+
+        const data = res.data || res;
+        const u = data.user || {};
+        const metrics = data.metrics || {};
+
+        // 1. Welcome Header
+        const name = u.name || 'Staff Member';
+        document.getElementById('emp-welcome-title').textContent = `Welcome back, ${name}`;
+        const deptName = u.department_name || 'General';
+        document.getElementById('emp-banner-pill').innerHTML = `Approved Employee &bull; ${EVORA.escapeHtml(deptName)}`;
+
+        // 2. Metric Cards
+        const totalLeaves = metrics.leaves_remaining ?? 14;
+        const casLeaves = metrics.casual_remaining ?? 10;
+        const sickLeaves = metrics.sick_remaining ?? 4;
+        document.getElementById('emp-leaves-val').innerHTML = `${totalLeaves} <span style="font-size: 1rem; font-weight: 500; color: var(--color-text-muted);">Days</span>`;
+        document.getElementById('emp-leaves-meta').innerHTML = `${casLeaves} Casual &bull; ${sickLeaves} Sick remaining`;
+
+        const pending = metrics.pending_leaves ?? 0;
+        document.getElementById('emp-pending-val').textContent = pending;
+        document.getElementById('emp-pending-meta').innerHTML = pending > 0
+          ? `<span class="badge badge-pending">${pending} Under Review</span>`
+          : `<span class="badge badge-neutral">No pending requests</span>`;
+
+        document.getElementById('emp-turnout-val').textContent = `${metrics.attendance_pct ?? 100}%`;
+        document.getElementById('emp-turnout-meta').textContent = `${metrics.shifts_logged ?? 0} working shift(s) logged`;
+
+        document.getElementById('emp-dept-val').textContent = deptName;
+        document.getElementById('emp-role-meta').textContent = `Role: ${u.designation || 'Staff Member'}`;
+
+        // 3. Weekly Rhythm Chart
+        renderWeeklyRhythm(data.weekly_rhythm || []);
+
+        // 4. Recent Logs Table
+        renderRecentLogs(data.recent_logs || []);
+
+      } catch (err) {
+        EVORA.showToast('Server error loading dashboard analytics.', 'error');
+      }
+    }
+
+    function renderWeeklyRhythm(rhythm) {
+      const chart = document.getElementById('emp-weekly-chart');
+      if (!rhythm.length) {
+        chart.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--color-text-muted);">No attendance recorded this week.</div>`;
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+
+      chart.innerHTML = rhythm.map(r => {
+        const heightPct = r.pct > 0 ? r.pct : 6;
+        const isToday = r.date === today;
+        const barColor = isToday ? 'var(--color-forest)' : (r.hours > 0 ? 'var(--color-forest-light)' : 'var(--color-border)');
+        return `
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height: ${heightPct}%; background-color: ${barColor};" title="${r.label} (${r.date}): ${r.hours} hours logged"></div>
+            <span class="chart-label">${r.label} (${r.hours}h)</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRecentLogs(logs) {
+      const tbody = document.getElementById('emp-recent-logs-tbody');
+      if (!logs.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">No attendance records logged yet.</td></tr>`;
+        return;
+      }
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      tbody.innerHTML = logs.map(l => {
+        const isToday = l.date === todayStr;
+        const dateDisplay = isToday ? `<strong>Today (${l.date})</strong>` : EVORA.escapeHtml(l.date);
+        const inTime = EVORA.formatTime(l.check_in_time);
+        const outTime = l.check_out_time ? EVORA.formatTime(l.check_out_time) : '&mdash;';
+
+        const badgeClass = l.status === 'present' ? 'badge-approved' : (l.status === 'late' ? 'badge-pending' : 'badge-rejected');
+        const statusLabel = l.status ? (l.status.charAt(0).toUpperCase() + l.status.slice(1)) : 'Present';
+
+        return `
+          <tr>
+            <td>${dateDisplay}</td>
+            <td>${inTime}</td>
+            <td>${outTime}</td>
+            <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.renderAttendanceTable = loadEmployeeDashboard;
   </script>
 </body>
 </html>

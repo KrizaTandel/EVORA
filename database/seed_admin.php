@@ -1,119 +1,135 @@
 <?php
 /**
- * EVORA HRMS — Secure Initial Admin Account Seeder
+ * EVORA HRMS — CLI-Only Initial Administrator Provisioner
+ * Core PHP 8.2
  * 
  * Usage:
- *   CLI: php database/seed_admin.php
- *   Browser: http://localhost/EVORA/database/seed_admin.php
+ *   php database/seed_admin.php
+ *   php database/seed_admin.php --name="Alex Morgan" --email="admin@evora.com" --password="YourPassword"
  * 
- * Project Rule Enforced:
- *   Admin accounts must be provisioned securely.
- *   Public signup must NEVER allow a user to choose the admin role.
+ * Security Enforcements:
+ *   - Strictly forbidden from web/HTTP execution.
+ *   - Uses password_hash() with PASSWORD_DEFAULT.
+ *   - Rejects execution if account already exists (does not overwrite).
+ *   - Never prints password hashes or sensitive server details.
  */
 
-// Helper to load simple .env file if it exists
-function loadEnv($path) {
-    if (!file_exists($path)) {
-        return [];
-    }
-    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $env = [];
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line === '' || strpos($line, '#') === 0) continue;
-        if (strpos($line, '=') !== false) {
-            list($key, $val) = explode('=', $line, 2);
-            $key = trim($key);
-            $val = trim($val);
-            $val = trim($val, "\"'");
-            $env[$key] = $val;
-        }
-    }
-    return $env;
+declare(strict_types=1);
+
+// Strictly block browser access
+if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
+    header('Content-Type: text/plain; charset=utf-8');
+    die("Access Denied: The administrator provisioner is restricted to the Command Line Interface (CLI).\n");
 }
 
-$rootPath = dirname(__DIR__);
-$env = loadEnv($rootPath . '/.env');
+require_once dirname(__DIR__) . '/backend/config/database.php';
 
-$dbHost = $env['DB_HOST'] ?? '127.0.0.1';
-$dbPort = $env['DB_PORT'] ?? '3306';
-$dbName = $env['DB_NAME'] ?? 'evora_hrms';
-$dbUser = $env['DB_USER'] ?? 'root';
-$dbPass = $env['DB_PASS'] ?? '';
+echo "=====================================================\n";
+echo " EVORA HRMS — Secure Administrator Provisioning Tool \n";
+echo "=====================================================\n\n";
 
-$isCli = (php_sapi_name() === 'cli');
+// Parse CLI command-line options
+$shortOpts = "n:e:p:";
+$longOpts  = ["name:", "email:", "password:"];
+$cliArgs   = getopt($shortOpts, $longOpts);
 
-function outputMsg($msg, $isCli, $type = 'info') {
-    if ($isCli) {
-        echo "[$type] $msg\n";
-    } else {
-        $colors = [
-            'info' => '#2D4739',
-            'success' => '#1F3327',
-            'warning' => '#D4A373',
-            'error' => '#C86D51'
-        ];
-        $color = $colors[$type] ?? '#333';
-        echo "<p style='font-family: monospace; color: {$color}; margin: 6px 0;'><strong>[{$type}]</strong> {$msg}</p>";
-    }
+$name     = $cliArgs['name'] ?? $cliArgs['n'] ?? null;
+$email    = $cliArgs['email'] ?? $cliArgs['e'] ?? null;
+$password = $cliArgs['password'] ?? $cliArgs['p'] ?? null;
+
+// Prompt interactively if not provided via CLI flags
+if (empty($name)) {
+    echo "Enter Administrator Full Name: ";
+    $name = trim((string)fgets(STDIN));
 }
 
-if (!$isCli) {
-    echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>EVORA HRMS - Admin Seeder</title>";
-    echo "<body style='background: #FBF9F5; color: #2D4739; padding: 2rem; font-family: sans-serif;'>";
-    echo "<div style='max-width: 600px; margin: 0 auto; background: #F4F0E8; padding: 1.5rem; border-radius: 8px; border: 1px solid #8A9A86;'>";
-    echo "<h2 style='color: #2D4739; margin-top: 0;'>EVORA HRMS — Initial Admin Seeder</h2>";
+if (empty($email)) {
+    echo "Enter Administrator Work Email: ";
+    $email = trim((string)fgets(STDIN));
+}
+
+if (empty($password)) {
+    echo "Enter Administrator Password: ";
+    // Read password
+    $password = trim((string)fgets(STDIN));
+}
+
+$email = strtolower(trim((string)$email));
+$name  = trim((string)$name);
+
+if (empty($name) || empty($email) || empty($password)) {
+    echo "\n[ERROR] Full name, email, and password are required to provision an administrator.\n";
+    exit(1);
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo "\n[ERROR] Invalid email format: '{$email}'.\n";
+    exit(1);
+}
+
+if (mb_strlen($password) < 8) {
+    echo "\n[ERROR] Password must be at least 8 characters in length.\n";
+    exit(1);
 }
 
 try {
-    $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
-    $pdo = new PDO($dsn, $dbUser, $dbPass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
+    $pdo = Database::getConnection();
 
-    outputMsg("Connected to MySQL database '{$dbName}' successfully.", $isCli, 'info');
+    // 1. Check if an account already exists with this email
+    $checkStmt = $pdo->prepare('SELECT id, full_name, role, status FROM users WHERE email = :email LIMIT 1');
+    $checkStmt->execute([':email' => $email]);
+    $existing = $checkStmt->fetch();
 
-    // Check if an admin already exists
-    $stmt = $pdo->prepare("SELECT id, email, full_name FROM users WHERE role = 'admin' LIMIT 1");
-    $stmt->execute();
-    $existingAdmin = $stmt->fetch();
-
-    if ($existingAdmin) {
-        outputMsg("An administrator account already exists (ID: {$existingAdmin['id']}, Email: {$existingAdmin['email']}).", $isCli, 'warning');
-        outputMsg("For security, seeder will not overwrite existing admin accounts.", $isCli, 'info');
-    } else {
-        // Default credentials for initial local setup
-        $adminName = 'System Administrator';
-        $adminEmail = 'admin@evora.local';
-        $adminPassword = 'AdminPassword123!';
-        $passwordHash = password_hash($adminPassword, PASSWORD_BCRYPT);
-
-        $insertStmt = $pdo->prepare("
-            INSERT INTO users (full_name, email, password_hash, role, status, designation, joined_date)
-            VALUES (:name, :email, :pass, 'admin', 'approved', 'Super Administrator', CURDATE())
-        ");
-
-        $insertStmt->execute([
-            ':name' => $adminName,
-            ':email' => $adminEmail,
-            ':pass' => $passwordHash,
-        ]);
-
-        outputMsg("Default Administrator account provisioned successfully!", $isCli, 'success');
-        outputMsg("Email: {$adminEmail}", $isCli, 'info');
-        outputMsg("Temporary Password: {$adminPassword}", $isCli, 'info');
-        outputMsg("Role: admin | Status: approved", $isCli, 'info');
-        outputMsg("IMPORTANT: Change this password immediately after your first login.", $isCli, 'warning');
+    if ($existing) {
+        echo "\n[WARNING] An account with email '{$email}' already exists.\n";
+        echo "  - Existing User ID: {$existing['id']}\n";
+        echo "  - Existing Role:    {$existing['role']}\n";
+        echo "  - Existing Status:  {$existing['status']}\n";
+        echo "[SECURITY] Refusing to overwrite existing account or credentials.\n";
+        exit(0);
     }
 
-} catch (PDOException $e) {
-    outputMsg("Database Error: " . $e->getMessage(), $isCli, 'error');
-    outputMsg("Please verify that MySQL is running in XAMPP and that 'database/evora_hrms.sql' has been imported.", $isCli, 'warning');
-}
+    // 2. Hash password with PASSWORD_DEFAULT
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-if (!$isCli) {
-    echo "<hr style='border: none; border-top: 1px solid #8A9A86; margin: 1.5rem 0;'>";
-    echo "<a href='../frontend/pages/login.html' style='display: inline-block; background: #2D4739; color: #FBF9F5; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Go to Login Page &rarr;</a>";
-    echo "</div></body></html>";
+    // 3. Insert new verified Administrator
+    $insertStmt = $pdo->prepare('
+        INSERT INTO users (full_name, email, password_hash, role, status, designation, joined_date, created_at)
+        VALUES (:name, :email, :pass, "admin", "approved", "System Administrator", CURDATE(), NOW())
+    ');
+
+    $insertStmt->execute([
+        ':name'  => $name,
+        ':email' => $email,
+        ':pass'  => $passwordHash,
+    ]);
+
+    $newId = (int)$pdo->lastInsertId();
+
+    // 4. Verify created database record
+    $verifyStmt = $pdo->prepare('SELECT id, full_name, email, role, status, joined_date FROM users WHERE id = :id');
+    $verifyStmt->execute([':id' => $newId]);
+    $verified = $verifyStmt->fetch();
+
+    if ($verified && $verified['role'] === 'admin' && $verified['status'] === 'approved') {
+        echo "\n[SUCCESS] Initial Administrator provisioned successfully!\n";
+        echo "-----------------------------------------------------\n";
+        echo "  User ID:     {$verified['id']}\n";
+        echo "  Full Name:   {$verified['full_name']}\n";
+        echo "  Work Email:  {$verified['email']}\n";
+        echo "  Role:        {$verified['role']}\n";
+        echo "  Status:      {$verified['status']}\n";
+        echo "  Joined Date: {$verified['joined_date']}\n";
+        echo "-----------------------------------------------------\n";
+        echo "You can now authenticate with these credentials at /frontend/pages/login.html\n\n";
+        exit(0);
+    }
+
+    echo "\n[ERROR] Verification query failed. Record was not confirmed.\n";
+    exit(1);
+
+} catch (PDOException $e) {
+    echo "\n[DATABASE ERROR] " . $e->getMessage() . "\n";
+    exit(1);
 }

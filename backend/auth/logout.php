@@ -4,6 +4,7 @@
  * Core PHP 8.2
  * 
  * Flushes $_SESSION, clears browser session cookie, and destroys server session state.
+ * Supports both JSON API requests and direct browser visits.
  */
 
 declare(strict_types=1);
@@ -21,17 +22,27 @@ if (ini_get('session.use_cookies')) {
     setcookie(
         session_name(),
         '',
-        time() - 42000,
-        $params['path'] ?? '/',
-        $params['domain'] ?? '',
-        (bool)($params['secure'] ?? false),
-        (bool)($params['httponly'] ?? true)
+        [
+            'expires'  => time() - 42000,
+            'path'     => $params['path'] ?? '/',
+            'domain'   => $params['domain'] ?? '',
+            'secure'   => (bool)($params['secure'] ?? false),
+            'httponly' => (bool)($params['httponly'] ?? true),
+            'samesite' => $params['samesite'] ?? 'Lax',
+        ]
     );
 }
 
 // Destroy active session
 if (session_status() === PHP_SESSION_ACTIVE) {
     session_destroy();
+}
+
+// If direct browser navigation (HTML request)
+$acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && str_contains($acceptHeader, 'text/html')) {
+    header('Location: ../../frontend/pages/login.html');
+    exit;
 }
 
 jsonResponse(true, 'Signed out successfully.', [
