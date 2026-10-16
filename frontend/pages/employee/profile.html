@@ -3,86 +3,185 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Employee Profile — EVORA HRMS">
+  <meta name="description" content="My Profile — EVORA HRMS">
   <title>My Profile — EVORA HRMS</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <style>
-    .layout-wrapper { display: flex; min-height: 100vh; }
-    .sidebar { width: 250px; background: var(--color-forest-dark); color: #FFFFFF; display: flex; flex-direction: column; flex-shrink: 0; }
-    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-    .sidebar-header h2 { color: #FFFFFF; font-size: 1.25rem; margin: 0; }
-    .sidebar-nav { list-style: none; padding: 1rem 0; flex: 1; }
-    .sidebar-nav li a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: rgba(255, 255, 255, 0.75); font-weight: 500; transition: all 0.2s ease; }
-    .sidebar-nav li a:hover, .sidebar-nav li a.active { color: #FFFFFF; background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--color-sage); }
-    .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.85rem; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .profile-hero {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+    }
+    .profile-avatar-lg {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-forest) 0%, var(--color-forest-light) 100%);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      box-shadow: var(--shadow-md);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    @media (max-width: 680px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="layout-wrapper">
+
+  <div class="portal-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h2>EVORA <span style="font-weight: 300; opacity: 0.8;">HRMS</span></h2>
-        <span style="font-size: 0.75rem; color: var(--color-sage-light); text-transform: uppercase;">Employee Workspace</span>
+        <div style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">EVORA</div>
+        <div class="brand-badge">Employee Workspace</div>
       </div>
       <ul class="sidebar-nav">
-        <li><a href="dashboard.html" id="nav-emp-dash">Dashboard</a></li>
-        <li><a href="attendance.html" id="nav-emp-attend">My Attendance</a></li>
-        <li><a href="leaves.html" id="nav-emp-leaves">Leave Requests</a></li>
-        <li><a href="profile.html" class="active" id="nav-emp-profile">My Profile</a></li>
+        <li class="sidebar-nav-item">
+          <a href="dashboard.html" id="nav-emp-dash">
+            <span><span class="nav-icon">&#9776;</span> Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="attendance.html" id="nav-emp-attend">
+            <span><span class="nav-icon">&#9201;</span> My Attendance</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="leaves.html" id="nav-emp-leaves">
+            <span><span class="nav-icon">&#128197;</span> Leave Requests</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html" class="active" id="nav-emp-profile">
+            <span><span class="nav-icon">&#128100;</span> My Profile</span>
+          </a>
+        </li>
       </ul>
       <div class="sidebar-footer">
-        <a href="../login.html" style="color: rgba(255, 255, 255, 0.85); font-weight: 600;">&larr; Sign Out</a>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
+          &larr; Exit Demo / Sign Out
+        </button>
       </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
-      <header style="margin-bottom: 1.5rem;">
-        <h1 style="font-size: 1.6rem;">My Profile</h1>
-        <p style="color: var(--color-text-muted); font-size: 0.9rem;">View and update your personal contact information.</p>
+      <header style="margin-bottom: 1.75rem;">
+        <h1 style="font-size: 1.85rem; margin-bottom: 0.25rem;">My Personal Profile</h1>
+        <p>Review contact information, employment attributes, and organizational credentials.</p>
       </header>
 
-      <div class="placeholder-notice">
-        <strong>Task 1 Placeholder:</strong> Profile details will be dynamically retrieved from <code>backend/employee/profile.php</code> and secured via prepared PDO statements.
+      <!-- Profile Summary Card -->
+      <div class="profile-hero">
+        <div class="profile-avatar-lg">JD</div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <h2 style="font-size: 1.5rem; margin: 0;" id="display-profile-name">Jane Doe</h2>
+            <span class="badge badge-approved">Approved Staff</span>
+          </div>
+          <div style="color: var(--color-text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
+            Senior Product Designer &bull; Engineering &amp; IT Department
+          </div>
+          <div style="display: flex; gap: 1.5rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--color-text-muted); flex-wrap: wrap;">
+            <div><strong>Employee ID:</strong> EMP-2026-042</div>
+            <div><strong>Joined:</strong> January 15, 2026</div>
+            <div><strong>Email:</strong> employee@evora.test</div>
+          </div>
+        </div>
       </div>
 
-      <div class="card" style="max-width: 720px;">
-        <form id="form-profile" onsubmit="event.preventDefault();">
+      <!-- Notice regarding Demo Persistence -->
+      <div class="notice-box notice-demo">
+        <strong>Frontend Demo State:</strong> Profile modifications made here update local browser state for testing UI responsiveness. Records are not persisted to MySQL until backend PHP endpoints are linked.
+      </div>
+
+      <!-- Editable Profile Form -->
+      <div class="card" style="max-width: 860px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Edit Contact Details</div>
+            <div class="card-subtitle">Keep your organizational contact information up to date.</div>
+          </div>
+        </div>
+
+        <form id="form-profile" novalidate>
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label" for="profile-name">Full Name</label>
               <input type="text" id="profile-name" class="form-control" value="Jane Doe" required>
             </div>
             <div class="form-group">
-              <label class="form-label" for="profile-email">Work Email</label>
-              <input type="email" id="profile-email" class="form-control" value="jane.doe@example.com" disabled>
+              <label class="form-label" for="profile-email">Work Email (Locked by Admin)</label>
+              <input type="email" id="profile-email" class="form-control" value="employee@evora.test" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label" for="profile-phone">Phone Number</label>
+              <label class="form-label" for="profile-phone">Mobile Phone</label>
               <input type="tel" id="profile-phone" class="form-control" value="+91 98765 43210">
             </div>
             <div class="form-group">
-              <label class="form-label" for="profile-designation">Designation</label>
-              <input type="text" id="profile-designation" class="form-control" value="Software Engineer" disabled>
+              <label class="form-label" for="profile-emergency">Emergency Contact</label>
+              <input type="text" id="profile-emergency" class="form-control" value="Robert Doe &bull; +91 98765 12345">
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="profile-department">Department</label>
-            <input type="text" id="profile-department" class="form-control" value="Engineering & IT" disabled>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="profile-dept">Department</label>
+              <input type="text" id="profile-dept" class="form-control" value="Engineering &amp; IT" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-designation">Designation</label>
+              <input type="text" id="profile-designation" class="form-control" value="Software Associate" disabled style="background-color: var(--color-ivory-light); cursor: not-allowed;">
+            </div>
           </div>
 
-          <button type="submit" class="btn btn-primary" id="btn-save-profile">
-            Save Changes
-          </button>
+          <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary" id="btn-save-profile">
+              Save Profile Changes
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="EVORA.showToast('Discarded unsaved changes', 'info')">
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </main>
   </div>
 
   <script src="../../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      EVORA.initDemoBanner('employee');
+      EVORA.initProfileForm();
+
+      // Reflect any saved name in session
+      const user = EVORA.getDemoUser();
+      if (user && user.name) {
+        document.getElementById('display-profile-name').textContent = user.name;
+        document.getElementById('profile-name').value = user.name;
+      }
+    });
+  </script>
 </body>
 </html>

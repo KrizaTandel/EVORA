@@ -3,80 +3,191 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sign In to EVORA HRMS Portal">
+  <meta name="description" content="Sign In — EVORA HRMS Modern Portal">
   <title>Sign In — EVORA HRMS</title>
   <link rel="stylesheet" href="../assets/css/style.css">
   <style>
-    .auth-wrapper {
+    .auth-page {
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at 10% 20%, #FAF8F2 0%, var(--color-ivory) 90%);
+    }
+    .auth-container {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 2.5rem 1.5rem;
     }
     .auth-card {
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
       background: #FFFFFF;
-      border: 1px solid var(--color-cream-border);
-      border-radius: var(--radius-lg);
-      padding: 2.25rem;
-      box-shadow: var(--shadow-md);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-xl);
     }
-    .auth-brand {
-      text-align: center;
+    .auth-logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      margin-bottom: 1.5rem;
+    }
+    .auth-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--color-forest) 0%, #193126 100%);
+      color: var(--color-sage);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+    .demo-selector-card {
+      background-color: var(--color-ivory-light);
+      border: 1px dashed var(--color-gold);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
       margin-bottom: 1.75rem;
     }
-    .auth-brand h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.25rem;
-    }
-    .auth-brand p {
-      color: var(--color-text-muted);
-      font-size: 0.9rem;
+    .demo-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
     }
   </style>
 </head>
-<body>
-  <div class="auth-wrapper">
+<body class="auth-page">
+
+  <div class="auth-container">
     <div class="auth-card">
-      <div class="auth-brand">
-        <h1>EVORA HRMS</h1>
-        <p>Sign in to your account</p>
+      <div class="auth-logo-row">
+        <div class="auth-mark">&Ecy;</div>
+        <div>
+          <span style="font-size: 1.4rem; font-weight: 800; color: var(--color-forest-dark);">EVORA</span>
+          <span style="display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-gold-dark);">Human Resource System</span>
+        </div>
       </div>
 
-      <div class="placeholder-notice" id="login-notice">
-        <strong>Placeholder View:</strong> Authentication will connect to <code>backend/auth/login.php</code> with password hashing and session management.
+      <div style="text-align: center; margin-bottom: 1.75rem;">
+        <h1 style="font-size: 1.75rem; margin-bottom: 0.35rem;">Welcome Back</h1>
+        <p style="font-size: 0.92rem;">Sign in to access your organizational workspace.</p>
       </div>
 
-      <form id="form-login" onsubmit="event.preventDefault();">
+      <!-- Frontend Demo Mode Selection Strip -->
+      <div class="demo-selector-card">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span class="badge badge-pending" style="font-size: 0.68rem;">Frontend Demo Mode</span>
+          <span style="font-size: 0.76rem; color: var(--color-text-muted);">Instant UI Access</span>
+        </div>
+        <p style="font-size: 0.82rem; margin-top: 0.4rem; line-height: 1.45;">
+          Select a role to preview with demo state:
+        </p>
+        <div class="demo-btn-grid">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-demo-admin" onclick="useDemoCredentials('admin')">
+            Admin Demo &rarr;
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-demo-employee" onclick="useDemoCredentials('employee')">
+            Staff Demo &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- Authentication Form -->
+      <form id="form-login" novalidate>
         <div class="form-group">
-          <label class="form-label" for="login-email">Email Address</label>
-          <input type="email" id="login-email" class="form-control" placeholder="user@example.com" required autocomplete="email">
+          <label class="form-label" for="login-email">Work Email</label>
+          <input type="email" id="login-email" class="form-control" placeholder="user@evora.test" required autocomplete="email">
+          <div class="invalid-feedback" id="email-error">Please enter a valid work email address.</div>
         </div>
 
         <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
             <label class="form-label" for="login-password" style="margin-bottom: 0;">Password</label>
-            <a href="forgot-password.html" style="font-size: 0.8rem;">Forgot password?</a>
+            <a href="forgot-password.html" style="font-size: 0.82rem; font-weight: 600;">Forgot Password?</a>
           </div>
-          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+          <div class="password-input-wrap">
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">Show</button>
+            <div class="invalid-feedback" id="pass-error">Please enter your password.</div>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="btn-submit-login" style="width: 100%; margin-top: 0.5rem;">
-          Sign In
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; font-size: 0.86rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" id="remember-me" style="accent-color: var(--color-forest);">
+            <span>Remember session on this device</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btn-login-submit" style="width: 100%; padding: 0.85rem;">
+          Sign In to Portal
         </button>
       </form>
 
-      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--color-text-muted);">
-        Need an employee account? <a href="signup.html" style="font-weight: 600;">Register here</a>
+      <div style="margin-top: 1.75rem; text-align: center; font-size: 0.88rem; color: var(--color-text-muted);">
+        Don't have an approved account? <a href="signup.html" style="font-weight: 700;">Register as Employee</a>
       </div>
-      <div style="margin-top: 0.75rem; text-align: center; font-size: 0.8rem; color: var(--color-text-muted);">
-        <a href="../index.html">&larr; Back to Welcome Portal</a>
+
+      <div style="margin-top: 1.25rem; text-align: center;">
+        <a href="../index.html" style="font-size: 0.82rem; font-weight: 600; color: var(--color-text-muted);">&larr; Return to Welcome Portal</a>
       </div>
     </div>
   </div>
 
   <script src="../assets/js/main.js"></script>
+  <script>
+    function useDemoCredentials(role) {
+      const emailInput = document.getElementById('login-email');
+      const passInput = document.getElementById('login-password');
+      if (role === 'admin') {
+        emailInput.value = 'admin@evora.test';
+        passInput.value = 'Admin@12345';
+        EVORA.showToast('Admin demo credentials populated. Signing in...', 'info');
+        setTimeout(() => EVORA.switchDemoRole('admin'), 400);
+      } else {
+        emailInput.value = 'employee@evora.test';
+        passInput.value = 'Employee@12345';
+        EVORA.showToast('Employee demo credentials populated. Signing in...', 'info');
+        setTimeout(() => EVORA.switchDemoRole('employee'), 400);
+      }
+    }
+
+    document.getElementById('form-login').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email');
+      const pass = document.getElementById('login-password');
+      let isValid = true;
+
+      if (!email.value || !email.value.includes('@')) {
+        email.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        email.classList.remove('is-invalid');
+      }
+
+      if (!pass.value || pass.value.length < 4) {
+        pass.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        pass.classList.remove('is-invalid');
+      }
+
+      if (!isValid) return;
+
+      // Check if credentials match demo
+      if (email.value.toLowerCase().includes('admin')) {
+        EVORA.switchDemoRole('admin');
+      } else {
+        EVORA.switchDemoRole('employee');
+      }
+    });
+  </script>
 </body>
 </html>

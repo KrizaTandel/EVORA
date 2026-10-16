@@ -3,71 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Register an Employee Account on EVORA HRMS">
+  <meta name="description" content="Employee Registration — EVORA HRMS">
   <title>Employee Registration — EVORA HRMS</title>
   <link rel="stylesheet" href="../assets/css/style.css">
   <style>
-    .auth-wrapper {
+    .auth-page {
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at 10% 20%, #FAF8F2 0%, var(--color-ivory) 90%);
+    }
+    .auth-container {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem 1.5rem;
+      padding: 3rem 1.5rem;
     }
     .auth-card {
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       background: #FFFFFF;
-      border: 1px solid var(--color-cream-border);
-      border-radius: var(--radius-lg);
-      padding: 2.25rem;
-      box-shadow: var(--shadow-md);
-    }
-    .auth-brand {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    .auth-brand h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.25rem;
-    }
-    .auth-brand p {
-      color: var(--color-text-muted);
-      font-size: 0.9rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-xl);
     }
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
-    @media (max-width: 520px) {
+    @media (max-width: 580px) {
       .grid-2 {
         grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
-<body>
-  <div class="auth-wrapper">
+<body class="auth-page">
+
+  <div class="auth-container">
     <div class="auth-card">
-      <div class="auth-brand">
-        <h1>Employee Registration</h1>
-        <p>Join your organizational workspace</p>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-forest); color: var(--color-sage); font-weight: 800; font-size: 1.25rem; margin-bottom: 0.75rem;">&Ecy;</div>
+        <h1 style="font-size: 1.75rem; margin-bottom: 0.35rem;">Employee Registration</h1>
+        <p style="font-size: 0.92rem;">Create your organizational profile</p>
       </div>
 
-      <div class="placeholder-notice" id="signup-notice">
-        <strong>Important Account Policy:</strong> Public registration strictly provisions <em>Employee</em> accounts with a <code>Pending</code> status. An Administrator must review and approve your account before you can log in.
+      <!-- Critical Account Policy Notice -->
+      <div class="notice-box notice-pending">
+        <strong style="color: var(--status-pending); display: block; margin-bottom: 0.25rem;">Gated Onboarding Policy:</strong>
+        All new registrations strictly provision <strong>Employee</strong> accounts with a <code>Pending</code> status. An administrator must verify and approve your registration before you can log in.
       </div>
 
-      <form id="form-signup" onsubmit="event.preventDefault();">
+      <form id="form-signup" novalidate>
         <div class="form-group">
           <label class="form-label" for="signup-name">Full Name</label>
           <input type="text" id="signup-name" class="form-control" placeholder="e.g. Jane Doe" required autocomplete="name">
+          <div class="invalid-feedback">Please enter your full name.</div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="signup-email">Work Email</label>
           <input type="email" id="signup-email" class="form-control" placeholder="jane.doe@example.com" required autocomplete="email">
+          <div class="invalid-feedback">Please enter a valid email address.</div>
         </div>
 
         <div class="grid-2">
@@ -76,43 +76,134 @@
             <input type="tel" id="signup-phone" class="form-control" placeholder="+91 98765 43210" autocomplete="tel">
           </div>
           <div class="form-group">
-            <label class="form-label" for="signup-department">Department</label>
-            <select id="signup-department" class="form-control">
+            <label class="form-label" for="signup-dept">Department</label>
+            <select id="signup-dept" class="form-control" required>
               <option value="">Select Department...</option>
               <option value="1">Human Resources (HR)</option>
-              <option value="2">Engineering & IT (ENG)</option>
-              <option value="3">Marketing & Sales (MKT)</option>
-              <option value="4">Finance & Accounts (FIN)</option>
+              <option value="2">Engineering &amp; IT (ENG)</option>
+              <option value="3">Marketing &amp; Sales (MKT)</option>
+              <option value="4">Finance &amp; Accounts (FIN)</option>
               <option value="5">Operations (OPS)</option>
             </select>
+            <div class="invalid-feedback">Please select a department.</div>
           </div>
         </div>
 
         <div class="grid-2">
           <div class="form-group">
-            <label class="form-label" for="signup-password">Password</label>
-            <input type="password" id="signup-password" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+            <label class="form-label" for="signup-pass">Password</label>
+            <div class="password-input-wrap">
+              <input type="password" id="signup-pass" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+              <button type="button" class="password-toggle-btn">Show</button>
+              <div class="invalid-feedback">Password must be at least 6 characters.</div>
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="signup-confirm-password">Confirm Password</label>
-            <input type="password" id="signup-confirm-password" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+            <label class="form-label" for="signup-pass-confirm">Confirm Password</label>
+            <div class="password-input-wrap">
+              <input type="password" id="signup-pass-confirm" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+              <button type="button" class="password-toggle-btn">Show</button>
+              <div class="invalid-feedback">Passwords do not match.</div>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="btn-submit-signup" style="width: 100%; margin-top: 0.5rem;">
-          Submit for Approval
+        <div class="notice-box notice-demo" style="margin-top: 0.5rem; margin-bottom: 1.25rem; font-size: 0.8rem;">
+          <strong>Frontend Demo Note:</strong> Submitting this form tests client-side validation and simulates the pending registration workflow in memory.
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btn-signup-submit" style="width: 100%; padding: 0.85rem;">
+          Submit Application for Approval
         </button>
       </form>
 
-      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--color-text-muted);">
-        Already have an approved account? <a href="login.html" style="font-weight: 600;">Sign in here</a>
+      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.88rem; color: var(--color-text-muted);">
+        Already have an approved account? <a href="login.html" style="font-weight: 700;">Sign in here</a>
       </div>
-      <div style="margin-top: 0.75rem; text-align: center; font-size: 0.8rem; color: var(--color-text-muted);">
-        <a href="../index.html">&larr; Back to Welcome Portal</a>
+
+      <div style="margin-top: 1rem; text-align: center;">
+        <a href="../index.html" style="font-size: 0.82rem; font-weight: 600; color: var(--color-text-muted);">&larr; Return to Welcome Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal for Simulated Signup -->
+  <div class="modal-backdrop" id="signup-success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Application Submitted</div>
+        <button class="modal-close" onclick="EVORA.closeModal('signup-success-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--status-approved-bg); color: var(--status-approved); font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">✓</div>
+          <h3 style="font-size: 1.3rem;">Registration Received!</h3>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--color-text-muted); line-height: 1.6;">
+          Thank you, <strong id="success-user-name">Employee</strong>. Your application has been logged with status <span class="badge badge-pending">Pending Approval</span>.
+        </p>
+        <p style="font-size: 0.88rem; color: var(--color-text-muted); margin-top: 0.75rem;">
+          An administrator must verify your identity and approve access before your credentials can be used to log in to the Employee Portal.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <a href="login.html" class="btn btn-primary">Go to Login &rarr;</a>
       </div>
     </div>
   </div>
 
   <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('form-signup').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name');
+      const email = document.getElementById('signup-email');
+      const dept = document.getElementById('signup-dept');
+      const pass = document.getElementById('signup-pass');
+      const passConfirm = document.getElementById('signup-pass-confirm');
+      let isValid = true;
+
+      if (!name.value.trim()) {
+        name.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        name.classList.remove('is-invalid');
+      }
+
+      if (!email.value || !email.value.includes('@')) {
+        email.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        email.classList.remove('is-invalid');
+      }
+
+      if (!dept.value) {
+        dept.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        dept.classList.remove('is-invalid');
+      }
+
+      if (!pass.value || pass.value.length < 6) {
+        pass.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        pass.classList.remove('is-invalid');
+      }
+
+      if (pass.value !== passConfirm.value) {
+        passConfirm.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        passConfirm.classList.remove('is-invalid');
+      }
+
+      if (!isValid) return;
+
+      document.getElementById('success-user-name').textContent = name.value.trim();
+      EVORA.openModal('signup-success-modal');
+      this.reset();
+    });
+  </script>
 </body>
 </html>

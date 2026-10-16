@@ -3,127 +3,229 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Department Management — EVORA HRMS">
+  <meta name="description" content="Manage Departments — EVORA HRMS">
   <title>Manage Departments — EVORA HRMS</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <style>
-    .layout-wrapper { display: flex; min-height: 100vh; }
-    .sidebar { width: 250px; background: var(--color-forest-dark); color: #FFFFFF; display: flex; flex-direction: column; flex-shrink: 0; }
-    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-    .sidebar-header h2 { color: #FFFFFF; font-size: 1.25rem; margin: 0; }
-    .sidebar-nav { list-style: none; padding: 1rem 0; flex: 1; }
-    .sidebar-nav li a { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; color: rgba(255, 255, 255, 0.75); font-weight: 500; transition: all 0.2s ease; }
-    .sidebar-nav li a:hover, .sidebar-nav li a.active { color: #FFFFFF; background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--color-sage); }
-    .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.85rem; }
-    .table-container { overflow-x: auto; margin-top: 1rem; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--color-cream-border); font-size: 0.9rem; }
-    th { background: var(--color-cream-card); color: var(--color-forest-dark); font-weight: 600; }
-  </style>
 </head>
 <body>
-  <div class="layout-wrapper">
+
+  <div class="portal-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h2>EVORA <span style="font-weight: 300; opacity: 0.8;">HRMS</span></h2>
-        <span style="font-size: 0.75rem; color: var(--color-sage-light); text-transform: uppercase;">Administrator Panel</span>
+        <div style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">EVORA</div>
+        <div class="brand-badge">Administrator Panel</div>
       </div>
       <ul class="sidebar-nav">
-        <li><a href="dashboard.html" id="nav-adm-dash"><span>Dashboard</span></a></li>
-        <li><a href="employees.html" id="nav-adm-emp"><span>Employees</span> <span class="badge badge-pending" style="font-size: 0.65rem;">3 Pending</span></a></li>
-        <li><a href="departments.html" class="active" id="nav-adm-dept"><span>Departments</span></a></li>
-        <li><a href="leave-attendance.html" id="nav-adm-la"><span>Leaves &amp; Attendance</span></a></li>
+        <li class="sidebar-nav-item">
+          <a href="dashboard.html" id="nav-adm-dash">
+            <span><span class="nav-icon">&#9776;</span> Overview</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="employees.html" id="nav-adm-emp">
+            <span><span class="nav-icon">&#128100;</span> Employees</span>
+            <span class="badge badge-pending pending-counter" style="font-size: 0.65rem;">3</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="departments.html" class="active" id="nav-adm-dept">
+            <span><span class="nav-icon">&#127970;</span> Departments</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="leave-attendance.html" id="nav-adm-la">
+            <span><span class="nav-icon">&#128197;</span> Leaves &amp; Attendance</span>
+          </a>
+        </li>
       </ul>
       <div class="sidebar-footer">
-        <a href="../login.html" style="color: rgba(255, 255, 255, 0.85); font-weight: 600;">&larr; Sign Out</a>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
+          &larr; Exit Demo / Sign Out
+        </button>
       </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
-      <header style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <header style="margin-bottom: 1.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <h1 style="font-size: 1.6rem;">Department Management</h1>
-          <p style="color: var(--color-text-muted); font-size: 0.9rem;">Organize organizational divisions, teams, and unit codes.</p>
+          <h1 style="font-size: 1.85rem; margin-bottom: 0.25rem;">Department Management</h1>
+          <p>Organize organizational units, operational codes, and functional responsibilities.</p>
         </div>
+        <button class="btn btn-primary btn-sm" onclick="EVORA.openModal('add-dept-modal')">
+          + Add New Department
+        </button>
       </header>
 
-      <div class="placeholder-notice">
-        <strong>Task 1 Placeholder:</strong> Department CRUD operations will interface with <code>backend/admin/departments.php</code> using prepared SQL statements.
+      <!-- Department Overview Metrics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Active Units</span>
+            <div class="stat-icon">&#127970;</div>
+          </div>
+          <div class="stat-value" id="dept-count">5</div>
+          <div class="stat-meta">Structured organizational divisions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Largest Department</span>
+            <div class="stat-icon">&#128101;</div>
+          </div>
+          <div class="stat-value" style="font-size: 1.5rem; padding-top: 0.35rem;">Engineering</div>
+          <div class="stat-meta">18 team members (43%)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Avg Team Size</span>
+            <div class="stat-icon">&#128202;</div>
+          </div>
+          <div class="stat-value">8.4</div>
+          <div class="stat-meta">Staff members per division</div>
+        </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
-        <!-- Add Department Form -->
-        <div class="card">
-          <h3 style="margin-bottom: 1rem;">Add Department</h3>
-          <form id="form-add-department" onsubmit="event.preventDefault();">
-            <div class="form-group">
-              <label class="form-label" for="dept-name">Department Name</label>
-              <input type="text" id="dept-name" class="form-control" placeholder="e.g. Research &amp; Development" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="dept-code">Short Code</label>
-              <input type="text" id="dept-code" class="form-control" placeholder="e.g. RND" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="dept-desc">Description</label>
-              <textarea id="dept-desc" class="form-control" rows="3" placeholder="Brief outline of unit duties..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" id="btn-save-dept" style="width: 100%;">Create Department</button>
-          </form>
+      <!-- Department Roster Table -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Existing Departments</div>
+            <div class="card-subtitle">Default schema divisions and allocated workforce members.</div>
+          </div>
         </div>
 
-        <!-- Department Table -->
-        <div class="card">
-          <h3>Existing Departments</h3>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Name</th>
-                  <th>Staff Count</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>HR</strong></td>
-                  <td>Human Resources</td>
-                  <td>6</td>
-                  <td><button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</button></td>
-                </tr>
-                <tr>
-                  <td><strong>ENG</strong></td>
-                  <td>Engineering &amp; IT</td>
-                  <td>18</td>
-                  <td><button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</button></td>
-                </tr>
-                <tr>
-                  <td><strong>MKT</strong></td>
-                  <td>Marketing &amp; Sales</td>
-                  <td>8</td>
-                  <td><button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</button></td>
-                </tr>
-                <tr>
-                  <td><strong>FIN</strong></td>
-                  <td>Finance &amp; Accounts</td>
-                  <td>5</td>
-                  <td><button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</button></td>
-                </tr>
-                <tr>
-                  <td><strong>OPS</strong></td>
-                  <td>Operations</td>
-                  <td>5</td>
-                  <td><button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="table-responsive">
+          <table class="table" id="departments-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Department Name</th>
+                <th>Core Responsibilities</th>
+                <th>Allocated Staff</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">ENG</strong></td>
+                <td><strong>Engineering &amp; IT</strong></td>
+                <td>Software architecture, cloud infrastructure, and technical operations</td>
+                <td><span class="badge badge-approved">18 Staff</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Edit department: Engineering & IT (Demo mode)', 'info')">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">MKT</strong></td>
+                <td><strong>Marketing &amp; Sales</strong></td>
+                <td>Brand growth, client outreach, and campaign management</td>
+                <td><span class="badge badge-approved">8 Staff</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Edit department: Marketing & Sales (Demo mode)', 'info')">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">HR</strong></td>
+                <td><strong>Human Resources</strong></td>
+                <td>Talent acquisition, employee welfare, and institutional compliance</td>
+                <td><span class="badge badge-approved">6 Staff</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Edit department: Human Resources (Demo mode)', 'info')">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">FIN</strong></td>
+                <td><strong>Finance &amp; Accounts</strong></td>
+                <td>Budget auditing, financial forecasts, and compliance accounting</td>
+                <td><span class="badge badge-approved">5 Staff</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Edit department: Finance & Accounts (Demo mode)', 'info')">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">OPS</strong></td>
+                <td><strong>Operations</strong></td>
+                <td>Logistics, facilities oversight, and cross-departmental coordination</td>
+                <td><span class="badge badge-approved">5 Staff</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Edit department: Operations (Demo mode)', 'info')">Edit</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </main>
   </div>
 
+  <!-- Add Department Modal -->
+  <div class="modal-backdrop" id="add-dept-modal" role="dialog" aria-modal="true" aria-labelledby="add-dept-title">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="add-dept-title">Create New Department</div>
+        <button class="modal-close" onclick="EVORA.closeModal('add-dept-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-add-dept" onsubmit="event.preventDefault(); createDepartment();">
+          <div class="form-group">
+            <label class="form-label" for="new-dept-name">Department Name</label>
+            <input type="text" id="new-dept-name" class="form-control" placeholder="e.g. Research & Development" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-dept-code">Short Code (Unique Identifier)</label>
+            <input type="text" id="new-dept-code" class="form-control" placeholder="e.g. RND" maxlength="6" style="text-transform: uppercase;" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-dept-desc">Responsibilities &amp; Overview</label>
+            <textarea id="new-dept-desc" class="form-control" rows="3" placeholder="Describe the unit's main functions..." required></textarea>
+          </div>
+          <div class="notice-box notice-demo" style="font-size: 0.8rem;">
+            Demo simulation: created department appears dynamically in table for this browser session.
+          </div>
+          <div style="display:flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" onclick="EVORA.closeModal('add-dept-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Department</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="../../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      EVORA.initDemoBanner('admin');
+    });
+
+    function createDepartment() {
+      const name = document.getElementById('new-dept-name').value.trim();
+      const code = document.getElementById('new-dept-code').value.trim().toUpperCase();
+      const desc = document.getElementById('new-dept-desc').value.trim();
+
+      if (!name || !code) return;
+
+      const tbody = document.querySelector('#departments-table tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">${code}</strong></td>
+        <td><strong>${name}</strong></td>
+        <td>${desc || 'General departmental duties'}</td>
+        <td><span class="badge badge-neutral">0 Staff</span></td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Edit department: ${name} (Demo mode)', 'info')">Edit</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      // Increment count
+      const countEl = document.getElementById('dept-count');
+      if (countEl) countEl.textContent = parseInt(countEl.textContent, 10) + 1;
+
+      document.getElementById('form-add-dept').reset();
+      EVORA.closeModal('add-dept-modal');
+      EVORA.showToast(`Department "${name}" (${code}) added successfully (Demo simulation)`, 'success');
+    }
+  </script>
 </body>
 </html>

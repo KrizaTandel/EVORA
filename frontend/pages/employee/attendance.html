@@ -6,89 +6,171 @@
   <meta name="description" content="Attendance Tracking — EVORA HRMS">
   <title>My Attendance — EVORA HRMS</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <style>
-    .layout-wrapper { display: flex; min-height: 100vh; }
-    .sidebar { width: 250px; background: var(--color-forest-dark); color: #FFFFFF; display: flex; flex-direction: column; flex-shrink: 0; }
-    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-    .sidebar-header h2 { color: #FFFFFF; font-size: 1.25rem; margin: 0; }
-    .sidebar-nav { list-style: none; padding: 1rem 0; flex: 1; }
-    .sidebar-nav li a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: rgba(255, 255, 255, 0.75); font-weight: 500; transition: all 0.2s ease; }
-    .sidebar-nav li a:hover, .sidebar-nav li a.active { color: #FFFFFF; background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--color-sage); }
-    .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.85rem; }
-    .table-container { overflow-x: auto; margin-top: 1rem; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--color-cream-border); font-size: 0.9rem; }
-    th { background: var(--color-cream-card); color: var(--color-forest-dark); font-weight: 600; }
-  </style>
 </head>
 <body>
-  <div class="layout-wrapper">
+
+  <div class="portal-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h2>EVORA <span style="font-weight: 300; opacity: 0.8;">HRMS</span></h2>
-        <span style="font-size: 0.75rem; color: var(--color-sage-light); text-transform: uppercase;">Employee Workspace</span>
+        <div style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">EVORA</div>
+        <div class="brand-badge">Employee Workspace</div>
       </div>
       <ul class="sidebar-nav">
-        <li><a href="dashboard.html" id="nav-emp-dash">Dashboard</a></li>
-        <li><a href="attendance.html" class="active" id="nav-emp-attend">My Attendance</a></li>
-        <li><a href="leaves.html" id="nav-emp-leaves">Leave Requests</a></li>
-        <li><a href="profile.html" id="nav-emp-profile">My Profile</a></li>
+        <li class="sidebar-nav-item">
+          <a href="dashboard.html" id="nav-emp-dash">
+            <span><span class="nav-icon">&#9776;</span> Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="attendance.html" class="active" id="nav-emp-attend">
+            <span><span class="nav-icon">&#9201;</span> My Attendance</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="leaves.html" id="nav-emp-leaves">
+            <span><span class="nav-icon">&#128197;</span> Leave Requests</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html" id="nav-emp-profile">
+            <span><span class="nav-icon">&#128100;</span> My Profile</span>
+          </a>
+        </li>
       </ul>
       <div class="sidebar-footer">
-        <a href="../login.html" style="color: rgba(255, 255, 255, 0.85); font-weight: 600;">&larr; Sign Out</a>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
+          &larr; Exit Demo / Sign Out
+        </button>
       </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
-      <header style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <header style="margin-bottom: 1.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <h1 style="font-size: 1.6rem;">My Attendance</h1>
-          <p style="color: var(--color-text-muted); font-size: 0.9rem;">Review daily work hours, check-ins, and logs.</p>
-        </div>
-        <div style="display: flex; gap: 0.75rem;">
-          <button class="btn btn-primary" id="btn-checkin">Check In</button>
-          <button class="btn btn-secondary" id="btn-checkout">Check Out</button>
+          <h1 style="font-size: 1.85rem; margin-bottom: 0.25rem;">Attendance Records</h1>
+          <p>Review check-in history, work shift timestamps, and monthly attendance percentage.</p>
         </div>
       </header>
 
-      <div class="placeholder-notice">
-        <strong>Task 1 Placeholder:</strong> Real-time clock in/out submissions will communicate with <code>backend/employee/attendance.php</code> via the Fetch API.
+      <!-- Live Shift Punch Card -->
+      <div class="card" style="background: linear-gradient(135deg, #FFFFFF 0%, var(--color-ivory-light) 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+          <div>
+            <span class="stat-label">Shift Status &bull; Today, Oct 16, 2026</span>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem;">
+              <span id="clock-status-text" class="badge badge-approved" style="font-size: 0.82rem;">Present (Checked In)</span>
+              <span id="clock-time-text" style="font-size: 0.88rem; color: var(--color-text-muted);">Clocked in at 09:05 AM</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-primary" id="btn-clock-toggle">Clock Out</button>
+          </div>
+        </div>
       </div>
 
+      <!-- Monthly Summary Metrics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Days Present</span>
+            <div class="stat-icon">&#128197;</div>
+          </div>
+          <div class="stat-value" style="color: var(--status-present);">21</div>
+          <div class="stat-meta">Out of 22 scheduled shifts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">On-Time Rate</span>
+            <div class="stat-icon">&#9201;</div>
+          </div>
+          <div class="stat-value">95.4%</div>
+          <div class="stat-meta">1 late arrival logged this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Avg Shift Length</span>
+            <div class="stat-icon">&#9200;</div>
+          </div>
+          <div class="stat-value">8.4 <span style="font-size: 1rem; font-weight: 500; color: var(--color-text-muted);">Hours</span></div>
+          <div class="stat-meta">Meets full-time criteria</div>
+        </div>
+      </div>
+
+      <!-- Filters & History Table -->
       <div class="card">
-        <h3 style="margin-bottom: 1rem;">Monthly Log (Placeholder View)</h3>
-        <div class="table-container">
-          <table>
+        <div class="card-header">
+          <div>
+            <div class="card-title">Monthly Attendance Logs</div>
+            <div class="card-subtitle">Sample attendance log for the current evaluation period.</div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <select id="filter-month" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Filter updated (Demo view)', 'info')">
+              <option value="10">October 2026 (Current)</option>
+              <option value="09">September 2026</option>
+              <option value="08">August 2026</option>
+            </select>
+            <select id="filter-status" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Filter updated (Demo view)', 'info')">
+              <option value="all">All Statuses</option>
+              <option value="present">Present Only</option>
+              <option value="late">Late Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
             <thead>
               <tr>
                 <th>Date</th>
                 <th>Check In</th>
                 <th>Check Out</th>
+                <th>Duration</th>
                 <th>Status</th>
-                <th>Notes</th>
+                <th>Remarks</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>2026-10-16</td>
+                <td><strong>2026-10-16</strong></td>
                 <td>09:05 AM</td>
-                <td>06:00 PM</td>
+                <td>&mdash;</td>
+                <td>In Progress</td>
                 <td><span class="badge badge-approved">Present</span></td>
-                <td>On-time entry</td>
+                <td>Standard shift</td>
               </tr>
               <tr>
                 <td>2026-10-15</td>
-                <td>09:35 AM</td>
+                <td>09:32 AM</td>
                 <td>06:15 PM</td>
+                <td>8 hrs 43 min</td>
                 <td><span class="badge badge-pending">Late</span></td>
-                <td>Transit delay</td>
+                <td>Transit congestion reported</td>
               </tr>
               <tr>
                 <td>2026-10-14</td>
+                <td>08:58 AM</td>
+                <td>05:55 PM</td>
+                <td>8 hrs 57 min</td>
+                <td><span class="badge badge-approved">Present</span></td>
+                <td>On time</td>
+              </tr>
+              <tr>
+                <td>2026-10-13</td>
+                <td>09:02 AM</td>
+                <td>06:05 PM</td>
+                <td>9 hrs 03 min</td>
+                <td><span class="badge badge-approved">Present</span></td>
+                <td>On time</td>
+              </tr>
+              <tr>
+                <td>2026-10-10</td>
                 <td>09:00 AM</td>
                 <td>06:00 PM</td>
+                <td>9 hrs 00 min</td>
                 <td><span class="badge badge-approved">Present</span></td>
-                <td>Standard shift</td>
+                <td>Weekly review</td>
               </tr>
             </tbody>
           </table>
@@ -98,5 +180,11 @@
   </div>
 
   <script src="../../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      EVORA.initDemoBanner('employee');
+      EVORA.initAttendanceControls();
+    });
+  </script>
 </body>
 </html>

@@ -3,118 +3,888 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="EVORA HRMS — College Web Development Human Resource Management System">
-  <title>EVORA HRMS — Welcome Portal</title>
+  <meta name="description" content="EVORA HRMS — People first. Work, beautifully managed. An elegant, modern Human Resource Management System.">
+  <title>EVORA HRMS — Modern Workforce &amp; People Operations</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
-    .hero-container {
-      max-width: 900px;
-      margin: 4rem auto;
-      text-align: center;
-      padding: 2.5rem 1.5rem;
+    /* ---------------- Landing Page Exclusive Styles ---------------- */
+    .landing-header {
+      position: sticky;
+      top: 0;
+      background-color: rgba(246, 243, 234, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+      z-index: 100;
+      transition: background-color var(--transition-fast);
+    }
+    .landing-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 74px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--color-forest) 0%, #193126 100%);
+      color: var(--color-sage);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      box-shadow: 0 4px 10px rgba(36, 69, 54, 0.2);
+    }
+    .brand-text {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--color-forest-dark);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .brand-sub {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-gold-dark);
+      display: block;
+      margin-top: 0.15rem;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--color-charcoal);
+      transition: color var(--transition-fast);
+    }
+    .nav-links a:hover {
+      color: var(--color-forest);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.65rem;
+      font-size: 1.25rem;
+      color: var(--color-forest);
+      cursor: pointer;
+    }
+    .mobile-menu-drawer {
+      display: none;
+      background-color: var(--color-ivory-light);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1.25rem 1.5rem;
+    }
+    .mobile-menu-drawer.active {
+      display: block;
+    }
+    .mobile-nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 5rem 0 4rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      background-color: var(--color-sage-subtle);
+      border: 1px solid var(--color-sage);
+      border-radius: var(--radius-full);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-forest);
+      margin-bottom: 1.25rem;
     }
     .hero-title {
-      font-size: 2.8rem;
-      letter-spacing: -0.02em;
-      margin-bottom: 1rem;
-    }
-    .hero-subtitle {
-      font-size: 1.2rem;
-      color: var(--color-text-muted);
-      margin-bottom: 2.5rem;
-      max-width: 650px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 3rem;
-    }
-    .portal-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      text-align: left;
-      margin-top: 2rem;
-    }
-    .portal-card {
-      background: #FFFFFF;
-      border: 1px solid var(--color-cream-border);
-      border-radius: var(--radius-md);
-      padding: 1.75rem;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .portal-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-    .portal-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      padding: 0.2rem 0.5rem;
-      background: var(--color-sage-light);
+      font-size: 3.25rem;
+      font-weight: 800;
       color: var(--color-forest-dark);
-      border-radius: 4px;
-      display: inline-block;
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+      margin-bottom: 1.35rem;
+    }
+    .hero-title span {
+      color: var(--color-forest-light);
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 600;
+    }
+    .hero-desc {
+      font-size: 1.12rem;
+      color: var(--color-text-muted);
+      line-height: 1.65;
+      margin-bottom: 2.25rem;
+      max-width: 520px;
+    }
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* Live Hero Dashboard UI Mockup */
+    .hero-preview-frame {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-border-subtle);
+      padding-bottom: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .preview-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .preview-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--color-sage);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .preview-metrics-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .preview-mini-card {
+      background: var(--color-ivory-light);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1rem;
+    }
+    .preview-chart-box {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .preview-activity-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.85rem;
+      background: var(--color-ivory-subtle);
+      border-radius: var(--radius-xs);
+      font-size: 0.82rem;
+    }
+
+    /* Value Proposition Strip */
+    .value-strip {
+      background-color: #FFFFFF;
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      padding: 2.25rem 0;
+    }
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+    }
+    .value-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .value-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      background-color: var(--color-sage-subtle);
+      color: var(--color-forest);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .value-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-forest-dark);
+      margin-bottom: 0.2rem;
+    }
+    .value-desc {
+      font-size: 0.84rem;
+      color: var(--color-text-muted);
+      line-height: 1.45;
+    }
+
+    /* Features Section */
+    .section-padding {
+      padding: 5.5rem 0;
+    }
+    .section-head {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 3.5rem;
+    }
+    .section-head h2 {
+      font-size: 2.3rem;
       margin-bottom: 0.75rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.75rem;
+    }
+    .feature-card {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 2rem 1.75rem;
+      box-shadow: var(--shadow-xs);
+      transition: all var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-sage);
+    }
+    .feature-icon-wrap {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-md);
+      background-color: var(--color-ivory);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--color-forest);
+      margin-bottom: 1.35rem;
+    }
+
+    /* How It Works Section */
+    .workflow-container {
+      background-color: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 3.5rem 3rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 2.5rem;
+      position: relative;
+    }
+    .step-card {
+      position: relative;
+      padding-right: 1rem;
+    }
+    .step-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: var(--color-forest);
+      color: #FFFFFF;
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 10px rgba(36, 69, 54, 0.25);
+    }
+
+    /* Product Preview Tabs */
+    .preview-tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .tab-trigger {
+      padding: 0.65rem 1.35rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: #FFFFFF;
+      color: var(--color-charcoal);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .tab-trigger.active {
+      background-color: var(--color-forest);
+      color: #FFFFFF;
+      border-color: var(--color-forest);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Footer */
+    .site-footer {
+      background-color: var(--color-forest-dark);
+      color: #FFFFFF;
+      padding: 4.5rem 0 2.5rem;
+      margin-top: auto;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3.5rem;
+    }
+    .footer-col h4 {
+      color: #FFFFFF;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1.25rem;
+    }
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .footer-col ul a {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.88rem;
+    }
+    .footer-col ul a:hover {
+      color: #FFFFFF;
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    @media (max-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .nav-links, .nav-actions .btn-secondary {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <header style="background: var(--color-forest-dark); padding: 1rem 2rem; color: #FFFFFF;">
-    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-      <h2 style="color: #FFFFFF; font-size: 1.3rem;">EVORA <span style="font-weight: 300; opacity: 0.85;">HRMS</span></h2>
-      <nav>
-        <a href="pages/login.html" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.9rem;">Sign In</a>
+
+  <!-- Sticky Top Navigation -->
+  <header class="landing-header">
+    <div class="container landing-nav">
+      <a href="index.html" class="brand-logo" aria-label="EVORA HRMS Home">
+        <div class="brand-mark">&Ecy;</div>
+        <div>
+          <span class="brand-text">EVORA</span>
+          <span class="brand-sub">Human Resource System</span>
+        </div>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#workflow">How It Works</a></li>
+          <li><a href="#preview">Interface</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
       </nav>
+
+      <div class="nav-actions">
+        <a href="pages/login.html" class="btn btn-secondary btn-sm" id="btn-nav-login">Sign In</a>
+        <a href="pages/signup.html" class="btn btn-primary btn-sm" id="btn-nav-signup">Get Started</a>
+        <button class="mobile-menu-btn" id="mobile-nav-toggle" aria-label="Toggle mobile menu" aria-expanded="false">&#9776;</button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div class="mobile-menu-drawer" id="mobile-nav-menu">
+      <ul class="mobile-nav-list">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#workflow">How It Works</a></li>
+        <li><a href="#preview">Interface Preview</a></li>
+        <li><a href="#about">About EVORA</a></li>
+        <li><a href="pages/login.html">Sign In</a></li>
+        <li><a href="pages/signup.html">Employee Registration</a></li>
+      </ul>
+      <div style="display:flex;gap:0.75rem;">
+        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="EVORA.switchDemoRole('admin')">Admin Demo</button>
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="EVORA.switchDemoRole('employee')">Staff Demo</button>
+      </div>
     </div>
   </header>
 
-  <main class="hero-container">
-    <div class="placeholder-notice">
-      <strong>Task 1 Foundation Notice:</strong> Project structure and initial placeholder pages initialized. Core PHP and MySQL backend integration will be implemented in subsequent phases.
-    </div>
-
-    <h1 class="hero-title">Workforce Management, Refined.</h1>
-    <p class="hero-subtitle">
-      EVORA HRMS provides a streamlined, accessible platform for organizational attendance, leave management, and staff administration.
-    </p>
-
-    <div class="hero-actions">
-      <a href="pages/login.html" class="btn btn-primary" id="btn-portal-login">Log In to Portal &rarr;</a>
-      <a href="pages/signup.html" class="btn btn-secondary" id="btn-portal-signup">Employee Registration</a>
-    </div>
-
-    <div class="portal-grid">
-      <div class="portal-card">
-        <span class="portal-badge">Admin Workspace</span>
-        <h3 style="margin-bottom: 0.5rem;">Administrator Oversight</h3>
-        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
-          Approve pending employee registrations, manage departments, review leave applications, and analyze organizational statistics.
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      <!-- Left Column: Copy & Actions -->
+      <div>
+        <div class="hero-eyebrow">
+          <span>&bull;</span> A Better Way to Work
+        </div>
+        <h1 class="hero-title">
+          People first.<br>
+          Work, <span>beautifully managed.</span>
+        </h1>
+        <p class="hero-desc">
+          EVORA HRMS brings clarity to workplace operations. Manage employee onboarding, track daily attendance, and review leave requests with a calm, aesthetic, and accessible interface.
         </p>
-        <a href="pages/admin/dashboard.html" style="font-size: 0.9rem; font-weight: 600;">Explore Admin View &rarr;</a>
+        <div class="hero-cta-group">
+          <a href="#features" class="btn btn-primary btn-lg" id="btn-hero-explore">Explore EVORA &darr;</a>
+          <a href="pages/login.html" class="btn btn-secondary btn-lg" id="btn-hero-login">Portal Sign In</a>
+        </div>
+        <div style="margin-top: 2rem; display: flex; align-items: center; gap: 1rem;">
+          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Direct Demo Access:</span>
+          <button class="btn btn-secondary btn-sm" onclick="EVORA.switchDemoRole('admin')">Admin View</button>
+          <button class="btn btn-secondary btn-sm" onclick="EVORA.switchDemoRole('employee')">Employee View</button>
+        </div>
       </div>
 
-      <div class="portal-card">
-        <span class="portal-badge">Employee Workspace</span>
-        <h3 style="margin-bottom: 0.5rem;">Staff Self-Service</h3>
-        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
-          Log daily check-ins, request casual or sick leaves, track application statuses, and maintain personal records.
-        </p>
-        <a href="pages/employee/dashboard.html" style="font-size: 0.9rem; font-weight: 600;">Explore Employee View &rarr;</a>
+      <!-- Right Column: Interactive HTML/CSS Mockup -->
+      <div class="hero-preview-frame" aria-label="Interactive Dashboard Preview Mockup">
+        <div class="preview-header">
+          <div class="preview-user">
+            <div class="preview-avatar">EV</div>
+            <div>
+              <strong style="font-size: 0.95rem; color: var(--color-forest-dark);">Eleanor Vance</strong>
+              <div style="font-size: 0.78rem; color: var(--color-text-muted);">People Operations &bull; Admin</div>
+            </div>
+          </div>
+          <span class="badge badge-approved">Live Demo View</span>
+        </div>
+
+        <div class="preview-metrics-row">
+          <div class="preview-mini-card">
+            <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 700;">Present Today</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: var(--color-forest-dark); margin: 0.2rem 0;">38 / 42</div>
+            <span class="badge badge-present" style="font-size: 0.68rem;">90.4% Turnout</span>
+          </div>
+          <div class="preview-mini-card">
+            <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 700;">Pending Approvals</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: var(--status-pending); margin: 0.2rem 0;">3 Staff</div>
+            <span class="badge badge-pending" style="font-size: 0.68rem;">Review Queue</span>
+          </div>
+        </div>
+
+        <!-- Compact Attendance Trend Mini Chart -->
+        <div class="preview-chart-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--color-forest-dark);">Weekly Presence Rhythm</span>
+            <span style="font-size: 0.74rem; color: var(--color-text-muted);">Mon &mdash; Fri</span>
+          </div>
+          <div class="visual-chart" style="height: 100px; padding: 0.25rem 0 0;">
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 85%;"></div>
+              <span class="chart-label">M</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 92%;"></div>
+              <span class="chart-label">T</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 88%;"></div>
+              <span class="chart-label">W</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 96%; background-color: var(--color-forest);"></div>
+              <span class="chart-label">T</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 78%;"></div>
+              <span class="chart-label">F</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Leave Activity Card -->
+        <div class="preview-activity-item">
+          <div>
+            <strong>Jane Doe &mdash; Casual Leave</strong>
+            <div style="color: var(--color-text-muted); font-size: 0.75rem;">Oct 20 &mdash; Oct 21 (Family Event)</div>
+          </div>
+          <span class="badge badge-pending">Pending Review</span>
+        </div>
       </div>
     </div>
-  </main>
+  </section>
 
-  <footer style="margin-top: auto; border-top: 1px solid var(--color-cream-border); padding: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--color-text-muted);">
-    &copy; EVORA HRMS — College Web Development Project. Built with HTML5, CSS3, Vanilla JS, Core PHP, & MySQL.
+  <!-- Trust & Value Strip -->
+  <section class="value-strip">
+    <div class="container value-grid">
+      <div class="value-item">
+        <div class="value-icon">&#128101;</div>
+        <div>
+          <div class="value-title">Clear Employee Visibility</div>
+          <div class="value-desc">Structured directory with departments, designations, and verified records.</div>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">&#9201;</div>
+        <div>
+          <div class="value-title">Organized Attendance</div>
+          <div class="value-desc">Frictionless check-in logs with automated daily timestamps.</div>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">&#128197;</div>
+        <div>
+          <div class="value-title">Simpler Leave Management</div>
+          <div class="value-desc">Transparent requests, real-time approval pipelines, and reason tracking.</div>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">&#128274;</div>
+        <div>
+          <div class="value-title">Role-Based Access</div>
+          <div class="value-desc">Strict administrative approval gates for all new employee registrations.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section-padding" id="features">
+    <div class="container">
+      <div class="section-head">
+        <div class="hero-eyebrow">Key Capabilities</div>
+        <h2>Engineered for Clarity and Reliability</h2>
+        <p>Built with vanilla web technologies to deliver speed, accessibility, and straightforward college project architecture.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrap">&#128100;</div>
+          <h3 style="margin-bottom: 0.6rem;">Employee Management</h3>
+          <p style="font-size: 0.92rem; margin-bottom: 1.25rem;">
+            Review incoming employee registrations, assign designated departments, and oversee staff status from pending to approved.
+          </p>
+          <a href="pages/admin/employees.html" style="margin-top:auto; font-weight: 600; font-size: 0.88rem;">View Directory &rarr;</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">&#9200;</div>
+          <h3 style="margin-bottom: 0.6rem;">Attendance Tracking</h3>
+          <p style="font-size: 0.92rem; margin-bottom: 1.25rem;">
+            Provide staff with a quick clock in and out experience while supervisors audit daily presence logs and attendance percentages.
+          </p>
+          <a href="pages/employee/attendance.html" style="margin-top:auto; font-weight: 600; font-size: 0.88rem;">Inspect Logs &rarr;</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">&#9993;</div>
+          <h3 style="margin-bottom: 0.6rem;">Leave Management</h3>
+          <p style="font-size: 0.92rem; margin-bottom: 1.25rem;">
+            Submit casual, sick, or annual leave requests with date range verification and structured supervisor feedback remarks.
+          </p>
+          <a href="pages/employee/leaves.html" style="margin-top:auto; font-weight: 600; font-size: 0.88rem;">Explore Leaves &rarr;</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">&#128202;</div>
+          <h3 style="margin-bottom: 0.6rem;">HR Analytics</h3>
+          <p style="font-size: 0.92rem; margin-bottom: 1.25rem;">
+            High-level metrics on department distributions, daily presence rates, and active leaves presented in clear visual charts.
+          </p>
+          <a href="pages/admin/dashboard.html" style="margin-top:auto; font-weight: 600; font-size: 0.88rem;">Open Metrics &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works (Three-Step Workflow) -->
+  <section class="section-padding" style="background-color: var(--color-ivory-light); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);" id="workflow">
+    <div class="container">
+      <div class="workflow-container">
+        <div class="section-head" style="margin-bottom: 1.5rem;">
+          <div class="hero-eyebrow">Structured Governance</div>
+          <h2>How EVORA Operates</h2>
+          <p>Strict role segregation and gated approval ensure that only verified staff access internal company tools.</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3 style="margin-bottom: 0.5rem;">Employee Registers</h3>
+            <p style="font-size: 0.92rem;">
+              Prospective employees complete the public signup form with name, email, department, and credentials.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-pending">Status: Pending</span>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3 style="margin-bottom: 0.5rem;">Admin Approves</h3>
+            <p style="font-size: 0.92rem;">
+              Administrators receive the registration in their verification queue and either approve or reject access.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-neutral">Security Gate</span>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3 style="margin-bottom: 0.5rem;">Portal Access</h3>
+            <p style="font-size: 0.92rem;">
+              Approved team members can sign in, log daily check-ins, request time off, and manage their profile.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-approved">Status: Approved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Preview Section -->
+  <section class="section-padding" id="preview">
+    <div class="container">
+      <div class="section-head">
+        <div class="hero-eyebrow">Interface Showcase</div>
+        <h2>Designed for Work That Feels Natural</h2>
+        <p>Switch between the Administrator view and the Employee view to explore EVORA's interface.</p>
+      </div>
+
+      <div class="preview-tabs-nav">
+        <button class="tab-trigger active" onclick="switchPreviewTab('admin-tab', this)">Administrator View</button>
+        <button class="tab-trigger" onclick="switchPreviewTab('employee-tab', this)">Employee View</button>
+      </div>
+
+      <!-- Admin Tab Pane -->
+      <div class="tab-pane active" id="admin-tab">
+        <div class="card" style="box-shadow: var(--shadow-lg);">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Administrator Oversight Center</div>
+              <div class="card-subtitle">Sample UI preview of the approval queue and staff metrics.</div>
+            </div>
+            <a href="pages/admin/dashboard.html" class="btn btn-secondary btn-sm">Launch Admin View &rarr;</a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Status</th>
+                  <th>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Alex Mercer</strong><div style="font-size:0.75rem;color:var(--color-text-muted);">alex.mercer@example.com</div></td>
+                  <td>Engineering &amp; IT</td>
+                  <td>Backend Developer</td>
+                  <td><span class="badge badge-pending">Pending</span></td>
+                  <td>
+                    <button class="btn btn-primary btn-sm" onclick="EVORA.showToast('Alexander Mercer approved (Preview simulation)', 'success')">Approve</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Sarah Lin</strong><div style="font-size:0.75rem;color:var(--color-text-muted);">sarah.lin@example.com</div></td>
+                  <td>Marketing &amp; Sales</td>
+                  <td>Brand Strategist</td>
+                  <td><span class="badge badge-pending">Pending</span></td>
+                  <td>
+                    <button class="btn btn-primary btn-sm" onclick="EVORA.showToast('Sarah Lin approved (Preview simulation)', 'success')">Approve</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Jane Doe</strong><div style="font-size:0.75rem;color:var(--color-text-muted);">jane.doe@example.com</div></td>
+                  <td>Engineering &amp; IT</td>
+                  <td>Software Associate</td>
+                  <td><span class="badge badge-approved">Approved</span></td>
+                  <td><span style="font-size:0.8rem;color:var(--color-text-muted);">Active Member</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee Tab Pane -->
+      <div class="tab-pane" id="employee-tab">
+        <div class="card" style="box-shadow: var(--shadow-lg);">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Employee Self-Service Desk</div>
+              <div class="card-subtitle">Sample UI preview of daily attendance marking and leave balance tracking.</div>
+            </div>
+            <a href="pages/employee/dashboard.html" class="btn btn-secondary btn-sm">Launch Employee View &rarr;</a>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="card" style="margin-bottom:0; background: var(--color-ivory-light);">
+              <h4 style="margin-bottom: 0.5rem;">Quick Attendance</h4>
+              <p style="font-size:0.85rem; margin-bottom:1rem;">Mark today's shift with a single click.</p>
+              <div style="display:flex;align-items:center;gap:1rem;">
+                <button class="btn btn-primary" onclick="EVORA.showToast('Clocked in at 09:00 AM (Preview simulation)', 'success')">Clock In</button>
+                <span class="badge badge-approved">Present</span>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:0; background: var(--color-ivory-light);">
+              <h4 style="margin-bottom: 0.5rem;">Leave Balance</h4>
+              <p style="font-size:0.85rem; margin-bottom:1rem;">Casual and sick leave allowance.</p>
+              <div style="display:flex;align-items:baseline;gap:0.5rem;">
+                <span style="font-size:1.8rem;font-weight:800;color:var(--color-forest-dark);">14</span>
+                <span style="color:var(--color-text-muted);font-size:0.9rem;">Days Available</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About & Closing CTA Section -->
+  <section class="section-padding" style="background-color: #FFFFFF; border-top: 1px solid var(--color-border);" id="about">
+    <div class="container" style="text-align: center; max-width: 780px;">
+      <div class="hero-eyebrow">Academic Demonstration</div>
+      <h2 style="font-size: 2.4rem; margin-bottom: 1.25rem;">Built with Web Standards</h2>
+      <p style="font-size: 1.05rem; line-height: 1.7; margin-bottom: 2.25rem;">
+        EVORA HRMS was crafted as a comprehensive college Web Development project. It showcases semantic HTML5, Vanilla CSS3 styling, reactive JavaScript DOM manipulation, and core PHP / MySQL integration without relying on third-party frameworks.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="pages/signup.html" class="btn btn-primary btn-lg">Register as Employee</a>
+        <a href="pages/login.html" class="btn btn-secondary btn-lg">Sign In to Workspace</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="brand-logo" style="margin-bottom: 1rem;">
+            <div class="brand-mark" style="background: rgba(255,255,255,0.15);">&Ecy;</div>
+            <span class="brand-text" style="color: #FFFFFF;">EVORA</span>
+          </div>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; max-width: 380px;">
+            A responsive, accessible Human Resource Management System engineered with Core Web Technologies.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#workflow">How It Works</a></li>
+            <li><a href="#preview">Interface</a></li>
+            <li><a href="pages/login.html">Sign In</a></li>
+            <li><a href="pages/signup.html">Registration</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Workspaces</h4>
+          <ul>
+            <li><a href="pages/admin/dashboard.html">Admin Dashboard</a></li>
+            <li><a href="pages/admin/employees.html">Staff Directory</a></li>
+            <li><a href="pages/employee/dashboard.html">Employee Portal</a></li>
+            <li><a href="pages/employee/attendance.html">My Attendance</a></li>
+            <li><a href="pages/employee/leaves.html">Leave Requests</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; EVORA HRMS &bull; College Web Development Project. All rights reserved.</div>
+        <div>HTML5 &bull; CSS3 &bull; Vanilla JavaScript &bull; Core PHP &bull; MySQL</div>
+      </div>
+    </div>
   </footer>
 
   <script src="assets/js/main.js"></script>
+  <script>
+    function switchPreviewTab(tabId, btn) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+  </script>
 </body>
 </html>

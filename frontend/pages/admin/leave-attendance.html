@@ -3,91 +3,115 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Leave & Attendance Oversight — EVORA HRMS">
+  <meta name="description" content="Leaves & Attendance Administration — EVORA HRMS">
   <title>Leaves &amp; Attendance — EVORA HRMS</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <style>
-    .layout-wrapper { display: flex; min-height: 100vh; }
-    .sidebar { width: 250px; background: var(--color-forest-dark); color: #FFFFFF; display: flex; flex-direction: column; flex-shrink: 0; }
-    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-    .sidebar-header h2 { color: #FFFFFF; font-size: 1.25rem; margin: 0; }
-    .sidebar-nav { list-style: none; padding: 1rem 0; flex: 1; }
-    .sidebar-nav li a { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; color: rgba(255, 255, 255, 0.75); font-weight: 500; transition: all 0.2s ease; }
-    .sidebar-nav li a:hover, .sidebar-nav li a.active { color: #FFFFFF; background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--color-sage); }
-    .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.85rem; }
-    .table-container { overflow-x: auto; margin-top: 1rem; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--color-cream-border); font-size: 0.9rem; }
-    th { background: var(--color-cream-card); color: var(--color-forest-dark); font-weight: 600; }
-    .action-btn { padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; }
-    .action-approve { background: var(--color-forest); color: #FFF; }
-    .action-reject { background: #FDE8E8; color: var(--status-rejected); }
-  </style>
 </head>
 <body>
-  <div class="layout-wrapper">
+
+  <div class="portal-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h2>EVORA <span style="font-weight: 300; opacity: 0.8;">HRMS</span></h2>
-        <span style="font-size: 0.75rem; color: var(--color-sage-light); text-transform: uppercase;">Administrator Panel</span>
+        <div style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">EVORA</div>
+        <div class="brand-badge">Administrator Panel</div>
       </div>
       <ul class="sidebar-nav">
-        <li><a href="dashboard.html" id="nav-adm-dash"><span>Dashboard</span></a></li>
-        <li><a href="employees.html" id="nav-adm-emp"><span>Employees</span> <span class="badge badge-pending" style="font-size: 0.65rem;">3 Pending</span></a></li>
-        <li><a href="departments.html" id="nav-adm-dept"><span>Departments</span></a></li>
-        <li><a href="leave-attendance.html" class="active" id="nav-adm-la"><span>Leaves &amp; Attendance</span></a></li>
+        <li class="sidebar-nav-item">
+          <a href="dashboard.html" id="nav-adm-dash">
+            <span><span class="nav-icon">&#9776;</span> Overview</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="employees.html" id="nav-adm-emp">
+            <span><span class="nav-icon">&#128100;</span> Employees</span>
+            <span class="badge badge-pending pending-counter" style="font-size: 0.65rem;">3</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="departments.html" id="nav-adm-dept">
+            <span><span class="nav-icon">&#127970;</span> Departments</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="leave-attendance.html" class="active" id="nav-adm-la">
+            <span><span class="nav-icon">&#128197;</span> Leaves &amp; Attendance</span>
+          </a>
+        </li>
       </ul>
       <div class="sidebar-footer">
-        <a href="../login.html" style="color: rgba(255, 255, 255, 0.85); font-weight: 600;">&larr; Sign Out</a>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
+          &larr; Exit Demo / Sign Out
+        </button>
       </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
-      <header style="margin-bottom: 1.5rem;">
-        <h1 style="font-size: 1.6rem;">Leave &amp; Attendance Administration</h1>
-        <p style="color: var(--color-text-muted); font-size: 0.9rem;">Review staff leave requests and audit daily attendance check-ins.</p>
+      <header style="margin-bottom: 1.75rem;">
+        <h1 style="font-size: 1.85rem; margin-bottom: 0.25rem;">Leaves &amp; Attendance Administration</h1>
+        <p>Review staff absence applications, audit check-in logs, and manage daily shift records.</p>
       </header>
 
-      <div class="placeholder-notice">
-        <strong>Task 1 Placeholder:</strong> Leave decisions and attendance updates will connect to <code>backend/admin/leaves.php</code> and <code>backend/admin/attendance.php</code>.
-      </div>
-
-      <!-- Pending Leaves Review -->
-      <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h3>Leave Applications Pending Review</h3>
-          <span class="badge badge-pending">2 Pending</span>
+      <!-- Leave Requests Review Queue -->
+      <div class="card" style="border-left: 4px solid var(--color-forest);">
+        <div class="card-header">
+          <div>
+            <div style="display:flex; align-items: center; gap: 0.75rem;">
+              <h2 class="card-title" style="margin:0;">Pending Leave Applications</h2>
+              <span class="badge badge-pending">Review Queue</span>
+            </div>
+            <div class="card-subtitle">Authorize or reject employee absence requests with optional remarks.</div>
+          </div>
         </div>
-        <div class="table-container">
-          <table>
+
+        <div class="table-responsive">
+          <table class="table">
             <thead>
               <tr>
                 <th>Employee</th>
-                <th>Type</th>
-                <th>Duration</th>
+                <th>Department</th>
+                <th>Category</th>
+                <th>Dates</th>
                 <th>Reason</th>
-                <th>Action</th>
+                <th>Status</th>
+                <th>Decision Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr id="leave-row-1">
                 <td><strong>Jane Doe</strong></td>
-                <td>Casual</td>
-                <td>Oct 20, 2026 &mdash; Oct 21, 2026</td>
-                <td>Family event</td>
-                <td>
-                  <button class="action-btn action-approve" id="btn-approve-leave-1">Approve</button>
-                  <button class="action-btn action-reject" id="btn-reject-leave-1">Reject</button>
+                <td>Engineering &amp; IT</td>
+                <td><span class="badge badge-neutral">Casual</span></td>
+                <td>2026-10-20 &mdash; 2026-10-21</td>
+                <td>Personal family celebration</td>
+                <td class="status-cell"><span class="badge badge-pending">Pending</span></td>
+                <td class="action-cell" style="white-space: nowrap;">
+                  <button class="btn btn-primary btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-1', 'approve', 'Jane Doe')">Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-1', 'reject', 'Jane Doe')">Reject</button>
                 </td>
               </tr>
-              <tr>
+              <tr id="leave-row-2">
                 <td><strong>Michael Scott</strong></td>
-                <td>Sick</td>
-                <td>Oct 18, 2026 &mdash; Oct 19, 2026</td>
-                <td>Medical recovery</td>
-                <td>
-                  <button class="action-btn action-approve" id="btn-approve-leave-2">Approve</button>
-                  <button class="action-btn action-reject" id="btn-reject-leave-2">Reject</button>
+                <td>Operations</td>
+                <td><span class="badge badge-neutral">Sick</span></td>
+                <td>2026-10-18 &mdash; 2026-10-19</td>
+                <td>Medical recovery &amp; rest</td>
+                <td class="status-cell"><span class="badge badge-pending">Pending</span></td>
+                <td class="action-cell" style="white-space: nowrap;">
+                  <button class="btn btn-primary btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-2', 'approve', 'Michael Scott')">Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="EVORA.reviewLeaveRequest('leave-row-2', 'reject', 'Michael Scott')">Reject</button>
+                </td>
+              </tr>
+              <tr id="leave-row-3">
+                <td><strong>David Wallace</strong></td>
+                <td>Finance &amp; Accounts</td>
+                <td><span class="badge badge-neutral">Paid Annual</span></td>
+                <td>2026-10-27 &mdash; 2026-10-29</td>
+                <td>Conference attendance &amp; research</td>
+                <td class="status-cell"><span class="badge badge-approved">Approved</span></td>
+                <td class="action-cell" style="font-size:0.8rem; color:var(--color-text-muted);">
+                  Approved by Eleanor Vance
                 </td>
               </tr>
             </tbody>
@@ -95,40 +119,65 @@
         </div>
       </div>
 
-      <!-- Daily Attendance Log -->
+      <!-- Daily Attendance Audit Log -->
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-          <h3>Daily Attendance Log (Today)</h3>
-          <div style="display: flex; gap: 0.5rem;">
-            <input type="date" class="form-control" style="padding: 0.35rem 0.6rem; font-size: 0.85rem;" value="2026-10-16">
-            <button class="btn btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.85rem;">Filter</button>
+        <div class="card-header">
+          <div>
+            <div class="card-title">Daily Attendance Log</div>
+            <div class="card-subtitle">Auditable check-in and check-out logs for all departments.</div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <input type="date" id="attendance-audit-date" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" value="2026-10-16">
+            <button class="btn btn-secondary btn-sm" onclick="EVORA.showToast('Attendance log filtered for selected date (Demo simulation)', 'info')">
+              Filter Date
+            </button>
           </div>
         </div>
-        <div class="table-container">
-          <table>
+
+        <div class="table-responsive">
+          <table class="table">
             <thead>
               <tr>
-                <th>Employee</th>
+                <th>Employee Name</th>
                 <th>Department</th>
                 <th>Check In</th>
                 <th>Check Out</th>
+                <th>Working Hours</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Jane Doe</td>
+                <td><strong>Jane Doe</strong></td>
                 <td>Engineering &amp; IT</td>
                 <td>09:05 AM</td>
-                <td>06:00 PM</td>
+                <td>&mdash;</td>
+                <td>Shift in progress</td>
                 <td><span class="badge badge-approved">Present</span></td>
               </tr>
               <tr>
-                <td>David Wallace</td>
+                <td><strong>David Wallace</strong></td>
                 <td>Finance &amp; Accounts</td>
-                <td>09:42 AM</td>
+                <td>09:38 AM</td>
                 <td>&mdash;</td>
-                <td><span class="badge badge-pending">Late</span></td>
+                <td>Shift in progress</td>
+                <td><span class="badge badge-pending">Late (38m)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Pam Beesly</strong></td>
+                <td>Human Resources</td>
+                <td>08:55 AM</td>
+                <td>&mdash;</td>
+                <td>Shift in progress</td>
+                <td><span class="badge badge-approved">Present</span></td>
+              </tr>
+              <tr>
+                <td><strong>Michael Scott</strong></td>
+                <td>Operations</td>
+                <td>09:00 AM</td>
+                <td>&mdash;</td>
+                <td>Shift in progress</td>
+                <td><span class="badge badge-approved">Present</span></td>
               </tr>
             </tbody>
           </table>
@@ -138,5 +187,10 @@
   </div>
 
   <script src="../../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      EVORA.initDemoBanner('admin');
+    });
+  </script>
 </body>
 </html>

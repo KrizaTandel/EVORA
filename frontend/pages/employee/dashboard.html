@@ -7,151 +7,268 @@
   <title>Employee Dashboard — EVORA HRMS</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <style>
-    .layout-wrapper {
-      display: flex;
-      min-height: 100vh;
-    }
-    .sidebar {
-      width: 250px;
-      background: var(--color-forest-dark);
+    .welcome-card {
+      background: linear-gradient(135deg, var(--color-forest) 0%, #193126 100%);
       color: #FFFFFF;
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
       display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+      flex-wrap: wrap;
+      gap: 1.5rem;
     }
-    .sidebar-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .sidebar-header h2 {
+    .welcome-title {
       color: #FFFFFF;
-      font-size: 1.25rem;
-      margin: 0;
+      font-size: 1.75rem;
+      margin-bottom: 0.35rem;
     }
-    .sidebar-nav {
-      list-style: none;
-      padding: 1rem 0;
-      flex: 1;
+    .welcome-desc {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
     }
-    .sidebar-nav li a {
+    .clock-pill-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.35rem;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1.5rem;
-      color: rgba(255, 255, 255, 0.75);
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-    .sidebar-nav li a:hover,
-    .sidebar-nav li a.active {
-      color: #FFFFFF;
-      background: rgba(255, 255, 255, 0.1);
-      border-left: 4px solid var(--color-sage);
-    }
-    .sidebar-footer {
-      padding: 1.25rem 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 0.85rem;
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1.25rem;
-      margin-bottom: 1.5rem;
     }
-    .stat-card {
-      background: #FFFFFF;
-      border: 1px solid var(--color-cream-border);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
+    .grid-2-1 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.75rem;
     }
-    .stat-val {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--color-forest-dark);
-      margin: 0.25rem 0;
+    @media (max-width: 992px) {
+      .grid-2-1 {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="layout-wrapper">
-    <!-- Sidebar Navigation -->
+
+  <div class="portal-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h2>EVORA <span style="font-weight: 300; opacity: 0.8;">HRMS</span></h2>
-        <span style="font-size: 0.75rem; color: var(--color-sage-light); text-transform: uppercase; letter-spacing: 0.05em;">Employee Workspace</span>
+        <div style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">EVORA</div>
+        <div class="brand-badge">Employee Workspace</div>
       </div>
       <ul class="sidebar-nav">
-        <li><a href="dashboard.html" class="active" id="nav-emp-dash">Dashboard</a></li>
-        <li><a href="attendance.html" id="nav-emp-attend">My Attendance</a></li>
-        <li><a href="leaves.html" id="nav-emp-leaves">Leave Requests</a></li>
-        <li><a href="profile.html" id="nav-emp-profile">My Profile</a></li>
+        <li class="sidebar-nav-item">
+          <a href="dashboard.html" class="active" id="nav-emp-dash">
+            <span><span class="nav-icon">&#9776;</span> Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="attendance.html" id="nav-emp-attend">
+            <span><span class="nav-icon">&#9201;</span> My Attendance</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="leaves.html" id="nav-emp-leaves">
+            <span><span class="nav-icon">&#128197;</span> Leave Requests</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html" id="nav-emp-profile">
+            <span><span class="nav-icon">&#128100;</span> My Profile</span>
+          </a>
+        </li>
       </ul>
       <div class="sidebar-footer">
-        <a href="../login.html" style="color: rgba(255, 255, 255, 0.85); font-weight: 600;">&larr; Sign Out</a>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
+          &larr; Exit Demo / Sign Out
+        </button>
       </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
-      <header style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <!-- Welcome Header Banner -->
+      <div class="welcome-card">
         <div>
-          <h1 style="font-size: 1.6rem;">Welcome back, Jane Doe</h1>
-          <p style="color: var(--color-text-muted); font-size: 0.9rem;">Here is your personal attendance and leave overview.</p>
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(215, 167, 109, 0.2); border: 1px solid var(--color-gold); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; color: var(--color-gold); margin-bottom: 0.75rem;">
+            Approved Employee &bull; Engineering &amp; IT
+          </div>
+          <h1 class="welcome-title">Welcome back, Jane Doe</h1>
+          <p class="welcome-desc">Here is your attendance summary, active requests, and upcoming schedule.</p>
         </div>
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <span class="badge badge-approved">Approved Account</span>
-        </div>
-      </header>
 
-      <div class="placeholder-notice">
-        <strong>Task 1 Placeholder:</strong> This dashboard will fetch dynamic attendance status, leave balances, and in-app notifications from <code>backend/dashboard/</code> via Vanilla JS Fetch.
+        <!-- Quick Clock-In Widget -->
+        <div class="clock-pill-card">
+          <div>
+            <div id="clock-status-text" class="badge badge-approved" style="margin-bottom: 0.25rem;">Present (Checked In)</div>
+            <div id="clock-time-text" style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.85);">Today: Clocked in at 09:05 AM</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-clock-toggle">Clock Out</button>
+        </div>
       </div>
 
-      <!-- Quick Metrics -->
+      <!-- Quick Metrics Grid -->
       <div class="stats-grid">
         <div class="stat-card">
-          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Today's Status</span>
-          <div class="stat-val" style="color: var(--status-present);">Checked In</div>
-          <span style="font-size: 0.8rem; color: var(--color-text-muted);">Clocked in at 09:05 AM</span>
+          <div class="stat-header">
+            <span class="stat-label">Leaves Remaining</span>
+            <div class="stat-icon">&#128197;</div>
+          </div>
+          <div class="stat-value">14 <span style="font-size: 1rem; font-weight: 500; color: var(--color-text-muted);">Days</span></div>
+          <div class="stat-meta">10 Casual &bull; 4 Sick remaining</div>
         </div>
+
         <div class="stat-card">
-          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Leaves Remaining</span>
-          <div class="stat-val">14 Days</div>
-          <span style="font-size: 0.8rem; color: var(--color-text-muted);">Casual & Sick allowance</span>
+          <div class="stat-header">
+            <span class="stat-label">Pending Requests</span>
+            <div class="stat-icon">&#9993;</div>
+          </div>
+          <div class="stat-value" style="color: var(--status-pending);">1</div>
+          <div class="stat-meta"><span class="badge badge-pending">Under HR Review</span></div>
         </div>
+
         <div class="stat-card">
-          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Pending Requests</span>
-          <div class="stat-val" style="color: var(--status-pending);">1</div>
-          <span style="font-size: 0.8rem; color: var(--color-text-muted);">Awaiting admin review</span>
+          <div class="stat-header">
+            <span class="stat-label">Monthly Attendance</span>
+            <div class="stat-icon">&#9201;</div>
+          </div>
+          <div class="stat-value" style="color: var(--color-forest);">96%</div>
+          <div class="stat-meta">21 of 22 working shifts logged</div>
         </div>
+
         <div class="stat-card">
-          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Monthly Attendance</span>
-          <div class="stat-val">96%</div>
-          <span style="font-size: 0.8rem; color: var(--color-text-muted);">Current billing period</span>
+          <div class="stat-header">
+            <span class="stat-label">Department</span>
+            <div class="stat-icon">&#128101;</div>
+          </div>
+          <div class="stat-value" style="font-size: 1.4rem; padding-top: 0.4rem;">Engineering</div>
+          <div class="stat-meta">Role: Software Associate</div>
         </div>
       </div>
 
-      <!-- Quick Action Panels -->
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+      <!-- Main Columns: Attendance Rhythm Chart & Activity -->
+      <div class="grid-2-1">
+        <!-- Attendance Chart & Recent History -->
         <div class="card">
-          <h3 style="margin-bottom: 0.75rem;">Recent Attendance Logs</h3>
-          <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
-            Detailed historical check-in/out logs will be rendered here.
-          </p>
-          <a href="attendance.html" class="btn btn-secondary" style="font-size: 0.85rem;">View Full Attendance History &rarr;</a>
+          <div class="card-header">
+            <div>
+              <div class="card-title">Weekly Attendance Rhythm</div>
+              <div class="card-subtitle">Hours logged per shift over the past week (Sample Demo Data).</div>
+            </div>
+            <a href="attendance.html" class="btn btn-secondary btn-sm">Full Attendance Log &rarr;</a>
+          </div>
+
+          <div class="visual-chart" style="height: 160px;">
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 85%;"></div>
+              <span class="chart-label">Mon (8.5h)</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 90%;"></div>
+              <span class="chart-label">Tue (9.0h)</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 80%;"></div>
+              <span class="chart-label">Wed (8.0h)</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 88%; background-color: var(--color-forest);"></div>
+              <span class="chart-label">Thu (8.8h)</span>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar" style="height: 75%;"></div>
+              <span class="chart-label">Fri (7.5h)</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.75rem;">
+            <h4 style="margin-bottom: 0.75rem;">Recent Attendance Logs</h4>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Today (2026-10-16)</strong></td>
+                    <td>09:05 AM</td>
+                    <td>&mdash;</td>
+                    <td><span class="badge badge-approved">Present</span></td>
+                  </tr>
+                  <tr>
+                    <td>2026-10-15</td>
+                    <td>09:32 AM</td>
+                    <td>06:15 PM</td>
+                    <td><span class="badge badge-pending">Late (32m)</span></td>
+                  </tr>
+                  <tr>
+                    <td>2026-10-14</td>
+                    <td>08:58 AM</td>
+                    <td>05:55 PM</td>
+                    <td><span class="badge badge-approved">Present</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <div class="card">
-          <h3 style="margin-bottom: 0.75rem;">Quick Clock In / Out</h3>
-          <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
-            Mark your work shifts with a single click.
-          </p>
-          <button class="btn btn-primary" id="btn-mock-clockout" style="width: 100%;">Clock Out</button>
+
+        <!-- Right Side: Quick Actions & Upcoming Holidays -->
+        <div>
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom: 1rem;">Quick Shortcuts</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+              <a href="leaves.html" class="btn btn-secondary" style="justify-content: flex-start;">
+                &#128197; Submit Leave Application
+              </a>
+              <a href="attendance.html" class="btn btn-secondary" style="justify-content: flex-start;">
+                &#9201; Audit Attendance Records
+              </a>
+              <a href="profile.html" class="btn btn-secondary" style="justify-content: flex-start;">
+                &#128100; View Personal Profile
+              </a>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom: 0.25rem;">Upcoming Holidays</h3>
+            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Official Academic Calendar (Demo Data)</p>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div style="padding: 0.75rem; background: var(--color-ivory-light); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="font-size: 0.88rem; color: var(--color-forest-dark);">Founders Day</strong>
+                  <div style="font-size: 0.78rem; color: var(--color-text-muted);">Thursday &bull; Full Day Off</div>
+                </div>
+                <span class="badge badge-neutral">Nov 12</span>
+              </div>
+              <div style="padding: 0.75rem; background: var(--color-ivory-light); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="font-size: 0.88rem; color: var(--color-forest-dark);">Winter Recess</strong>
+                  <div style="font-size: 0.78rem; color: var(--color-text-muted);">Institutional Holiday</div>
+                </div>
+                <span class="badge badge-neutral">Dec 25</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
   </div>
 
   <script src="../../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      EVORA.initDemoBanner('employee');
+      EVORA.initAttendanceControls();
+    });
+  </script>
 </body>
 </html>
