@@ -119,7 +119,8 @@ const EVORA = {
   },
 
   /**
-   * Render persistent Demo Banner across employee and admin portals
+   * Initialize user session and profile dropdown for portal pages
+   * (Top demo banner removed as requested)
    */
   initDemoBanner(currentRole) {
     let user = this.getDemoUser();
@@ -129,26 +130,7 @@ const EVORA = {
       this.setDemoUser(user);
     }
 
-    const banner = document.createElement('div');
-    banner.className = 'demo-banner';
-    banner.setAttribute('role', 'region');
-    banner.setAttribute('aria-label', 'Frontend Demo Mode Indicator');
-
-    const otherRole = user.role === 'admin' ? 'employee' : 'admin';
-    const otherLabel = user.role === 'admin' ? 'Switch to Employee View' : 'Switch to Admin View';
-
-    banner.innerHTML = `
-      <div class="demo-banner-content">
-        <span class="demo-pill">Frontend Demo Mode</span>
-        <span>Viewing as <strong>${user.name}</strong> (${user.role.toUpperCase()}) &bull; UI Simulation Only &mdash; No Backend Connected</span>
-      </div>
-      <div class="demo-banner-actions">
-        <button class="demo-banner-btn" onclick="EVORA.switchDemoRole('${otherRole}')">${otherLabel} &rarr;</button>
-        <button class="demo-banner-btn" onclick="EVORA.exitDemo()">Exit Demo</button>
-      </div>
-    `;
-
-    document.body.insertBefore(banner, document.body.firstChild);
+    this.initProfileDropdown();
   },
 
   /**
@@ -539,11 +521,79 @@ const EVORA = {
   },
 
   /**
+   * Initializes the top-right profile avatar and dropdown menu
+   */
+  initProfileDropdown() {
+    const avatarBtn = document.getElementById('profile-avatar-btn');
+    const dropdown = document.getElementById('profile-dropdown');
+    if (!avatarBtn || !dropdown) return;
+
+    // Populate user info from demo state
+    const user = this.getDemoUser() || this.demoPersonas.employee;
+    const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+    const initialsEl = document.getElementById('topbar-avatar-initials');
+    if (initialsEl) initialsEl.textContent = initials;
+
+    const dropdownAvatar = document.getElementById('dropdown-avatar-circle');
+    if (dropdownAvatar) dropdownAvatar.textContent = initials;
+
+    const nameEl = document.getElementById('dropdown-user-name');
+    if (nameEl) nameEl.textContent = user.name;
+
+    const emailEl = document.getElementById('dropdown-user-email');
+    if (emailEl) emailEl.textContent = user.email;
+
+    const roleEl = document.getElementById('dropdown-user-role');
+    if (roleEl) {
+      roleEl.textContent = user.role.toUpperCase();
+      roleEl.className = user.role === 'admin' ? 'dropdown-user-role badge badge-approved' : 'dropdown-user-role badge badge-neutral';
+    }
+
+    const viewProfileLink = document.getElementById('dropdown-view-profile');
+    if (viewProfileLink) {
+      const isEmployeeSubdir = window.location.pathname.includes('/pages/employee/');
+      viewProfileLink.href = isEmployeeSubdir ? 'profile.html' : '../employee/profile.html';
+      viewProfileLink.innerHTML = '<span class="dropdown-link-icon">&#128100;</span> View Profile';
+    }
+
+    // Only attach events once
+    if (avatarBtn.dataset.bound === 'true') return;
+    avatarBtn.dataset.bound = 'true';
+
+    // Toggle dropdown on avatar click
+    avatarBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isShown = dropdown.classList.contains('show');
+      dropdown.classList.toggle('show');
+      avatarBtn.setAttribute('aria-expanded', !isShown);
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+        dropdown.classList.remove('show');
+        avatarBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+        avatarBtn.setAttribute('aria-expanded', 'false');
+        avatarBtn.focus();
+      }
+    });
+  },
+
+  /**
    * Global Initialization
    */
   init() {
     this.initPasswordToggles();
     this.initMobileNav();
+    this.initProfileDropdown();
   }
 };
 

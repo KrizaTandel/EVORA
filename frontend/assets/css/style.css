@@ -7,52 +7,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
 
 :root {
-  /* Core Brand Tokens */
-  --color-ivory: #F6F3EA;
-  --color-ivory-light: #FBF9F4;
-  --color-ivory-card: #FFFFFF;
-  --color-ivory-subtle: #EFECE1;
-  --color-border: #E4DEC9;
-  --color-border-subtle: #ECE8DD;
+  /* Core Brand Tokens — Rich EVORA Dark Green Theme */
+  --color-ivory: #F4F7F4;          /* Clean natural soft sage-tinted light background */
+  --color-ivory-light: #EBF2EC;    /* Soft natural tint for secondary sections */
+  --color-ivory-card: #FFFFFF;     /* Crisp white cards */
+  --color-ivory-subtle: #DEECE1;   /* Natural subtle divider */
+  --color-border: #D3E1D7;         /* Soft clean forest-tinted border */
+  --color-border-subtle: #E8F0EA;  /* Hairline border */
   
-  --color-sage: #A8B9A0;
-  --color-sage-light: #E4ECE0;
-  --color-sage-subtle: #F0F5EE;
-  --color-sage-dark: #74896C;
+  --color-sage: #527C65;           /* Rich Sage Green accent */
+  --color-sage-light: #E3EFE7;     /* Soft sage light */
+  --color-sage-subtle: #E8F4EC;    /* Fresh mint/sage badge & icon background */
+  --color-sage-dark: #325241;      /* Deep sage */
   
-  --color-forest: #244536;
-  --color-forest-dark: #193126;
-  --color-forest-light: #325B48;
-  --color-forest-hover: #1C362A;
+  --color-forest: #244536;         /* Signature EVORA Dark Green */
+  --color-forest-dark: #14281F;    /* Deep Forest Green (headings, sidebar, footer) */
+  --color-forest-light: #2E5643;   /* Medium Forest Green accent */
+  --color-forest-hover: #173325;   /* Rich dark hover */
   
-  --color-gold: #D7A76D;
-  --color-gold-light: #FAF2E6;
-  --color-gold-dark: #B58448;
+  --color-gold: #D7A76D;           /* Warm Muted Gold accent */
+  --color-gold-light: #FAF4EB;     /* Soft warm gold tint */
+  --color-gold-dark: #B88544;      /* Rich amber gold */
   
-  --color-charcoal: #252C28;
-  --color-text-main: #252C28;
-  --color-text-muted: #5E6D63;
-  --color-text-light: #FFFFFF;
+  --color-charcoal: #14281F;       /* Deep Forest Charcoal */
+  --color-text-main: #1A2F24;      /* High-contrast rich dark forest body text */
+  --color-text-muted: #4D6A5A;     /* Readable natural muted forest-slate */
+  --color-text-light: #FFFFFF;     /* Pure white */
   
-  /* Status Semantics */
-  --status-pending: #C9883E;
-  --status-pending-bg: #FCF6EC;
-  --status-pending-border: #F3DCB7;
+  /* Status Semantics — Clear, Standard & Cohesive */
+  --status-pending: #C97A1E;
+  --status-pending-bg: #FEF6EB;
+  --status-pending-border: #F7D9B2;
   
   --status-approved: #244536;
-  --status-approved-bg: #EAF2EC;
-  --status-approved-border: #BCD6C3;
+  --status-approved-bg: #EAF4EE;
+  --status-approved-border: #BCD9C5;
   
-  --status-rejected: #B6473F;
-  --status-rejected-bg: #FDF1F0;
-  --status-rejected-border: #F3C3BF;
+  --status-rejected: #C0392B;
+  --status-rejected-bg: #FDEEED;
+  --status-rejected-border: #F5C6C2;
 
-  --status-present: #2F6F4C;
-  --status-present-bg: #ECF7F0;
-  --status-late: #C26127;
-  --status-late-bg: #FDF4ED;
-  --status-halfday: #8F6B2A;
-  --status-halfday-bg: #FAF4E5;
+  --status-present: #244536;
+  --status-present-bg: #EAF4EE;
+  --status-late: #C97A1E;
+  --status-late-bg: #FEF6EB;
+  --status-halfday: #416954;
+  --status-halfday-bg: #EAF2ED;
 
   /* Typography */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -61,16 +61,16 @@
   /* Radii & Shadows */
   --radius-xs: 4px;
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  --shadow-xs: 0 1px 2px rgba(36, 69, 54, 0.04);
-  --shadow-sm: 0 2px 6px rgba(36, 69, 54, 0.06);
-  --shadow-md: 0 8px 24px -4px rgba(36, 69, 54, 0.08), 0 2px 6px rgba(36, 69, 54, 0.04);
-  --shadow-lg: 0 20px 40px -10px rgba(36, 69, 54, 0.12), 0 4px 12px rgba(36, 69, 54, 0.04);
-  --shadow-xl: 0 30px 60px -15px rgba(36, 69, 54, 0.18);
+  --shadow-xs: 0 1px 2px rgba(20, 40, 31, 0.04);
+  --shadow-sm: 0 1px 3px rgba(20, 40, 31, 0.07), 0 1px 2px rgba(20, 40, 31, 0.04);
+  --shadow-md: 0 4px 8px -1px rgba(20, 40, 31, 0.08), 0 2px 4px -2px rgba(20, 40, 31, 0.04);
+  --shadow-lg: 0 12px 20px -4px rgba(20, 40, 31, 0.1), 0 4px 8px -4px rgba(20, 40, 31, 0.05);
+  --shadow-xl: 0 24px 32px -6px rgba(20, 40, 31, 0.14), 0 8px 12px -6px rgba(20, 40, 31, 0.06);
   
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -155,6 +155,7 @@ button, input, select, textarea {
   min-height: 100vh;
   width: 100%;
   background-color: var(--color-ivory);
+  position: relative;
 }
 
 .sidebar {
@@ -164,18 +165,22 @@ button, input, select, textarea {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  bottom: 0;
   height: 100vh;
-  overflow: hidden; /* Non-scrollable sidebar */
+  height: 100dvh;
+  overflow: hidden;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   transition: transform var(--transition-smooth);
-  z-index: 90;
+  z-index: 100;
 }
 
 .sidebar-header {
-  padding: 1.75rem 1.5rem 1.25rem;
+  padding: 1.5rem 1.5rem 1.15rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
 .brand-badge {
@@ -201,10 +206,13 @@ button, input, select, textarea {
 .sidebar-nav {
   list-style: none;
   padding: 1.25rem 0.85rem;
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar-nav-item a {
@@ -241,71 +249,214 @@ button, input, select, textarea {
 }
 
 .sidebar-footer {
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem 1.5rem 1.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.15);
+  margin-top: auto;
+  flex-shrink: 0; /* Ensures logout button remains fixed, visible, and unclipped at the bottom */
 }
 
 .main-content {
-  flex: 1;
-  padding: 2.25rem 2.5rem;
-  overflow-y: auto;
+  flex: 1 1 auto;
+  padding: 1.75rem 2.25rem 3rem;
   max-width: 1400px;
+  min-width: 0;
 }
 
-/* ---------------- Top Banner (Demo Mode) ---------------- */
-.demo-banner {
-  background: linear-gradient(90deg, #193126 0%, #244536 100%);
-  color: #FFFFFF;
-  padding: 0.6rem 1.5rem;
-  font-size: 0.84rem;
+/* ---------------- EVORA Leaf Logo ---------------- */
+.evora-leaf-logo {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 3px 8px rgba(36, 69, 54, 0.2);
+}
+
+/* ---------------- Portal Topbar & Profile Dropdown ---------------- */
+.portal-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(215, 167, 109, 0.3);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--color-border);
   position: relative;
-  z-index: 100;
 }
 
-.demo-banner-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.demo-pill {
-  background-color: var(--color-gold);
-  color: #193126;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-full);
-}
-
-.demo-banner-actions {
+.topbar-left {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.demo-banner-btn {
-  background: rgba(255, 255, 255, 0.12);
-  color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-xs);
-  font-size: 0.78rem;
-  font-weight: 600;
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.profile-widget {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-avatar-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-forest) 0%, #193126 100%);
+  color: var(--color-sage);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all var(--transition-fast);
+  box-shadow: var(--shadow-xs);
+  outline: none;
 }
 
-.demo-banner-btn:hover {
-  background: rgba(255, 255, 255, 0.24);
+.profile-avatar-btn:hover,
+.profile-avatar-btn:focus-visible {
+  border-color: var(--color-sage);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 270px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  padding: 0.85rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
+  z-index: 1000;
+}
+
+.profile-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.35rem 0.75rem;
+}
+
+.dropdown-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-forest);
   color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.dropdown-user-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dropdown-user-name {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--color-forest-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-user-role {
+  margin-top: 0.25rem;
+  align-self: flex-start;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.5rem;
+}
+
+.dropdown-user-email {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.2rem;
+}
+
+.dropdown-divider {
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+  margin: 0.5rem 0;
+}
+
+.dropdown-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  color: var(--color-text-main);
+  font-size: 0.88rem;
+  font-weight: 500;
+  border-radius: var(--radius-xs);
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.dropdown-link:hover {
+  background-color: var(--color-ivory-light);
+  color: var(--color-forest-dark);
+}
+
+.dropdown-link-icon {
+  font-size: 1rem;
+  opacity: 0.85;
+  display: inline-flex;
+  width: 18px;
+  justify-content: center;
+}
+
+.dropdown-logout {
+  color: var(--status-rejected);
+  font-weight: 600;
+}
+
+.dropdown-logout:hover {
+  background-color: var(--status-rejected-bg);
+  color: var(--status-rejected);
+}
+
+/* ---------------- Top Banner (Demo Mode - Removed) ---------------- */
+.demo-banner {
+  display: none !important;
 }
 
 /* ---------------- Cards & Surfaces ---------------- */
@@ -860,27 +1011,63 @@ button, input, select, textarea {
 }
 
 /* ---------------- Responsive Styles ---------------- */
+@media (min-width: 993px) {
+  body:has(.portal-layout) {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .portal-layout {
+    margin-left: 270px;
+    width: calc(100% - 270px);
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-content {
+    overflow-y: auto;
+    height: 100%;
+    min-height: 0;
+  }
+}
+
 @media (max-width: 992px) {
   .portal-layout {
     flex-direction: column;
+    margin-left: 0;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
   }
-  
+
   .sidebar {
     width: 100%;
     height: auto;
     position: relative;
+    top: auto;
+    left: auto;
+    bottom: auto;
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
+
   .sidebar-nav {
     flex-direction: row;
     flex-wrap: wrap;
     padding: 0.5rem;
+    overflow: visible;
   }
 
   .main-content {
     padding: 1.5rem 1.25rem;
+    overflow: visible;
+    height: auto;
   }
 }
 
@@ -894,12 +1081,6 @@ button, input, select, textarea {
   
   .main-content {
     padding: 1.25rem 1rem;
-  }
-
-  .demo-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
   }
 }
 

@@ -11,7 +11,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: radial-gradient(circle at 10% 20%, #FAF8F2 0%, var(--color-ivory) 90%);
+      background-color: var(--color-ivory);
     }
     .auth-container {
       flex: 1;
@@ -46,7 +46,20 @@
   <div class="auth-container">
     <div class="auth-card">
       <div style="text-align: center; margin-bottom: 1.5rem;">
-        <div style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-forest); color: var(--color-sage); font-weight: 800; font-size: 1.25rem; margin-bottom: 0.75rem;">&Ecy;</div>
+        <div style="margin-bottom: 0.75rem;">
+          <svg class="evora-leaf-logo" width="38" height="38" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="34" height="34" rx="8" fill="url(#evora-leaf-grad)"/>
+            <path d="M17 6.5C17 6.5 24 10.5 24 18.5C24 23 20.2 26.5 17 26.5C13.8 26.5 10 23 10 18.5C10 10.5 17 6.5 17 6.5Z" fill="#A8B9A0" fill-opacity="0.3"/>
+            <path d="M17 7.5C17 7.5 22.5 11 22.5 17.5C22.5 21.2 19.6 24 17 24C14.4 24 11.5 21.2 11.5 17.5C11.5 11 17 7.5 17 7.5Z" stroke="#A8B9A0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17 11V23.5M17 15C19 14 20.5 14.5 20.5 14.5M17 18.5C14.8 17.5 13.5 18 13.5 18" stroke="#D7A76D" stroke-width="1.6" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="evora-leaf-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#193126"/>
+                <stop offset="1" stop-color="#244536"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <h1 style="font-size: 1.75rem; margin-bottom: 0.35rem;">Employee Registration</h1>
         <p style="font-size: 0.92rem;">Create your organizational profile</p>
       </div>

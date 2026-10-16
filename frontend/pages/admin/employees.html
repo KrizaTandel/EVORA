@@ -57,7 +57,21 @@
     <!-- Non-Scrollable Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">EVORA</div>
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <svg class="evora-leaf-logo" width="30" height="30" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="34" height="34" rx="8" fill="url(#evora-leaf-grad)"/>
+            <path d="M17 6.5C17 6.5 24 10.5 24 18.5C24 23 20.2 26.5 17 26.5C13.8 26.5 10 23 10 18.5C10 10.5 17 6.5 17 6.5Z" fill="#A8B9A0" fill-opacity="0.3"/>
+            <path d="M17 7.5C17 7.5 22.5 11 22.5 17.5C22.5 21.2 19.6 24 17 24C14.4 24 11.5 21.2 11.5 17.5C11.5 11 17 7.5 17 7.5Z" stroke="#A8B9A0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17 11V23.5M17 15C19 14 20.5 14.5 20.5 14.5M17 18.5C14.8 17.5 13.5 18 13.5 18" stroke="#D7A76D" stroke-width="1.6" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="evora-leaf-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#193126"/>
+                <stop offset="1" stop-color="#244536"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">EVORA</span>
+        </div>
         <div class="brand-badge">Administrator Panel</div>
       </div>
       <ul class="sidebar-nav">
@@ -92,6 +106,41 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
+      <!-- Portal Topbar with Profile Avatar & Dropdown -->
+      <div class="portal-topbar">
+        <div class="topbar-left">
+          <span style="font-size: 0.84rem; color: var(--color-text-muted); font-weight: 500;">
+            EVORA HRMS &bull; <strong style="color: var(--color-forest-dark);">Administrator Panel</strong>
+          </span>
+        </div>
+        <div class="topbar-right">
+          <div class="profile-widget" id="profile-widget">
+            <button class="profile-avatar-btn" id="profile-avatar-btn" aria-expanded="false" aria-haspopup="true" aria-label="Open user profile menu">
+              <span class="avatar-initials" id="topbar-avatar-initials">EV</span>
+            </button>
+            <div class="profile-dropdown" id="profile-dropdown" role="menu">
+              <div class="dropdown-user-info">
+                <div class="dropdown-avatar" id="dropdown-avatar-circle">EV</div>
+                <div class="dropdown-user-text">
+                  <strong class="dropdown-user-name" id="dropdown-user-name">Eleanor Vance</strong>
+                  <span class="dropdown-user-role badge badge-approved" id="dropdown-user-role">ADMIN</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email">admin@evora.test</span>
+                </div>
+              </div>
+              <hr class="dropdown-divider">
+              <div class="dropdown-links">
+                <a href="../employee/profile.html" class="dropdown-link" id="dropdown-view-profile" role="menuitem">
+                  <span class="dropdown-link-icon">&#128100;</span> View Profile
+                </a>
+              </div>
+              <hr class="dropdown-divider">
+              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.exitDemo()">
+                <span class="dropdown-link-icon">&#8618;</span> Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Page Header & Action Bar -->
       <header style="margin-bottom: 1.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
