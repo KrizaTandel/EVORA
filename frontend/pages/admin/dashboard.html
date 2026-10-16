@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Administrator Dashboard — EVORA HRMS">
+  <title>Admin Dashboard — EVORA HRMS</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <style>
+    .layout-wrapper { display: flex; min-height: 100vh; }
+    .sidebar { width: 250px; background: var(--color-forest-dark); color: #FFFFFF; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .sidebar-header h2 { color: #FFFFFF; font-size: 1.25rem; margin: 0; }
+    .sidebar-nav { list-style: none; padding: 1rem 0; flex: 1; }
+    .sidebar-nav li a { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; color: rgba(255, 255, 255, 0.75); font-weight: 500; transition: all 0.2s ease; }
+    .sidebar-nav li a:hover, .sidebar-nav li a.active { color: #FFFFFF; background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--color-sage); }
+    .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.85rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+    .stat-card { background: #FFFFFF; border: 1px solid var(--color-cream-border); border-radius: var(--radius-md); padding: 1.25rem; }
+    .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--color-forest-dark); margin: 0.25rem 0; }
+    .chart-container-mock { height: 260px; background: var(--color-cream-card); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); font-size: 0.9rem; border: 1px dashed var(--color-sage); margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="layout-wrapper">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>EVORA <span style="font-weight: 300; opacity: 0.8;">HRMS</span></h2>
+        <span style="font-size: 0.75rem; color: var(--color-sage-light); text-transform: uppercase;">Administrator Panel</span>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="dashboard.html" class="active" id="nav-adm-dash"><span>Dashboard</span></a></li>
+        <li><a href="employees.html" id="nav-adm-emp"><span>Employees</span> <span class="badge badge-pending" style="font-size: 0.65rem;">3 Pending</span></a></li>
+        <li><a href="departments.html" id="nav-adm-dept"><span>Departments</span></a></li>
+        <li><a href="leave-attendance.html" id="nav-adm-la"><span>Leaves &amp; Attendance</span></a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <a href="../login.html" style="color: rgba(255, 255, 255, 0.85); font-weight: 600;">&larr; Sign Out</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header style="margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.6rem;">Administrator Overview</h1>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem;">System metrics, pending registrations, and organizational presence.</p>
+      </header>
+
+      <div class="placeholder-notice">
+        <strong>Task 1 Placeholder:</strong> Live aggregation metrics will connect to <code>backend/dashboard/admin_stats.php</code> and render via Chart.js.
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Total Staff</span>
+          <div class="stat-val">42</div>
+          <span style="font-size: 0.8rem; color: var(--color-text-muted);">Across 5 departments</span>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Pending Approvals</span>
+          <div class="stat-val" style="color: var(--status-pending);">3</div>
+          <span style="font-size: 0.8rem; color: var(--color-text-muted);">Require onboarding review</span>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Present Today</span>
+          <div class="stat-val" style="color: var(--status-present);">38</div>
+          <span style="font-size: 0.8rem; color: var(--color-text-muted);">90.4% daily turn-out</span>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Active Leaves</span>
+          <div class="stat-val">4</div>
+          <span style="font-size: 0.8rem; color: var(--color-text-muted);">Approved absences</span>
+        </div>
+      </div>
+
+      <!-- Chart and Action Grid -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        <div class="card">
+          <h3>Attendance Trend Analytics</h3>
+          <p style="color: var(--color-text-muted); font-size: 0.85rem;">Weekly presence vs. absences overview.</p>
+          <div class="chart-container-mock" id="chart-attendance-placeholder">
+            [Chart.js Attendance Line/Bar Chart Placeholder]
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Quick Actions</h3>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+            <a href="employees.html" class="btn btn-secondary" style="font-size: 0.85rem; justify-content: flex-start;">Review Pending Registrations &rarr;</a>
+            <a href="leave-attendance.html" class="btn btn-secondary" style="font-size: 0.85rem; justify-content: flex-start;">Inspect Today's Attendance Logs &rarr;</a>
+            <a href="departments.html" class="btn btn-secondary" style="font-size: 0.85rem; justify-content: flex-start;">Add New Department &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

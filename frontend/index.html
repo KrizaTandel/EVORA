@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EVORA HRMS — College Web Development Human Resource Management System">
+  <title>EVORA HRMS — Welcome Portal</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .hero-container {
+      max-width: 900px;
+      margin: 4rem auto;
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+    }
+    .hero-title {
+      font-size: 2.8rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--color-text-muted);
+      margin-bottom: 2.5rem;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      text-align: left;
+      margin-top: 2rem;
+    }
+    .portal-card {
+      background: #FFFFFF;
+      border: 1px solid var(--color-cream-border);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .portal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .portal-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      background: var(--color-sage-light);
+      color: var(--color-forest-dark);
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <header style="background: var(--color-forest-dark); padding: 1rem 2rem; color: #FFFFFF;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="color: #FFFFFF; font-size: 1.3rem;">EVORA <span style="font-weight: 300; opacity: 0.85;">HRMS</span></h2>
+      <nav>
+        <a href="pages/login.html" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.9rem;">Sign In</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="hero-container">
+    <div class="placeholder-notice">
+      <strong>Task 1 Foundation Notice:</strong> Project structure and initial placeholder pages initialized. Core PHP and MySQL backend integration will be implemented in subsequent phases.
+    </div>
+
+    <h1 class="hero-title">Workforce Management, Refined.</h1>
+    <p class="hero-subtitle">
+      EVORA HRMS provides a streamlined, accessible platform for organizational attendance, leave management, and staff administration.
+    </p>
+
+    <div class="hero-actions">
+      <a href="pages/login.html" class="btn btn-primary" id="btn-portal-login">Log In to Portal &rarr;</a>
+      <a href="pages/signup.html" class="btn btn-secondary" id="btn-portal-signup">Employee Registration</a>
+    </div>
+
+    <div class="portal-grid">
+      <div class="portal-card">
+        <span class="portal-badge">Admin Workspace</span>
+        <h3 style="margin-bottom: 0.5rem;">Administrator Oversight</h3>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+          Approve pending employee registrations, manage departments, review leave applications, and analyze organizational statistics.
+        </p>
+        <a href="pages/admin/dashboard.html" style="font-size: 0.9rem; font-weight: 600;">Explore Admin View &rarr;</a>
+      </div>
+
+      <div class="portal-card">
+        <span class="portal-badge">Employee Workspace</span>
+        <h3 style="margin-bottom: 0.5rem;">Staff Self-Service</h3>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+          Log daily check-ins, request casual or sick leaves, track application statuses, and maintain personal records.
+        </p>
+        <a href="pages/employee/dashboard.html" style="font-size: 0.9rem; font-weight: 600;">Explore Employee View &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer style="margin-top: auto; border-top: 1px solid var(--color-cream-border); padding: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--color-text-muted);">
+    &copy; EVORA HRMS — College Web Development Project. Built with HTML5, CSS3, Vanilla JS, Core PHP, & MySQL.
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

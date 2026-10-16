@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Leave Management — EVORA HRMS">
+  <title>Leave Requests — EVORA HRMS</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <style>
+    .layout-wrapper { display: flex; min-height: 100vh; }
+    .sidebar { width: 250px; background: var(--color-forest-dark); color: #FFFFFF; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .sidebar-header h2 { color: #FFFFFF; font-size: 1.25rem; margin: 0; }
+    .sidebar-nav { list-style: none; padding: 1rem 0; flex: 1; }
+    .sidebar-nav li a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: rgba(255, 255, 255, 0.75); font-weight: 500; transition: all 0.2s ease; }
+    .sidebar-nav li a:hover, .sidebar-nav li a.active { color: #FFFFFF; background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--color-sage); }
+    .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.85rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .table-container { overflow-x: auto; margin-top: 1rem; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--color-cream-border); font-size: 0.9rem; }
+    th { background: var(--color-cream-card); color: var(--color-forest-dark); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="layout-wrapper">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>EVORA <span style="font-weight: 300; opacity: 0.8;">HRMS</span></h2>
+        <span style="font-size: 0.75rem; color: var(--color-sage-light); text-transform: uppercase;">Employee Workspace</span>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="dashboard.html" id="nav-emp-dash">Dashboard</a></li>
+        <li><a href="attendance.html" id="nav-emp-attend">My Attendance</a></li>
+        <li><a href="leaves.html" class="active" id="nav-emp-leaves">Leave Requests</a></li>
+        <li><a href="profile.html" id="nav-emp-profile">My Profile</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <a href="../login.html" style="color: rgba(255, 255, 255, 0.85); font-weight: 600;">&larr; Sign Out</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header style="margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.6rem;">Leave Requests</h1>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem;">Submit time-off requests and monitor review status.</p>
+      </header>
+
+      <div class="placeholder-notice">
+        <strong>Task 1 Placeholder:</strong> Leave submissions will route to <code>backend/employee/leaves.php</code> and generate in-app notifications for administrators.
+      </div>
+
+      <!-- Application Form -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Apply for Leave</h3>
+        <form id="form-leave-apply" onsubmit="event.preventDefault();">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="leave-type">Leave Type</label>
+              <select id="leave-type" class="form-control">
+                <option value="casual">Casual Leave</option>
+                <option value="sick">Sick Leave</option>
+                <option value="paid">Paid Annual Leave</option>
+                <option value="unpaid">Unpaid Leave</option>
+              </select>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="leave-start">Start Date</label>
+                <input type="date" id="leave-start" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="leave-end">End Date</label>
+                <input type="date" id="leave-end" class="form-control" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="leave-reason">Reason for Absence</label>
+            <textarea id="leave-reason" class="form-control" rows="3" placeholder="Provide context for your supervisor..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-submit-leave">
+            Submit Leave Request
+          </button>
+        </form>
+      </div>
+
+      <!-- Historical Requests -->
+      <div class="card">
+        <h3 style="margin-bottom: 1rem;">My Leave History</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Dates</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Admin Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Casual</td>
+                <td>Oct 20, 2026 &mdash; Oct 21, 2026</td>
+                <td>Personal family event</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td>Awaiting review</td>
+              </tr>
+              <tr>
+                <td>Sick</td>
+                <td>Sep 12, 2026 &mdash; Sep 13, 2026</td>
+                <td>Doctor appointment</td>
+                <td><span class="badge badge-approved">Approved</span></td>
+                <td>Approved by HR</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>
