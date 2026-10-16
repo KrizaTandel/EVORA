@@ -98,8 +98,8 @@
         </li>
       </ul>
       <div class="sidebar-footer">
-        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
-          &larr; Exit Demo / Sign Out
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.logout()">
+          &larr; Sign Out
         </button>
       </div>
     </aside>
@@ -134,7 +134,7 @@
                 </a>
               </div>
               <hr class="dropdown-divider">
-              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.exitDemo()">
+              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.logout()">
                 <span class="dropdown-link-icon">&#8618;</span> Log Out
               </button>
             </div>
@@ -153,11 +153,6 @@
           </button>
         </div>
       </header>
-
-      <!-- Demo State Banner Note -->
-      <div class="notice-box notice-demo" style="margin-bottom: 1.5rem;">
-        <strong>Frontend Demo Controls:</strong> All Add, Edit, Department Transfer, and Remove operations interact with in-memory browser session state (<code>sessionStorage</code>). Changes are displayed dynamically for demonstration without altering MySQL records.
-      </div>
 
       <!-- Section 1: Separate Pending Registration Queue -->
       <div class="card" style="border-left: 4px solid var(--status-pending);" id="section-pending-queue">
@@ -308,10 +303,6 @@
             </select>
           </div>
 
-          <div class="notice-box notice-demo" style="font-size: 0.8rem; margin-bottom: 0;">
-            Demo Mode Notice: New employee is added directly to session storage. Not saved to database until backend integration.
-          </div>
-
           <div class="modal-footer" style="padding: 1.25rem 0 0; background: none; margin-top: 1.25rem;">
             <button type="button" class="btn btn-secondary" onclick="EVORA.closeModal('modal-add-employee')">Cancel</button>
             <button type="submit" class="btn btn-primary" id="btn-save-new-employee">Create Employee</button>
@@ -434,10 +425,6 @@
             </select>
           </div>
 
-          <div class="notice-box notice-demo" style="font-size: 0.8rem; margin-bottom: 0;">
-            Demo Mode Notice: Updates modify local session memory. Changes will not be saved to database until backend integration.
-          </div>
-
           <div class="modal-footer" style="padding: 1.25rem 0 0; background: none; margin-top: 1.25rem;">
             <button type="button" class="btn btn-secondary" onclick="EVORA.closeModal('modal-edit-employee')">Cancel</button>
             <button type="submit" class="btn btn-primary" id="btn-save-edit-employee">Save Changes</button>
@@ -468,7 +455,7 @@
           Are you sure you want to remove this employee from EVORA HRMS?
         </p>
         <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.5rem; line-height: 1.5;">
-          <strong>Consequences:</strong> The employee will immediately lose access to attendance logging, leave submission, and profile portals. (In frontend demo mode, the record is removed from browser session storage).
+          <strong>Consequences:</strong> The employee will immediately lose access to attendance logging, leave submission, and profile portals.
         </p>
       </div>
       <div class="modal-footer">
@@ -478,7 +465,7 @@
     </div>
   </div>
 
-  <!-- Modal 5: Access Restricted for Employee Demo Persona -->
+  <!-- Modal 5: Access Restricted for Employee Persona -->
   <div class="modal-backdrop" id="modal-access-denied" role="dialog" aria-modal="true">
     <div class="modal" style="max-width: 480px;">
       <div class="modal-header">
@@ -490,11 +477,10 @@
           <h3>Administrator Privilege Required</h3>
         </div>
         <p style="font-size: 0.92rem; color: var(--color-text-muted); line-height: 1.6; text-align: center;">
-          You are currently viewing EVORA as an <strong>Employee</strong> demo persona (Jane Doe). Employee accounts are not authorized to view or manage administrative employee controls.
+          You are currently viewing EVORA as an <strong>Employee</strong> persona. Employee accounts are not authorized to view or manage administrative employee controls.
         </p>
       </div>
       <div class="modal-footer" style="justify-content: center;">
-        <button type="button" class="btn btn-primary" onclick="EVORA.switchDemoRole('admin')">Switch to Admin Demo &rarr;</button>
         <a href="../employee/dashboard.html" class="btn btn-secondary">Return to Employee Portal</a>
       </div>
     </div>
@@ -656,7 +642,7 @@
     function approveApplicant(id, name) {
       EVORA.EmployeeStore.approve(id);
       renderAllTables();
-      EVORA.showToast(`Approved ${name} &mdash; Demo only — not saved to database`, 'success');
+      EVORA.showToast(`Approved registration for ${name}`, 'success');
     }
 
     /**
@@ -666,7 +652,7 @@
       if (!confirm(`Are you sure you want to reject the registration application for ${name}?`)) return;
       EVORA.EmployeeStore.reject(id);
       renderAllTables();
-      EVORA.showToast(`Rejected registration for ${name} &mdash; Demo only — not saved to database`, 'warning');
+      EVORA.showToast(`Rejected registration for ${name}`, 'warning');
     }
 
     /**
@@ -744,7 +730,7 @@
 
       EVORA.closeModal('modal-add-employee');
       renderAllTables();
-      EVORA.showToast(`Added employee "${newEmp.name}" &mdash; Demo only — not saved to database`, 'success');
+      EVORA.showToast(`Added employee "${newEmp.name}"`, 'success');
     }
 
     /**
@@ -862,7 +848,7 @@
 
       EVORA.closeModal('modal-edit-employee');
       renderAllTables();
-      EVORA.showToast(`Updated "${updated.name}" &mdash; Demo only — not saved to database`, 'success');
+      EVORA.showToast(`Updated "${updated.name}" successfully`, 'success');
     }
 
     /**
@@ -898,7 +884,7 @@
       EVORA.EmployeeStore.remove(id);
       EVORA.closeModal('modal-remove-employee');
       renderAllTables();
-      EVORA.showToast(`Removed employee "${name}" &mdash; Demo only — not saved to database`, 'warning');
+      EVORA.showToast(`Removed employee "${name}"`, 'warning');
     }
 
     /**

@@ -48,19 +48,7 @@
       font-size: 1.3rem;
       font-weight: 800;
     }
-    .demo-selector-card {
-      background-color: var(--color-ivory-light);
-      border: 1px dashed var(--color-gold);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      margin-bottom: 1.75rem;
-    }
-    .demo-btn-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
+
   </style>
 </head>
 <body class="auth-page">
@@ -91,30 +79,11 @@
         <p style="font-size: 0.92rem;">Sign in to access your organizational workspace.</p>
       </div>
 
-      <!-- Frontend Demo Mode Selection Strip -->
-      <div class="demo-selector-card">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <span class="badge badge-pending" style="font-size: 0.68rem;">Frontend Demo Mode</span>
-          <span style="font-size: 0.76rem; color: var(--color-text-muted);">Instant UI Access</span>
-        </div>
-        <p style="font-size: 0.82rem; margin-top: 0.4rem; line-height: 1.45;">
-          Select a role to preview with demo state:
-        </p>
-        <div class="demo-btn-grid">
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-demo-admin" onclick="useDemoCredentials('admin')">
-            Admin Demo &rarr;
-          </button>
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-demo-employee" onclick="useDemoCredentials('employee')">
-            Staff Demo &rarr;
-          </button>
-        </div>
-      </div>
-
       <!-- Authentication Form -->
       <form id="form-login" novalidate>
         <div class="form-group">
           <label class="form-label" for="login-email">Work Email</label>
-          <input type="email" id="login-email" class="form-control" placeholder="user@evora.test" required autocomplete="email">
+          <input type="email" id="login-email" class="form-control" placeholder="user@example.com" required autocomplete="email">
           <div class="invalid-feedback" id="email-error">Please enter a valid work email address.</div>
         </div>
 
@@ -154,23 +123,7 @@
 
   <script src="../assets/js/main.js"></script>
   <script>
-    function useDemoCredentials(role) {
-      const emailInput = document.getElementById('login-email');
-      const passInput = document.getElementById('login-password');
-      if (role === 'admin') {
-        emailInput.value = 'admin@evora.test';
-        passInput.value = 'Admin@12345';
-        EVORA.showToast('Admin demo credentials populated. Signing in...', 'info');
-        setTimeout(() => EVORA.switchDemoRole('admin'), 400);
-      } else {
-        emailInput.value = 'employee@evora.test';
-        passInput.value = 'Employee@12345';
-        EVORA.showToast('Employee demo credentials populated. Signing in...', 'info');
-        setTimeout(() => EVORA.switchDemoRole('employee'), 400);
-      }
-    }
-
-    document.getElementById('form-login').addEventListener('submit', function(e) {
+    document.getElementById('form-login').addEventListener('submit', async function(e) {
       e.preventDefault();
       const email = document.getElementById('login-email');
       const pass = document.getElementById('login-password');
@@ -192,11 +145,31 @@
 
       if (!isValid) return;
 
-      // Check if credentials match demo
-      if (email.value.toLowerCase().includes('admin')) {
-        EVORA.switchDemoRole('admin');
-      } else {
-        EVORA.switchDemoRole('employee');
+      const submitBtn = document.getElementById('btn-login-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing In...';
+
+      try {
+        const response = await fetch(`${EVORA.apiBase}/auth/login.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.value.trim(), password: pass.value })
+        });
+        const result = await response.json();
+        if (result.success) {
+          EVORA.showToast('Login successful! Redirecting...', 'success');
+          setTimeout(() => {
+            window.location.href = result.redirect || (result.role === 'admin' ? 'admin/dashboard.html' : 'employee/dashboard.html');
+          }, 400);
+        } else {
+          EVORA.showToast(result.message || 'Invalid email or password.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In to Portal';
+        }
+      } catch (err) {
+        EVORA.showToast('Backend authentication endpoint will be connected in next task.', 'info');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In to Portal';
       }
     });
   </script>

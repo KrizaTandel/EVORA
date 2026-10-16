@@ -90,8 +90,8 @@
         </li>
       </ul>
       <div class="sidebar-footer">
-        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
-          &larr; Exit Demo / Sign Out
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.logout()">
+          &larr; Sign Out
         </button>
       </div>
     </aside>
@@ -126,7 +126,7 @@
                 </a>
               </div>
               <hr class="dropdown-divider">
-              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.exitDemo()">
+              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.logout()">
                 <span class="dropdown-link-icon">&#8618;</span> Log Out
               </button>
             </div>
@@ -155,11 +155,6 @@
             <div><strong>Email:</strong> employee@evora.test</div>
           </div>
         </div>
-      </div>
-
-      <!-- Notice regarding Demo Persistence -->
-      <div class="notice-box notice-demo">
-        <strong>Frontend Demo State:</strong> Profile modifications made here update local browser state for testing UI responsiveness. Records are not persisted to MySQL until backend PHP endpoints are linked.
       </div>
 
       <!-- Editable Profile Form -->

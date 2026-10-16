@@ -65,8 +65,8 @@
         </li>
       </ul>
       <div class="sidebar-footer">
-        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
-          &larr; Exit Demo / Sign Out
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.logout()">
+          &larr; Sign Out
         </button>
       </div>
     </aside>
@@ -101,7 +101,7 @@
                 </a>
               </div>
               <hr class="dropdown-divider">
-              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.exitDemo()">
+              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.logout()">
                 <span class="dropdown-link-icon">&#8618;</span> Log Out
               </button>
             </div>
@@ -187,10 +187,6 @@
           <div class="form-group">
             <label class="form-label" for="leave-reason">Reason for Absence</label>
             <textarea id="leave-reason" class="form-control" rows="3" placeholder="Provide context for your team supervisor..." required></textarea>
-          </div>
-
-          <div class="notice-box notice-demo" style="font-size: 0.82rem; margin-bottom: 1.25rem;">
-            <strong>Demo Submission Notice:</strong> Submitting adds this record to the table below in temporary session memory, simulating the workflow.
           </div>
 
           <button type="submit" class="btn btn-primary" id="btn-submit-leave">

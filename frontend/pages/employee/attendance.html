@@ -53,8 +53,8 @@
         </li>
       </ul>
       <div class="sidebar-footer">
-        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
-          &larr; Exit Demo / Sign Out
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.logout()">
+          &larr; Sign Out
         </button>
       </div>
     </aside>
@@ -89,7 +89,7 @@
                 </a>
               </div>
               <hr class="dropdown-divider">
-              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.exitDemo()">
+              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.logout()">
                 <span class="dropdown-link-icon">&#8618;</span> Log Out
               </button>
             </div>
@@ -155,12 +155,12 @@
             <div class="card-subtitle">Sample attendance log for the current evaluation period.</div>
           </div>
           <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-            <select id="filter-month" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Filter updated (Demo view)', 'info')">
+            <select id="filter-month" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Attendance filter applied', 'info')">
               <option value="10">October 2026 (Current)</option>
               <option value="09">September 2026</option>
               <option value="08">August 2026</option>
             </select>
-            <select id="filter-status" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Filter updated (Demo view)', 'info')">
+            <select id="filter-status" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.85rem;" onchange="EVORA.showToast('Attendance filter applied', 'info')">
               <option value="all">All Statuses</option>
               <option value="present">Present Only</option>
               <option value="late">Late Only</option>

@@ -193,84 +193,6 @@
       color: var(--color-text-muted);
     }
 
-    /* How It Works 3-Step Section (Simple & Beginner-Friendly) */
-    .steps-simple-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.75rem;
-    }
-    .step-simple-card {
-      background-color: #FFFFFF;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: 2.25rem 1.85rem;
-      position: relative;
-      box-shadow: var(--shadow-sm);
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
-      display: flex;
-      flex-direction: column;
-    }
-    .step-simple-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--color-forest);
-    }
-    .step-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.25rem;
-    }
-    .step-badge {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--color-forest);
-      color: #FFFFFF;
-      font-weight: 800;
-      font-size: 1.05rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(36, 69, 54, 0.25);
-    }
-    .step-icon-wrap {
-      font-size: 1.45rem;
-      line-height: 1;
-      width: 42px;
-      height: 42px;
-      border-radius: var(--radius-sm);
-      background-color: var(--color-sage-subtle);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .step-card-step-tag {
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--color-gold-dark);
-      margin-bottom: 0.35rem;
-    }
-    .step-simple-card h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--color-forest-dark);
-      margin-bottom: 0.65rem;
-      line-height: 1.3;
-    }
-    .step-simple-card p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: var(--color-text-muted);
-      margin-bottom: 0;
-    }
-    .steps-action-wrap {
-      text-align: center;
-      margin-top: 2.75rem;
-    }
-
     /* About Section */
     .about-container-simple {
       max-width: 760px;
@@ -393,10 +315,6 @@
     /* Responsive */
     @media (max-width: 992px) {
       .hero-heading { font-size: 2.75rem; }
-      .steps-simple-grid {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-      }
       .footer-grid-premium {
         flex-direction: column;
         gap: 2rem;
@@ -440,7 +358,6 @@
 
       <nav aria-label="Main Navigation">
         <ul class="nav-links">
-          <li><a href="#how-it-works">How It Works</a></li>
           <li><a href="#about">About</a></li>
         </ul>
       </nav>
@@ -455,7 +372,6 @@
     <!-- Mobile Drawer -->
     <div class="mobile-menu-drawer" id="mobile-nav-menu">
       <ul class="mobile-nav-list">
-        <li><a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a></li>
         <li><a href="#about" onclick="closeMobileMenu()">About</a></li>
       </ul>
       <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
@@ -488,53 +404,6 @@
     </div>
   </section>
 
-  <!-- How It Works Section (Simple & Beginner-Friendly) -->
-  <section class="section-padding bg-ivory-tint" id="how-it-works">
-    <div class="container">
-      <div class="section-head-simple">
-        <span class="section-sub-eyebrow">SIMPLE 3-STEP PROCESS</span>
-        <h2>How EVORA Works</h2>
-        <p>Get started in minutes with three easy, beginner-friendly steps.</p>
-      </div>
-
-      <div class="steps-simple-grid">
-        <div class="step-simple-card">
-          <div class="step-card-header">
-            <span class="step-badge">1</span>
-            <span class="step-icon-wrap" aria-hidden="true">&#128273;</span>
-          </div>
-          <div class="step-card-step-tag">Step 01</div>
-          <h3>Sign In or Try Demo</h3>
-          <p>Sign in with your work email or click <strong>Demo Mode</strong> below to explore both Admin and Employee features instantly.</p>
-        </div>
-
-        <div class="step-simple-card">
-          <div class="step-card-header">
-            <span class="step-badge">2</span>
-            <span class="step-icon-wrap" aria-hidden="true">&#128187;</span>
-          </div>
-          <div class="step-card-step-tag">Step 02</div>
-          <h3>Choose Your Portal</h3>
-          <p><strong>Admin Portal:</strong> Manage employees, track departments, and approve requests.<br><strong>Employee Portal:</strong> View attendance, clock in, and request leaves.</p>
-        </div>
-
-        <div class="step-simple-card">
-          <div class="step-card-header">
-            <span class="step-badge">3</span>
-            <span class="step-icon-wrap" aria-hidden="true">&#9989;</span>
-          </div>
-          <div class="step-card-step-tag">Step 03</div>
-          <h3>Track Work &amp; Leaves</h3>
-          <p>Mark daily attendance with a single click, submit leave requests in seconds, and receive real-time approval updates.</p>
-        </div>
-      </div>
-
-      <div class="steps-action-wrap">
-        <a href="pages/login.html" class="btn btn-primary btn-md" id="btn-steps-demo">Try Demo Mode Now &rarr;</a>
-      </div>
-    </div>
-  </section>
-
   <!-- About Section -->
   <section class="section-padding" id="about">
     <div class="container about-container-simple">
@@ -551,7 +420,7 @@
           <span class="about-pill-icon">&#10003;</span> Beginner-friendly UI
         </div>
         <div class="about-pill">
-          <span class="about-pill-icon">&#10003;</span> One-click role demo
+          <span class="about-pill-icon">&#10003;</span> Role-based security
         </div>
         <div class="about-pill">
           <span class="about-pill-icon">&#10003;</span> No complex setup

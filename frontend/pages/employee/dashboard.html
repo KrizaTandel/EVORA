@@ -96,8 +96,8 @@
         </li>
       </ul>
       <div class="sidebar-footer">
-        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.exitDemo()">
-          &larr; Exit Demo / Sign Out
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.logout()">
+          &larr; Sign Out
         </button>
       </div>
     </aside>
@@ -132,7 +132,7 @@
                 </a>
               </div>
               <hr class="dropdown-divider">
-              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.exitDemo()">
+              <button type="button" class="dropdown-link dropdown-logout" role="menuitem" onclick="EVORA.logout()">
                 <span class="dropdown-link-icon">&#8618;</span> Log Out
               </button>
             </div>
@@ -205,7 +205,7 @@
           <div class="card-header">
             <div>
               <div class="card-title">Weekly Attendance Rhythm</div>
-              <div class="card-subtitle">Hours logged per shift over the past week (Sample Demo Data).</div>
+              <div class="card-subtitle">Hours logged per shift over the past week.</div>
             </div>
             <a href="attendance.html" class="btn btn-secondary btn-sm">Full Attendance Log &rarr;</a>
           </div>
@@ -289,7 +289,7 @@
 
           <div class="card">
             <h3 class="card-title" style="margin-bottom: 0.25rem;">Upcoming Holidays</h3>
-            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Official Academic Calendar (Demo Data)</p>
+            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Official Organizational Calendar</p>
             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
               <div style="padding: 0.75rem; background: var(--color-ivory-light); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
                 <div>

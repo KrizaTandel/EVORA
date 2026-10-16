@@ -18,7 +18,7 @@ const EVORA = {
   },
 
   /**
-   * Demo User Personas for local UI testing
+   * Demo User Personas (Fallback for UI layout testing until backend auth endpoints are connected)
    */
   demoPersonas: {
     admin: {
@@ -39,11 +39,11 @@ const EVORA = {
   },
 
   /**
-   * Get current demo user from sessionStorage
+   * Get current authenticated user session
    */
-  getDemoUser() {
+  getCurrentUser() {
     try {
-      const data = sessionStorage.getItem('evora_demo_user');
+      const data = sessionStorage.getItem('evora_user') || sessionStorage.getItem('evora_demo_user');
       return data ? JSON.parse(data) : null;
     } catch (e) {
       return null;
@@ -51,24 +51,33 @@ const EVORA = {
   },
 
   /**
-   * Set demo user in sessionStorage
+   * Backwards-compatible alias for getDemoUser
+   */
+  getDemoUser() {
+    return this.getCurrentUser();
+  },
+
+  /**
+   * Set user in session storage
    */
   setDemoUser(persona) {
     try {
+      sessionStorage.setItem('evora_user', JSON.stringify(persona));
       sessionStorage.setItem('evora_demo_user', JSON.stringify(persona));
     } catch (e) {
-      console.error('Failed to store demo user state', e);
+      console.error('Failed to store user state', e);
     }
   },
 
   /**
-   * Switch demo role and navigate to appropriate workspace
+   * Switch demo role (deprecated: real roles are enforced by backend session)
    */
   switchDemoRole(role) {
+    console.warn('EVORA.switchDemoRole is deprecated. User role will be authenticated via backend session.');
     const persona = this.demoPersonas[role];
     if (!persona) return;
     this.setDemoUser(persona);
-    this.showToast(`Switched to ${role.toUpperCase()} Demo mode (${persona.name})`, 'info');
+    this.showToast(`Active session role: ${role.toUpperCase()}`, 'info');
     
     // Resolve relative path to dashboard
     const isEmployeePath = window.location.pathname.includes('/pages/employee/');
@@ -99,11 +108,17 @@ const EVORA = {
   },
 
   /**
-   * Exit demo mode, clear state, and return to login
+   * Genuine User Logout: Clears session credentials and redirects to login
    */
-  exitDemo() {
-    sessionStorage.removeItem('evora_demo_user');
-    this.showToast('Exited Demo Mode', 'info');
+  logout() {
+    try {
+      sessionStorage.removeItem('evora_user');
+      sessionStorage.removeItem('evora_demo_user');
+      sessionStorage.removeItem('evora_clocked_in');
+      localStorage.removeItem('evora_auth_token');
+    } catch (e) {}
+
+    this.showToast('Signed out successfully.', 'info');
     const isInsidePages = window.location.pathname.includes('/pages/');
     const isSubdir = window.location.pathname.includes('/pages/admin/') || window.location.pathname.includes('/pages/employee/');
     
@@ -119,13 +134,18 @@ const EVORA = {
   },
 
   /**
+   * Backwards-compatible alias for existing markup
+   */
+  exitDemo() {
+    this.logout();
+  },
+
+  /**
    * Initialize user session and profile dropdown for portal pages
-   * (Top demo banner removed as requested)
    */
   initDemoBanner(currentRole) {
-    let user = this.getDemoUser();
+    let user = this.getCurrentUser();
     if (!user) {
-      // Default to the matching role persona if entering directly
       user = this.demoPersonas[currentRole] || this.demoPersonas.employee;
       this.setDemoUser(user);
     }
