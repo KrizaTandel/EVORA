@@ -84,6 +84,11 @@
             <span><span class="nav-icon">&#128197;</span> Leaves &amp; Attendance</span>
           </a>
         </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html" id="nav-adm-profile">
+            <span><span class="nav-icon">&#9881;</span> Admin Profile</span>
+          </a>
+        </li>
       </ul>
       <div class="sidebar-footer">
         <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.logout()">
@@ -117,8 +122,8 @@
               </div>
               <hr class="dropdown-divider">
               <div class="dropdown-links">
-                <a href="../employee/profile.html" class="dropdown-link" id="dropdown-view-profile" role="menuitem">
-                  <span class="dropdown-link-icon">&#128100;</span> View Profile
+                <a href="profile.html" class="dropdown-link" id="dropdown-view-profile" role="menuitem">
+                  <span class="dropdown-link-icon">&#9881;</span> Admin Profile
                 </a>
               </div>
               <hr class="dropdown-divider">
@@ -132,10 +137,10 @@
       <header style="margin-bottom: 1.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h1 style="font-size: 1.85rem; margin-bottom: 0.25rem;">Administrator Operations</h1>
-          <p>Real-time workforce headcount, pending registration queues, and organizational health.</p>
+          <p>Workforce headcount, employee attendance monitoring, and registration approval queue.</p>
         </div>
         <div style="display: flex; gap: 0.75rem;">
-          <a href="employees.html" class="btn btn-primary btn-sm">&#128100; Review Registrations (<span class="pending-counter">3</span>)</a>
+          <a href="employees.html" class="btn btn-primary btn-sm">&#128100; Review Registrations (<span class="pending-counter">0</span>)</a>
         </div>
       </header>
 
@@ -143,7 +148,7 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-header">
-            <span class="stat-label">Total Staff</span>
+            <span class="stat-label">Total Employees</span>
             <div class="stat-icon">&#128101;</div>
           </div>
           <div class="stat-value" id="dash-total-staff">0</div>

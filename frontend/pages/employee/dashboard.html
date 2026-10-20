@@ -285,7 +285,7 @@
   <script src="../../assets/js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      const user = await EVORA.guardPage();
+      const user = await EVORA.requireRole('employee');
       if (!user) return;
 
       EVORA.initAttendanceControls();

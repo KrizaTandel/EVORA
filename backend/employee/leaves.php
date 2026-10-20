@@ -103,7 +103,39 @@ if ($method === 'POST') {
         jsonResponse(false, 'Invalid leave type. Choose from Casual, Sick, Paid Annual, or Unpaid.', [], 422);
     }
 
-    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) {
+    // Normalize and validate start/end dates flexibly (supports YYYY-MM-DD, DD-MM-YYYY, etc.)
+    $normalizeDate = static function(string $raw): ?string {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return null;
+        }
+
+        // Standard ISO format: YYYY-MM-DD
+        if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $raw, $m)) {
+            if (checkdate((int)$m[2], (int)$m[3], (int)$m[1])) {
+                return sprintf('%04d-%02d-%02d', (int)$m[1], (int)$m[2], (int)$m[3]);
+            }
+        }
+
+        // Localized format: DD-MM-YYYY or DD/MM/YYYY
+        if (preg_match('/^(\d{1,2})[- \/.](\d{1,2})[- \/.](\d{4})$/', $raw, $m)) {
+            if (checkdate((int)$m[2], (int)$m[1], (int)$m[3])) {
+                return sprintf('%04d-%02d-%02d', (int)$m[3], (int)$m[2], (int)$m[1]);
+            }
+        }
+
+        $ts = strtotime($raw);
+        if ($ts !== false) {
+            return date('Y-m-d', $ts);
+        }
+
+        return null;
+    };
+
+    $startDate = $normalizeDate((string)($input['start_date'] ?? ''));
+    $endDate   = $normalizeDate((string)($input['end_date'] ?? ''));
+
+    if (!$startDate || !$endDate) {
         jsonResponse(false, 'Please provide valid start and end dates (YYYY-MM-DD).', [], 422);
     }
 

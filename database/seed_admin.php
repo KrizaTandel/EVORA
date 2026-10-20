@@ -30,29 +30,51 @@ echo " EVORA HRMS — Secure Administrator Provisioning Tool \n";
 echo "=====================================================\n\n";
 
 // Parse CLI command-line options
-$shortOpts = "n:e:p:";
-$longOpts  = ["name:", "email:", "password:"];
+$shortOpts = "n:e:p:u";
+$longOpts  = ["name:", "email:", "password:", "update", "force"];
 $cliArgs   = getopt($shortOpts, $longOpts);
 
 $name     = $cliArgs['name'] ?? $cliArgs['n'] ?? null;
 $email    = $cliArgs['email'] ?? $cliArgs['e'] ?? null;
 $password = $cliArgs['password'] ?? $cliArgs['p'] ?? null;
+$allowUpdate = isset($cliArgs['update']) || isset($cliArgs['force']) || isset($cliArgs['u']);
+
+$isInteractive = function_exists('stream_isatty') ? @stream_isatty(STDIN) : false;
+
+// Default admin configuration
+$defaultName  = 'Alex Morgan';
+$defaultEmail = 'admin@evora.com';
+$defaultPass  = 'Admin@123456';
 
 // Prompt interactively if not provided via CLI flags
 if (empty($name)) {
-    echo "Enter Administrator Full Name: ";
-    $name = trim((string)fgets(STDIN));
+    if ($isInteractive) {
+        echo "Enter Administrator Full Name [{$defaultName}]: ";
+        $input = trim((string)fgets(STDIN));
+        $name = !empty($input) ? $input : $defaultName;
+    } else {
+        $name = $defaultName;
+    }
 }
 
 if (empty($email)) {
-    echo "Enter Administrator Work Email: ";
-    $email = trim((string)fgets(STDIN));
+    if ($isInteractive) {
+        echo "Enter Administrator Work Email [{$defaultEmail}]: ";
+        $input = trim((string)fgets(STDIN));
+        $email = !empty($input) ? $input : $defaultEmail;
+    } else {
+        $email = $defaultEmail;
+    }
 }
 
 if (empty($password)) {
-    echo "Enter Administrator Password: ";
-    // Read password
-    $password = trim((string)fgets(STDIN));
+    if ($isInteractive) {
+        echo "Enter Administrator Password [leave blank for default]: ";
+        $input = trim((string)fgets(STDIN));
+        $password = !empty($input) ? $input : $defaultPass;
+    } else {
+        $password = $defaultPass;
+    }
 }
 
 $email = strtolower(trim((string)$email));
@@ -81,52 +103,65 @@ try {
     $checkStmt->execute([':email' => $email]);
     $existing = $checkStmt->fetch();
 
-    if ($existing) {
-        echo "\n[WARNING] An account with email '{$email}' already exists.\n";
-        echo "  - Existing User ID: {$existing['id']}\n";
-        echo "  - Existing Role:    {$existing['role']}\n";
-        echo "  - Existing Status:  {$existing['status']}\n";
-        echo "[SECURITY] Refusing to overwrite existing account or credentials.\n";
-        exit(0);
-    }
-
-    // 2. Hash password with PASSWORD_DEFAULT
+    // 2. Hash password securely with PASSWORD_DEFAULT
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-    // 3. Insert new verified Administrator
-    $insertStmt = $pdo->prepare('
-        INSERT INTO users (full_name, email, password_hash, role, status, designation, joined_date, created_at)
-        VALUES (:name, :email, :pass, "admin", "approved", "System Administrator", CURDATE(), NOW())
-    ');
+    if ($existing) {
+        echo "\n[NOTICE] An existing account with email '{$email}' was found (User ID: {$existing['id']}).\n";
+        echo "  - Existing Role:   {$existing['role']}\n";
+        echo "  - Existing Status: {$existing['status']}\n";
+        echo "Updating administrator credentials with secure password hash...\n";
 
-    $insertStmt->execute([
-        ':name'  => $name,
-        ':email' => $email,
-        ':pass'  => $passwordHash,
-    ]);
+        $updateStmt = $pdo->prepare('
+            UPDATE users 
+            SET full_name = :name, password_hash = :pass, role = "admin", status = "approved", updated_at = NOW()
+            WHERE id = :id
+        ');
+        $updateStmt->execute([
+            ':name' => $name,
+            ':pass' => $passwordHash,
+            ':id'   => (int)$existing['id'],
+        ]);
 
-    $newId = (int)$pdo->lastInsertId();
+        $adminId = (int)$existing['id'];
+    } else {
+        // 3. Insert new verified Administrator
+        $insertStmt = $pdo->prepare('
+            INSERT INTO users (full_name, email, password_hash, role, status, designation, joined_date, created_at)
+            VALUES (:name, :email, :pass, "admin", "approved", "System Administrator", CURDATE(), NOW())
+        ');
 
-    // 4. Verify created database record
-    $verifyStmt = $pdo->prepare('SELECT id, full_name, email, role, status, joined_date FROM users WHERE id = :id');
-    $verifyStmt->execute([':id' => $newId]);
+        $insertStmt->execute([
+            ':name'  => $name,
+            ':email' => $email,
+            ':pass'  => $passwordHash,
+        ]);
+
+        $adminId = (int)$pdo->lastInsertId();
+    }
+
+    // 4. Verify created/updated database record and password hash
+    $verifyStmt = $pdo->prepare('SELECT id, full_name, email, role, status, joined_date, password_hash FROM users WHERE id = :id');
+    $verifyStmt->execute([':id' => $adminId]);
     $verified = $verifyStmt->fetch();
 
-    if ($verified && $verified['role'] === 'admin' && $verified['status'] === 'approved') {
-        echo "\n[SUCCESS] Initial Administrator provisioned successfully!\n";
+    $hashMatches = $verified ? password_verify($password, $verified['password_hash']) : false;
+
+    if ($verified && $verified['role'] === 'admin' && $verified['status'] === 'approved' && $hashMatches) {
+        echo "\n[SUCCESS] Administrator provisioned and verified successfully!\n";
         echo "-----------------------------------------------------\n";
         echo "  User ID:     {$verified['id']}\n";
         echo "  Full Name:   {$verified['full_name']}\n";
         echo "  Work Email:  {$verified['email']}\n";
         echo "  Role:        {$verified['role']}\n";
         echo "  Status:      {$verified['status']}\n";
-        echo "  Joined Date: {$verified['joined_date']}\n";
+        echo "  Hash Check:  VERIFIED (password_hash using PASSWORD_DEFAULT)\n";
         echo "-----------------------------------------------------\n";
-        echo "You can now authenticate with these credentials at /frontend/pages/login.html\n\n";
+        echo "You can now authenticate at /frontend/pages/login.html\n\n";
         exit(0);
     }
 
-    echo "\n[ERROR] Verification query failed. Record was not confirmed.\n";
+    echo "\n[ERROR] Verification query failed. Record or password verification could not be confirmed.\n";
     exit(1);
 
 } catch (PDOException $e) {

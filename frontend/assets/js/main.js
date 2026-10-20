@@ -21,7 +21,10 @@ const EVORA = {
    * Universal fetch client with CSRF token management and error handling
    */
   async api(endpoint, options = {}) {
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    let cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    if (cleanEndpoint.startsWith('/backend/')) {
+      cleanEndpoint = cleanEndpoint.substring(8);
+    }
     const url = `${this.apiBase}${cleanEndpoint}`;
     const method = (options.method || 'GET').toUpperCase();
     const headers = Object.assign({}, options.headers || {});
@@ -36,6 +39,8 @@ const EVORA = {
       if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
         options.body = JSON.stringify(options.body);
+      } else if (typeof options.body === 'string' && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
       }
     }
 
@@ -60,6 +65,7 @@ const EVORA = {
       return {
         ok: res.ok,
         status: res.status,
+        data: data || {},
         ...(data || {}),
       };
     } catch (err) {
@@ -202,12 +208,10 @@ const EVORA = {
     if (viewProfileLink) {
       const isEmployeeSubdir = window.location.pathname.includes('/pages/employee/');
       const isAdminSubdir = window.location.pathname.includes('/pages/admin/');
-      if (isEmployeeSubdir) {
-        viewProfileLink.href = 'profile.html';
-      } else if (isAdminSubdir) {
-        viewProfileLink.href = '../employee/profile.html';
+      if (role === 'admin') {
+        viewProfileLink.href = isAdminSubdir ? 'profile.html' : 'admin/profile.html';
       } else {
-        viewProfileLink.href = 'employee/profile.html';
+        viewProfileLink.href = isEmployeeSubdir ? 'profile.html' : 'employee/profile.html';
       }
     }
 
@@ -235,13 +239,15 @@ const EVORA = {
 
     const heroSubtitle = document.getElementById('profile-hero-subtitle');
     if (heroSubtitle) {
-      const desig = user.designation || (role === 'admin' ? 'Administrator' : 'Staff Member');
+      const desig = user.designation || (role === 'admin' ? 'System Administrator' : 'Staff Member');
       const dept = user.department_name || 'General';
-      heroSubtitle.textContent = `${desig} • ${dept} Department`;
+      heroSubtitle.textContent = role === 'admin' ? 'System Administrator • Workforce Governance' : `${desig} • ${dept} Department`;
     }
 
     const heroId = document.getElementById('profile-hero-id');
-    if (heroId) heroId.textContent = `EMP-2026-${String(user.id || 1).padStart(3, '0')}`;
+    if (heroId) {
+      heroId.textContent = role === 'admin' ? 'ADM-2026-001' : `EMP-2026-${String(user.id || 1).padStart(3, '0')}`;
+    }
 
     const heroJoined = document.getElementById('profile-hero-joined');
     if (heroJoined && user.joined_date) heroJoined.textContent = user.joined_date;
@@ -289,18 +295,34 @@ const EVORA = {
         sessionStorage.setItem('evora_csrf_token', data.csrf_token);
       }
 
-      // Enforce role authorization
-      if (requiredRole) {
-        const userRole = (user.role || '').toLowerCase();
-        const neededRole = requiredRole.toLowerCase();
+      const isEmployeePage = window.location.pathname.includes('/pages/employee/');
+      const isAdminPage = window.location.pathname.includes('/pages/admin/');
+      const userRole = (user.role || '').toLowerCase();
 
-        if (neededRole === 'admin' && userRole !== 'admin') {
-          const modal = document.getElementById('modal-access-denied');
-          if (modal) {
-            this.openModal('modal-access-denied');
-            return null;
-          }
-          window.location.replace('../employee/dashboard.html');
+      // Enforce role separation:
+      // 1. Admin is an overseer/monitor, NOT staff -> redirect away from employee workspace immediately!
+      if (isEmployeePage && userRole === 'admin') {
+        window.location.replace('../admin/dashboard.html');
+        return null;
+      }
+
+      // 2. Employee cannot access administrator operations
+      if (isAdminPage && userRole !== 'admin') {
+        const modal = document.getElementById('modal-access-denied');
+        if (modal) {
+          this.openModal('modal-access-denied');
+          return null;
+        }
+        window.location.replace('../employee/dashboard.html');
+        return null;
+      }
+
+      // 3. Explicit requiredRole parameter check
+      if (requiredRole) {
+        const neededRole = requiredRole.toLowerCase();
+        if (neededRole !== userRole) {
+          const target = userRole === 'admin' ? '../admin/dashboard.html' : '../employee/dashboard.html';
+          window.location.replace(target);
           return null;
         }
       }
@@ -451,6 +473,14 @@ const EVORA = {
     const statusText = document.getElementById('clock-status-text');
     const timeText = document.getElementById('clock-time-text');
     if (!btnClock) return;
+
+    // Administrators oversee the system and do not have attendance clock-in options
+    const currentUser = this.getCurrentUser();
+    if (currentUser && (currentUser.role || '').toLowerCase() === 'admin') {
+      const widget = document.querySelector('.clock-pill-card');
+      if (widget) widget.style.display = 'none';
+      return;
+    }
 
     btnClock.disabled = true;
 

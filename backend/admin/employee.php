@@ -260,8 +260,13 @@ if ($method === 'DELETE') {
         }
 
         // Check historical dependent records
-        $attendCount = (int)$pdo->query("SELECT COUNT(*) FROM attendance WHERE user_id = {$id}")->fetchColumn();
-        $leavesCount = (int)$pdo->query("SELECT COUNT(*) FROM leaves WHERE user_id = {$id} OR reviewed_by = {$id}")->fetchColumn();
+        $attendStmt = $pdo->prepare('SELECT COUNT(*) FROM attendance WHERE user_id = :id');
+        $attendStmt->execute([':id' => $id]);
+        $attendCount = (int)$attendStmt->fetchColumn();
+
+        $leavesStmt = $pdo->prepare('SELECT COUNT(*) FROM leaves WHERE user_id = :id OR reviewed_by = :id');
+        $leavesStmt->execute([':id' => $id]);
+        $leavesCount = (int)$leavesStmt->fetchColumn();
 
         if ($attendCount > 0 || $leavesCount > 0) {
             // Apply safe deactivation policy to preserve historical integrity

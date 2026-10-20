@@ -197,6 +197,27 @@
       alertBox.className = 'auth-banner-alert';
     }
 
+    // Dynamically load departments from backend
+    async function loadSignupDepartments() {
+      try {
+        const res = await fetch(`${EVORA.apiBase}/departments.php`);
+        if (res.ok) {
+          const data = await res.json();
+          const depts = data.departments || [];
+          if (depts.length > 0) {
+            const select = document.getElementById('signup-dept');
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">Select Department...</option>' + 
+              depts.map(d => `<option value="${d.id}">${EVORA.escapeHtml(d.name)} (${EVORA.escapeHtml(d.code)})</option>`).join('');
+            if (currentVal) select.value = currentVal;
+          }
+        }
+      } catch (e) {
+        // Fallback to initial HTML options
+      }
+    }
+    loadSignupDepartments();
+
     document.getElementById('form-signup').addEventListener('submit', async function(e) {
       e.preventDefault();
       hideAlert();

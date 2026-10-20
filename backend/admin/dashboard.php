@@ -18,14 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 try {
-    // 1. Core organizational stats
+    // 1. Core organizational stats (strictly employees; administrator monitors workforce)
     $statsStmt = $pdo->query('
         SELECT 
-            (SELECT COUNT(*) FROM users WHERE status = "approved") AS total_staff,
-            (SELECT COUNT(*) FROM users WHERE status = "pending") AS pending_approvals,
-            (SELECT COUNT(*) FROM attendance WHERE date = CURDATE() AND status IN ("present", "late", "half_day")) AS present_today,
-            (SELECT COUNT(*) FROM leaves WHERE status = "approved" AND CURDATE() BETWEEN start_date AND end_date) AS active_leaves,
-            (SELECT COUNT(*) FROM leaves WHERE status = "pending") AS pending_leaves,
+            (SELECT COUNT(*) FROM users WHERE role = "employee" AND status = "approved") AS total_staff,
+            (SELECT COUNT(*) FROM users WHERE role = "employee" AND status = "pending") AS pending_approvals,
+            (SELECT COUNT(DISTINCT a.user_id) FROM attendance a JOIN users u ON a.user_id = u.id WHERE u.role = "employee" AND a.date = CURDATE() AND a.status IN ("present", "late", "half_day")) AS present_today,
+            (SELECT COUNT(*) FROM leaves l JOIN users u ON l.user_id = u.id WHERE u.role = "employee" AND l.status = "approved" AND CURDATE() BETWEEN l.start_date AND l.end_date) AS active_leaves,
+            (SELECT COUNT(*) FROM leaves l JOIN users u ON l.user_id = u.id WHERE u.role = "employee" AND l.status = "pending") AS pending_leaves,
             (SELECT COUNT(*) FROM departments) AS total_departments
     ');
     $stats = $statsStmt->fetch();
@@ -42,7 +42,7 @@ try {
             d.code, 
             COUNT(u.id) AS staff_count
         FROM departments d
-        LEFT JOIN users u ON u.department_id = d.id AND u.status = "approved"
+        LEFT JOIN users u ON u.department_id = d.id AND u.role = "employee" AND u.status = "approved"
         GROUP BY d.id
         ORDER BY staff_count DESC, d.name ASC
     ');
@@ -71,10 +71,11 @@ try {
     }
 
     $weekStmt = $pdo->prepare('
-        SELECT date, COUNT(*) AS present_count
-        FROM attendance
-        WHERE date BETWEEN :mon AND :fri AND status IN ("present", "late", "half_day")
-        GROUP BY date
+        SELECT a.date, COUNT(DISTINCT a.user_id) AS present_count
+        FROM attendance a
+        JOIN users u ON a.user_id = u.id
+        WHERE u.role = "employee" AND a.date BETWEEN :mon AND :fri AND a.status IN ("present", "late", "half_day")
+        GROUP BY a.date
     ');
     $fri = date('Y-m-d', strtotime("{$monday} +4 days"));
     $weekStmt->execute([':mon' => $monday, ':fri' => $fri]);

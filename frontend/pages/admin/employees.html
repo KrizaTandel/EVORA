@@ -96,6 +96,11 @@
             <span><span class="nav-icon">&#128197;</span> Leaves &amp; Attendance</span>
           </a>
         </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html" id="nav-adm-profile">
+            <span><span class="nav-icon">&#9881;</span> Admin Profile</span>
+          </a>
+        </li>
       </ul>
       <div class="sidebar-footer">
         <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" onclick="EVORA.logout()">
@@ -129,8 +134,8 @@
               </div>
               <hr class="dropdown-divider">
               <div class="dropdown-links">
-                <a href="../employee/profile.html" class="dropdown-link" id="dropdown-view-profile" role="menuitem">
-                  <span class="dropdown-link-icon">&#128100;</span> View Profile
+                <a href="profile.html" class="dropdown-link" id="dropdown-view-profile" role="menuitem">
+                  <span class="dropdown-link-icon">&#9881;</span> Admin Profile
                 </a>
               </div>
               <hr class="dropdown-divider">
@@ -201,10 +206,10 @@
         <!-- Search & Filter Controls -->
         <div style="display: flex; gap: 0.85rem; margin-bottom: 1.35rem; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 240px;">
-            <input type="text" id="employee-search" class="form-control" placeholder="Search by name, email, or designation..." oninput="renderStaffTable()">
+            <input type="text" id="employee-search" class="form-control" placeholder="Search by name, email, or designation..." oninput="renderAllTables()">
           </div>
           <div style="min-width: 190px;">
-            <select id="filter-dept" class="form-control" onchange="renderStaffTable()">
+            <select id="filter-dept" class="form-control" onchange="renderAllTables()">
               <option value="">All Departments</option>
               <option value="Human Resources">Human Resources (HR)</option>
               <option value="Engineering & IT">Engineering &amp; IT (ENG)</option>
@@ -214,9 +219,9 @@
             </select>
           </div>
           <div style="min-width: 150px;">
-            <select id="filter-status-select" class="form-control" onchange="renderStaffTable()">
-              <option value="">All Statuses</option>
-              <option value="approved" selected>Approved Only</option>
+            <select id="filter-status-select" class="form-control" onchange="renderAllTables()">
+              <option value="" selected>All Statuses</option>
+              <option value="approved">Approved Only</option>
               <option value="pending">Pending Only</option>
               <option value="rejected">Rejected Only</option>
             </select>
@@ -552,20 +557,22 @@
       }
 
       cachedEmployees = res.employees || [];
-      renderPendingTable(cachedEmployees, res.pending_count ?? 0);
+      const pendingList = res.pending_applicants || cachedEmployees.filter(e => e.status === 'pending');
+      renderPendingTable(pendingList, res.pending_count ?? pendingList.length);
       renderStaffTable(cachedEmployees);
-      updateBadgeCounts(res.pending_count ?? 0);
+      updateBadgeCounts(res.pending_count ?? pendingList.length);
     }
 
     /**
      * Render the Pending Registration Approval Queue
      */
-    function renderPendingTable(employees, pendingCount) {
-      const pending = employees.filter(e => e.status === 'pending');
+    function renderPendingTable(pending, pendingCount) {
       const tbody = document.getElementById('pending-tbody');
       if (!tbody) return;
 
-      if (pending.length === 0) {
+      const list = Array.isArray(pending) ? pending : [];
+
+      if (list.length === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="7" class="empty-state">
@@ -578,13 +585,13 @@
         return;
       }
 
-      tbody.innerHTML = pending.map(e => `
+      tbody.innerHTML = list.map(e => `
         <tr id="pending-row-${e.id}">
           <td><strong>${escapeHtml(e.full_name)}</strong></td>
           <td>${escapeHtml(e.email)}</td>
           <td>${escapeHtml(e.phone || '—')}</td>
           <td><span class="badge badge-neutral">${escapeHtml(e.department_name || 'General')}</span></td>
-          <td>${escapeHtml(e.designation || 'Pending Staff')}</td>
+          <td>${escapeHtml(e.designation || 'Pending Review')}</td>
           <td>${escapeHtml(e.joined_date || e.created_at?.split(' ')[0] || '—')}</td>
           <td style="white-space: nowrap;">
             <button class="btn btn-primary btn-sm" onclick="approveApplicant(${e.id}, '${escapeHtml(e.full_name)}')">Approve</button>
@@ -597,7 +604,11 @@
     /**
      * Render the Filtered Staff Directory
      */
-    function renderStaffTable(employees) {
+    function renderStaffTable(employees = null) {
+      if (!employees) {
+        renderAllTables();
+        return;
+      }
       const tbody = document.getElementById('directory-tbody');
       const countEl = document.getElementById('count-visible-staff');
       if (countEl) countEl.textContent = employees.length;

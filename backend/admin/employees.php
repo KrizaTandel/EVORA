@@ -58,6 +58,9 @@ if ($method === 'GET') {
             $where[] = 'u.role = :role';
             $params[':role'] = strtolower($roleFilter);
         }
+    } else {
+        // Staff directory lists employees only; administrator oversees the workforce
+        $where[] = 'u.role = "employee"';
     }
 
     $whereSql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
@@ -87,19 +90,39 @@ if ($method === 'GET') {
         $stmt->execute($params);
         $employees = $stmt->fetchAll();
 
-        // Also fetch count of pending approvals for notification badges
-        $pendingCountStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE status = 'pending'");
-        $pendingCount = (int)$pendingCountStmt->fetchColumn();
+        // Always fetch all pending applicants for the registration queue
+        $pendingStmt = $pdo->query("
+            SELECT 
+                u.id, 
+                u.full_name, 
+                u.email, 
+                u.role, 
+                u.status, 
+                u.department_id, 
+                u.designation, 
+                u.phone, 
+                u.joined_date, 
+                u.created_at,
+                d.name AS department_name, 
+                d.code AS department_code
+            FROM users u
+            LEFT JOIN departments d ON u.department_id = d.id
+            WHERE u.role = 'employee' AND u.status = 'pending'
+            ORDER BY u.created_at DESC
+        ");
+        $pendingApplicants = $pendingStmt->fetchAll();
+        $pendingCount = count($pendingApplicants);
 
-        // Total staff count
-        $totalCountStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE status = 'approved'");
+        // Total approved staff count (excluding admin)
+        $totalCountStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'employee' AND status = 'approved'");
         $totalApproved = (int)$totalCountStmt->fetchColumn();
 
         jsonResponse(true, 'Employees retrieved successfully.', [
-            'employees'     => $employees,
-            'total'         => count($employees),
-            'pending_count' => $pendingCount,
-            'total_approved'=> $totalApproved,
+            'employees'          => $employees,
+            'pending_applicants' => $pendingApplicants,
+            'total'              => count($employees),
+            'pending_count'      => $pendingCount,
+            'total_approved'     => $totalApproved,
         ], 200);
 
     } catch (PDOException $e) {

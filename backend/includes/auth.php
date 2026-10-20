@@ -227,15 +227,33 @@ function jsonResponse(bool $success, string $message, array $data = [], int $htt
  */
 function getRequestBody(): array
 {
+    static $parsed = null;
+    if ($parsed !== null) {
+        return $parsed;
+    }
+
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
     if (str_contains($contentType, 'application/json')) {
         $raw = file_get_contents('php://input');
         if (empty($raw)) {
-            return [];
+            $parsed = [];
+            return $parsed;
         }
         $data = json_decode($raw, true);
-        return is_array($data) ? $data : [];
+        $parsed = is_array($data) ? $data : [];
+        return $parsed;
     }
 
-    return $_POST;
+    // Fallback: If Content-Type was omitted or raw JSON transmitted
+    $raw = file_get_contents('php://input');
+    if (!empty($raw)) {
+        $data = json_decode($raw, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
+            $parsed = $data;
+            return $parsed;
+        }
+    }
+
+    $parsed = !empty($_POST) ? $_POST : [];
+    return $parsed;
 }
